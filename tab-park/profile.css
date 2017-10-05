@@ -1,0 +1,83 @@
+﻿body {
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -webkit-user-select: none;
+	background-color:#323131;
+    background-attachment:fixed;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    width:100%;
+    background-color:#277aa3;
+    font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
+    font-size:12px;
+}
+
+.list-block{
+    background-color:white;
+}
+
+#profile-title{
+    position:center;
+    color:white;
+    font-size:28px;
+    text-align:center;
+}
+
+#parking-info{
+    position:absolute;
+    top:35%;
+    width:100%;
+}
+
+#car-select,#location{
+    background-color: white;
+}
+
+.wallet{
+    position:absolute;
+    top:15%;
+    box-sizing: border-box;
+    -webkit-border-radius:5px;
+    padding: 16px;
+    min-height: 48px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    background-color:white;
+    width:100%;
+    height:80px;
+}
+
+#money-icon{
+    width:10%;
+    margin:4px 4px;
+    color:goldenrod;
+}
+
+#token{
+    right:0%;
+    font-size:42px;
+    color: #422608;
+    text-align:left;
+    width:80%;
+}
+
+#add-car{
+    position:absolute;
+    right:16px;
+    bottom: 64px;
+}
+
+.popover .list-block{
+    max-height:200px;
+}
