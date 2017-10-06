@@ -217,9 +217,13 @@
                                                 <div class="item-inner">
                                                     <div class="item-title">
                                                         <div>ABC 1111</div>
-                                                        <div class="cards-item-title">Hint</div>
+                                                        <div class="cards-item-title">Name</div>
                                                     </div>
-                                                    <div class="item-after"><a href="#" class="override-icon-color" onclick="removeParentCard(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div>
+                                                    <div class="item-after">
+                                                        <a href="#" class="override-icon-color" onclick="$$(this).closest('.card').remove()">
+                                                            <i class="material-icons override-icon-size item-link">cancel</i>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </li>

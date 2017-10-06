@@ -27,13 +27,11 @@ $$('.modal-vehicle').on('click', function () {
               onClick: function () {
                   // TODO: Add validation/trimming function (refer to jom.js)
                   
-                  var str1 = '<li class="swipeout"><div class="item-content swipeout-content"><div class="item-inner"><div class="item-title">'
-                  var str2 = '</div><div class="item-after">'
-                  var str3 = '</div></div></div><div class="swipeout-actions-right"><a href="#" data-confirm="Are you sure you want to delete this item?" class="swipeout-delete">Delete</a></div></li>'
-                  var strComplete = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><div class="item-content"><div class="item-inner"><div class="item-title">Ivan Petrov</div><div class="item-after"><i class="material-icons override-cancel-icon">cancel</i></div></div></div></li></ul></div></div></div>'
-                  var preString = '<a href="#" class="item-link item-content"><div class="item-inner"><div class="item-title">';
-                  var postString = '</div></div></a>';
-                  $$('#tab-vehicle').append(strComplete);
+                  var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>';
+                  var str2 = '</div> <div class="cards-item-title">'
+                  var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="$$(this).closest(\'.card\').remove()"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
+                  var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeParentCard(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
+                  $$('#tab-vehicle').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
                   //$$('#car-list').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
               }
           },
@@ -42,9 +40,9 @@ $$('.modal-vehicle').on('click', function () {
 });
 
 function removeParentCard(item) {
-    //var parent = item.parent('.card');
-    //console.log(parent);
-    item.remove();
+    //var parent = item.parents('.card');
+    console.log($$(item));
+    //item.parents.remove();
 }
 
 myApp.onPageInit('stuff', function (page) {
