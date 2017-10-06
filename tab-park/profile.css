@@ -81,3 +81,13 @@
 .popover .list-block{
     max-height:200px;
 }
+
+a.close-popover{
+    color:inherit;
+    box-sizing:border-box;
+    display:flex;
+    -webkit-box-pack:justify;
+    justify-content:space-between;
+    -webkit-box-align:center;
+    width:100%;
+}

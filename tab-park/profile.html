@@ -32,12 +32,12 @@
                         <div id="money-icon"><i class="material-icons">monetization_on</i></div>
                         <div id="token">1000.00</div>
                     </div>
-                    <div id="parking-info" class="list-block accordion-list">
+                    <div id="parking-info" class="list-block">
                         <ul>
                             <li>
                                 <a href="#" data-popover=".popover-menu" class="item-link close-panel open-popover">
                                     <div class="item-content">
-                                        <div class="item-media"><i id="selected-car-photo" class="material-icons">directions_car</i></div>
+                                        <div class="item-media"><i id="selected-car-logo" class="material-icons">directions_car</i></div>
                                         <div class="item-inner">
                                             <div id="selected-car-plate" class="item-title">Select Car</div>
                                         </div>
@@ -45,11 +45,12 @@
                                 </a>
                                 <div class="popover popover-menu">
                                     <div class="popover-inner">
+                                        <a id="close-popover-menu" href="#" class="close-popover"></a>
                                         <div class="list-block">
-                                            <ul>
+                                            <ul id="select-car">
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="car-plate" value="BMW123"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">BMW123</div>
@@ -59,7 +60,7 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="car-plate" value="XXX456"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">XXX456</div>
@@ -69,10 +70,10 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="car-plate" value="XXX789"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
-                                                            <div class="item-title">XXX456</div>
+                                                            <div class="item-title">XXX789</div>
                                                         </div>
                                                     </label>
                                                 </li>
@@ -84,19 +85,19 @@
                             <li>
                                 <a href="#" data-popover=".popover-menu2" class="item-link close-panel open-popover">
                                     <div class="item-content">
-                                        <div class="item-media"><i class="material-icons">schedule</i></div>
+                                        <div class="item-media"><i id="selected-duration-logo" class="material-icons">schedule</i></div>
                                         <div class="item-inner">
-                                            <div class="item-title">Duration</div>
+                                            <div id="selected-duration" class="item-title">Duration</div>
                                         </div>
                                     </div>
                                 </a>
                                 <div class="popover popover-menu2">
                                     <div class="popover-inner">
                                         <div class="list-block">
-                                            <ul>
+                                            <ul id="select-duration">
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="duration" value="1"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">1 Hour</div>
@@ -106,7 +107,7 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="duration" value="2"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">2 Hours</div>
@@ -116,7 +117,7 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="duration" value="3"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">3 Hours</div>
@@ -126,7 +127,7 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="duration" value="4"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">4 Hours</div>
@@ -136,12 +137,12 @@
 
                                                 <li>
                                                     <label class="label-radio item-content">
-                                                        <input type="radio" name="ks-radio" />
+                                                        <input type="radio" name="duration" value="5"/>
                                                         <div class="item-media"><i class="icon icon-form-radio"></i></div>
                                                         <div class="item-inner">
                                                             <div class="item-title">5 Hours</div>
                                                         </div>
-                                                    </label>
+                                                    </label>  
                                                 </li>
                                             </ul>
                                         </div>
@@ -255,7 +256,6 @@
             </div>
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="dist/js/framework7.js"></script>
     <script type="text/javascript" src="js/kitchen-sink.js"></script>
     <script type="text/javascript" src="scripts/popup.js"></script>
