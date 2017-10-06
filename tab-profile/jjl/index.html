@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#2196f3">
+    <title>Framework7 Material</title>
+    <link rel="stylesheet" href="dist/css/framework7.material.css">
+    <link rel="stylesheet" href="dist/css/framework7.material.colors.css">
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,500,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/material-icons.css">
+    <link rel="stylesheet" href="css/kitchen-sink.css">
+      <link rel="stylesheet" href="css/parking-app.css">
+    <link rel="icon" href="img/icon.png">
+  </head>
+  <body>
+    <div class="statusbar-overlay"></div>
+    <div class="panel-overlay"></div>
+    <div class="views">
+      <div class="view view-main">
+        <div class="pages navbar-fixed">
+          <div data-page="index" class="page">
+              <div class="navbar">
+                  <div class="navbar-inner">
+                      <div class="left">
+                          <div class="icon"><i class="material-icons">add_box</i></div>
+                      </div>
+                      <div class="center">Jom Parking</div>
+                      <div class="right"></div>
+                  </div>
+              </div>
+              <div class="toolbar toolbar-bottom">
+                  <div class="toolbar-inner">
+                      <a href="#tab-park" class="tab-link link active"><i class="material-icons">local_parking</i></a>
+                      <a href="#tab-active" class="tab-link link"><i class="material-icons">timer</i></a>
+                      <a href="#tab-history" class="tab-link link"><i class="material-icons">filter_5</i></a>
+                      <a href="#tab-vehicle" class="tab-link link"><i class="material-icons">drive_eta</i></a>
+                      <a href="#tab-more" class="tab-link link"><i class="material-icons">more_horiz</i></a>
+                  </div>
+              </div>
+            <div class="page-content">
+                <div class="tabs">
+                    <div id="tab-park" class="tab active">
+                        <div class="content-block token-count" style="height:50px;font-size:20px;text-align:center;vertical-align">
+                            Tokens
+                        </div>
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">directions_car</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Vehicle</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">Location</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">Duration</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-block">
+                            <p class="row">
+                                <span class="col-33"></span>
+                                <span class="col-33"><a href="#" class="button button-raised btn-pay">Pay</a></span>
+                                <span class="col-33"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div id="tab-active" class="tab">
+                        <div class="content-block token-count" style="height:50px;font-size:20px;text-align:center;vertical-align">
+                            Tokens
+                        </div>
+                        <div class="content-block">
+                            <p>No active parking.</p>
+                        </div>
+                    </div>
+                    <div id="tab-history" class="tab">
+                            <div class="subnavbar">
+                                <div class="buttons-row">
+                                    <a href="#parking-history" class="button active">Parking History</a>
+                                    <a href="#topup-history" class="button">TopUp History</a>
+                                </div>
+                            </div>
+                        <div class="tabs">
+                            <div id="parking-history" class="tab active">
+                                <div class="content-block">
+                                    <!--HACK: SubNav Tab is blocking the text-->
+                                    <br /><br /><br />Parking stuffs
+                                </div>
+                            </div>
+                            <div id="topup-history" class="tab">
+                                <div class="content-block">
+                                    <!--HACK: SubNav Tab is blocking the text-->
+                                    <br /><br /><br />TopUp stuffs
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-vehicle" class="tab">
+                        <a href="#" class="floating-button color-pink override-vehicle modal-vehicle"><i class="icon icon-plus"></i></a>
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">ABC1234</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">VVB4896</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">Z777</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">A380</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="tab-more" class="tab">
+                        <div class="list-block media-list">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><img src="https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png" width="80" /></div>
+                                        <div class="item-inner">
+                                            <div class="item-title-row">
+                                                <div class="item-title">ID: starry725</div>
+                                            </div>
+                                            <div class="item-text">Account Settings, Personal Info, ...</div>
+
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">account_balance_wallet</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">My Wallet</div>
+                                            <div class="item-after">Balance/PROMO Code</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">time_to_leave</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Vehicles</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">notifications</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Notifications</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">settings</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Settings</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">report</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Report</div>
+                                            <div class="item-after">Car Loss/Illegal Park</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">help</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">HELP</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="#" class="item-link item-content">
+                                        <div class="item-media"><i class="material-icons">mood</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Invite a friend :)</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-block">
+                            <a href="#" class="button button-fill button-raised">Login</a>
+                        </div>
+
+                        </div>
+                    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="login-screen">
+      <div class="view">
+        <div class="page">
+          <div class="page-content login-screen-content">
+            <div class="login-screen-title">Framework7</div>
+            <form>
+              <div class="list-block inputs-list">
+                <ul>
+                  <li class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title label">Username</div>
+                      <div class="item-input">
+                        <input type="text" name="username" placeholder="Your username">
+                      </div>
+                    </div>
+                  </li>
+                  <li class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title label">Password</div>
+                      <div class="item-input">
+                        <input type="password" name="password" placeholder="Your password">
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="content-block"><a href="#" class="button button-big">Sign In</a></div>
+              <div class="content-block">
+                <div class="list-block-label">Some text about login information.<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="picker-modal picker-modal-demo">
+      <div class="toolbar">
+        <div class="toolbar-inner">
+          <div class="left"></div>
+          <div class="right"><a href="#" class="link close-picker">Done</a></div>
+        </div>
+      </div>
+      <div class="picker-modal-inner">
+        <div class="content-block">Integer mollis nulla id nibh elementum finibus. Maecenas eget fermentum ipsum. Sed sagittis condimentum nisl at tempus. Duis lacus libero, laoreet vitae ligula a, aliquet eleifend sapien. Nullam sodales viverra sodales.</div>
+      </div>
+    </div>
+    <script type="text/javascript" src="dist/js/framework7.js"></script>
+    <script type="text/javascript" src="js/kitchen-sink.js"></script>
+      <script type="text/javascript" src="js/parking-app.js"></script>
+  </body>
+</html>
