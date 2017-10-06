@@ -91,3 +91,8 @@ a.close-popover{
     -webkit-box-align:center;
     width:100%;
 }
+
+.popover.popover-menu-car,
+.popover.popover-menu-duration{
+    width:320px;
+}
