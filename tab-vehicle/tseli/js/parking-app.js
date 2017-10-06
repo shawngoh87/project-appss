@@ -12,6 +12,7 @@ var mainView = myApp.addView('.view-main', {
 });
 
 
+// Vehicle Tab - modal for adding vehicles
 $$('.modal-vehicle').on('click', function () {
     myApp.modal({
         title: 'Add vehicle',
@@ -29,14 +30,22 @@ $$('.modal-vehicle').on('click', function () {
                   var str1 = '<li class="swipeout"><div class="item-content swipeout-content"><div class="item-inner"><div class="item-title">'
                   var str2 = '</div><div class="item-after">'
                   var str3 = '</div></div></div><div class="swipeout-actions-right"><a href="#" data-confirm="Are you sure you want to delete this item?" class="swipeout-delete">Delete</a></div></li>'
+                  var strComplete = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><div class="item-content"><div class="item-inner"><div class="item-title">Ivan Petrov</div><div class="item-after"><i class="material-icons override-cancel-icon">cancel</i></div></div></div></li></ul></div></div></div>'
                   var preString = '<a href="#" class="item-link item-content"><div class="item-inner"><div class="item-title">';
                   var postString = '</div></div></a>';
-                  $$('#car-list').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
+                  $$('#tab-vehicle').append(strComplete);
+                  //$$('#car-list').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
               }
           },
         ]
     })
 });
+
+function removeParentCard(item) {
+    //var parent = item.parent('.card');
+    //console.log(parent);
+    item.remove();
+}
 
 myApp.onPageInit('stuff', function (page) {
 $$('.open-3-modal').on('click', function () {
