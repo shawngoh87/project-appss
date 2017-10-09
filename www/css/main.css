@@ -152,7 +152,7 @@ a.close-popover{
     padding:0px;
 }
 
-#car-icon, #location, #topup-icon,#topup-date,#car-plate1{
+#car-icon, #location, #topup-icon,#topup-date,#history-car-plate{
     font-size:20px
 }
 
@@ -170,7 +170,7 @@ a.close-popover{
     position:absolute;
 }
 
-#car-plate{
+#active-car-plate{
     font-size:35px;
 }
 
@@ -183,7 +183,7 @@ a.close-popover{
 }
 
 #lbl-btn{
-    font-size:15px;
+    font-size:16px;
 }
 
 #topup-btn{
@@ -196,7 +196,7 @@ a.close-popover{
 }
 
 #popover-active{
-    width:330px;
+    width:350px;
     height:350px;
 }
 
