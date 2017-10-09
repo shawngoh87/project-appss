@@ -1131,7 +1131,7 @@ $$('#login').on('click', function () {
     var password = $$('#password').val();
 
     if (username == 'utarstudent' && password == '123') {
-        mainView.router.loadPage("profile.html");
+        mainView.router.loadPage("main.html");
     }
     else {
         alert('wrong username or password!')
@@ -1139,16 +1139,21 @@ $$('#login').on('click', function () {
 })
 
 /*profile popover*/
-myApp.onPageInit('home-profile', function (page) {
+myApp.onPageInit('main', function (page) {
+    var carPlate, parkDuration, tokenReq, tokenBal,confirmText;
+    var tokenNo = +$$('#token').text();
+    var selectedCar=false, selectedDuration=false;
+
     $$('#select-car').on('click', function () {
-        var carPlate = $$('input[name=car-plate]:checked').val();
+        carPlate = $$('input[name=car-plate]:checked').val();
         $$('#selected-car-plate').html(carPlate);
         $$('#selected-car-logo').css('color', 'blue');
+        selectedCar = true;
         $$('#close-popover-menu').click();
     })
 
     $$('#select-duration').on('click', function () {
-        var parkDuration = +$$('input[name=duration]:checked').val();
+        parkDuration = +$$('input[name=duration]:checked').val();
         if (parkDuration > 1) {
             $$('#selected-duration').html(parkDuration + ' Hours');
         }
@@ -1156,6 +1161,28 @@ myApp.onPageInit('home-profile', function (page) {
             $$('#selected-duration').html(parkDuration + ' Hour');
         }
         $$('#selected-duration-logo').css('color', 'blue');
+        selectedDuration = true;
         $$('#close-popover-menu').click();
     })
+
+    $$('#confirm-payment').on('click', function () {
+        if (selectedCar && selectedDuration) {
+            tokenReq = parkDuration * 2;
+            tokenBal = tokenNo - tokenReq;
+            confirmText =
+                'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
+                'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('#selected-duration').text() + '<br>' +
+                'Token required is &emsp;:' + tokenReq.toString() + '<br>' +
+                'Token balance is &emsp;&nbsp:' + tokenBal.toString() + '<br>' +
+                'Confirm Transaction?';
+            myApp.confirm(confirmText, 'Confirmation', function () {
+                myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                $$('#token').html(tokenBal.toString());
+            });
+        }
+        else {
+            myApp.alert('Please select your car and duration! Stupid!','Notification');
+        }
+    });
+
 })
