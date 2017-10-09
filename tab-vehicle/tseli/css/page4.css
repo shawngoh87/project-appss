@@ -1,0 +1,20 @@
+﻿body {
+}
+
+.cards-item-title {
+    /*min-width: 0;
+    -webkit-box-flex: 1;
+    -webkit-flex-shrink: 1;
+    -ms-flex: 0 1 auto;
+    flex-shrink: 1;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;*/
+    max-width: 50%;
+    font-size: small;
+    padding-left: 0;
+    padding-right: 16px;
+    color: rgba(0, 0, 0, 0.54);
+}
+

@@ -14,6 +14,38 @@
     <link rel="stylesheet" href="css/material-icons.css">
     <link rel="stylesheet" href="css/parking-app.css">
     <link rel="icon" href="img/icon.png">
+
+      <style>
+          .flex-containers {
+              display: -webkit-flex;
+              display: flex;
+              justify-content: flex-start;
+              width: 400px;
+              height: 40px;
+              background-color: none;
+          }
+
+          .flex-items-left {
+              background-color: none;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              width: 150px;
+              height: 30px;
+              margin-left: 0px;
+              margin-top: 10px;
+          }
+
+          .flex-items-right {
+              background-color: none;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              width: 150px;
+              height: 30px;
+              margin-left: 0px;
+              margin-top: 10px;
+              direction: rtl;
+          }
+      </style>
   </head>
   <body>
     <div class="statusbar-overlay"></div>
@@ -218,19 +250,43 @@
                                                     <div class="item-title">
                                                         <div>ABC 1111</div>
                                                         <div class="cards-item-title">Name</div>
-                                                    </div>
+                                                    </div>                                                    
                                                     <div class="item-after">
-                                                        <a href="#" class="override-icon-color" onclick="$$(this).closest('.card').remove()">
+                                                        <a href="#" class="override-icon-color" onclick="card-history">
+                                                            <i class="material-icons override-icon-size override-position">history</i>
+                                                        </a>
+                                                        <div class="no-colour">o</div>
+                                                        <a href="#" class="override-icon-color" onclick="$$(this).closest('.card').remove()">                                                           
                                                             <i class="material-icons override-icon-size item-link">cancel</i>
                                                         </a>
+                                                        
                                                     </div>
+
+                                                    
+
                                                 </div>
-                                            </div>
+                                            </div>                                            
                                         </li>
                                     </ul>
                                 </div>
                             </div>
+                        </div> 
+                        <!--vehicle history-->
+                        <div id="card-history">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="card-content-inner">Location</div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="flex-containers">
+                                        <div class="flex-items-left">Duration</div>
+                                        <div class="flex-items-right">Total</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                       
+
                     </div>
                     <div id="tab-more" class="tab">
                         <div class="list-block">
