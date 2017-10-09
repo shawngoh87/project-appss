@@ -16,16 +16,6 @@ var mainView = myApp.addView('.view-main', {
 // Login auth
 $$('.button-login').on('click', function () {
     mainView.router.loadPage("main.html");
-
-    //var username = $$('.username').val();
-    //var password = $$('.password').val();
-
-    //if (username == 'utarstudent' && password == '123') {
-    //    mainView.router.loadPage("main.html");
-    //}
-    //else {
-    //    alert('wrong username or password!')
-    //}
 })
 
 function removeVehicle(item) {

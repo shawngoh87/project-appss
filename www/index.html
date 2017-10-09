@@ -28,7 +28,7 @@
                     </div>
                     <div class="input-user-info">
                         <form>
-                            <input type="text" class="user-text username" placeholder="username" /><br />
+                            <input type="text" class="user-text user-email" placeholder="user email" /><br />
                             <input type="password" class="user-text password" placeholder="password" /><br />
                             <input type="button" class="button-login-page button-login" value="LOGIN" /><br />
                             <input type="button" class="button-login-page button-signup" value="Sign Up" /><br />
@@ -42,8 +42,20 @@
         </div>
       </div>
     </div>
+      <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
+      <script>
+          // Initialize Firebase
+          var config = {
+            apiKey: "AIzaSyDQfYGu4-ydBLkaKUDjoEnmdfwr5xavOXA",
+            authDomain: "project-appss-420.firebaseapp.com",
+            databaseURL: "https://project-appss-420.firebaseio.com",
+            projectId: "project-appss-420",
+            storageBucket: "project-appss-420.appspot.com",
+            messagingSenderId: "509444077185"
+          };
+          firebase.initializeApp(config);
+      </script>
     <script type="text/javascript" src="dist/js/framework7.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
-      <script type="text/javascript" src="js/firebase.js"></script>
   </body>
 </html>
