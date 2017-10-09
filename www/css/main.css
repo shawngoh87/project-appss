@@ -170,8 +170,16 @@ a.close-popover{
     position:absolute;
 }
 
+#car-plate,.owned-car,.select-car{
+    text-transform: uppercase;
+}
+
 #active-car-plate{
     font-size:35px;
+}
+
+::-webkit-input-placeholder{
+    text-transform: none;
 }
 
 #lbl-time,#history-info,#topup-info{

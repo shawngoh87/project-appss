@@ -2,8 +2,8 @@
 // http://go.microsoft.com/fwlink/?LinkID=397705
 // To debug code on page load in Ripple or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
-var APPSS1;
-(function (APPSS1) {
+var Frame;
+(function (Frame) {
     "use strict";
     var Application;
     (function (Application) {
@@ -28,9 +28,9 @@ var APPSS1;
         function onResume() {
             // TODO: This application has been reactivated. Restore application state here.
         }
-    })(Application = APPSS1.Application || (APPSS1.Application = {}));
+    })(Application = Frame.Application || (Frame.Application = {}));
     window.onload = function () {
         Application.initialize();
     };
-})(APPSS1 || (APPSS1 = {}));
+})(Frame || (Frame = {}));
 //# sourceMappingURL=appBundle.js.map
