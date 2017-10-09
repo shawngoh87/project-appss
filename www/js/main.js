@@ -47,6 +47,59 @@ function removeVehicle(item) {
 }
 
 myApp.onPageInit('main', function (page) {
+    //Parking Info and Payment
+    var carPlate, parkDuration, tokenReq, tokenBal, confirmText, tokenNo;
+    var selectedCar = false, selectedDuration = false;
+
+
+    $$('#select-car').on('click', function () {
+        carPlate = $$('input[name=car-plate]:checked').val();
+        $$('#selected-car-plate').html(carPlate);
+        $$('#selected-car-logo').css('color', 'blue');
+        selectedCar = true;
+        $$('#close-popover-menu').click();
+    })
+
+    $$('#select-duration').on('click', function () {
+        parkDuration = +$$('input[name=duration]:checked').val();
+        if (parkDuration > 1) {
+            $$('#selected-duration').html(parkDuration + ' Hours');
+        }
+        else {
+            $$('#selected-duration').html(parkDuration + ' Hour');
+        }
+        $$('#selected-duration-logo').css('color', 'blue');
+        selectedDuration = true;
+        $$('#close-popover-menu').click();
+    })
+
+    $$('#confirm-payment').on('click', function () {
+        tokenNo = +$$('#token').text();
+        if (selectedCar && selectedDuration) {
+            tokenReq = parkDuration * 2;
+            tokenBal = tokenNo - tokenReq;
+            confirmText =
+                'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
+                'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('#selected-duration').text() + '<br>' +
+                'Token required is &emsp;:' + tokenReq.toString() + '<br>' +
+                'Token balance is &emsp;&nbsp:' + tokenBal.toString() + '<br>' +
+                'Confirm Transaction?';
+            myApp.confirm(confirmText, 'Confirmation', function () {
+                myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                $$('#token').html(tokenBal.toString());
+                $$('#selected-car-plate').html('Select Car');
+                $$('#selected-duration').html('Duration');
+                $$('#selected-car-logo').css('color', 'inherit');
+                $$('#selected-duration-logo').css('color', 'inherit');
+                selectedCar = false;
+                selectedDuration = false;
+            });
+        }
+        else {
+            myApp.alert('Please select your car and duration! Stupid!', 'Notification');
+        }
+    });
+
 
     // Vehicle Tab - modal for adding vehicles
     $$('.modal-vehicle').on('click', function () {
