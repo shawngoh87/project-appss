@@ -145,7 +145,7 @@ myApp.onPageInit('main', function (page) {
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
-            afterText: '<div class="input-field"><input type="text" id="car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="car-hint" class="modal-text-input" placeholder="Hint"></div>',
+            afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-hint" class="modal-text-input" placeholder="Hint"></div>',
             buttons: [
               {
                   text: 'Cancel',
@@ -160,7 +160,7 @@ myApp.onPageInit('main', function (page) {
                       var str2 = '</div> <div class="cards-item-title">'
                       var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
                       var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
-                      $$('#tab-vehicle').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
+                      $$('#tab-vehicle').append(str1 + $$('#txt-car-plate').val() + str2 + $$('#car-hint').val() + str3);
 
                   }
               },
