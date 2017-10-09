@@ -1,0 +1,59 @@
+﻿<div data-page="profile-mywallet" class="page">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="index.html/tab-more" class="back link icon-only"><i class="icon icon-back"></i></a></div>
+            <div class="center">My Wallet</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <div class="tabbar-labels-fixed">
+            <!--HACK: top padding removed-->
+            <div class="toolbar tabbar tabbar-labels">
+                <div class="toolbar-inner">
+                    <a href="#mywallet-balance" class="tab-link">
+                        <span class="tabbar-label">Balance</span>
+                    </a>
+                    <a href="#mywallet-promocode" class="tab-link">
+                       <!--<i class="icon material-icons">local_atm</i>--> 
+                        <span class="tabbar-label">PROMO Code</span>
+                    </a>
+                </div>
+            </div>
+            <div class="">
+                <div class="tabs">
+                    <div id="mywallet-balance" class="tab active">
+                        <div class="list-block media-list">
+                            <ul>
+                                <li>
+                                    <a href="#" data-popover=".popover-active1" class="item-link item-content open-popover">
+                                        <div class="item-inner">
+                                            <div class="item-title-row">
+                                                <div class="item-title" id="car-icon"><i class="material-icons">child_friendly</i>ABC-123</div>
+                                                <div class="item-after" id="time">38</div>
+                                                <div class="item-after" id="remain">minutes <br />remaining</div>
+                                            </div>
+                                            <div class="item-subtitle"><i class="material-icons">place</i>Sungai Long, Kajang</div>
+                                        </div>
+                                    </a>
+                                    <div class="popover popover-active1" id="popover-active">
+                                        <div class="popover-angle"></div>
+                                        <div class="popover-inner">
+                                            <div class="content-block">
+                                                <div id="car-plate">ABC-123</div>
+                                                <div id="location">Sungai Long, Kajang</div><br />
+                                                <div id="lbl-time">Expected End Time:</div>
+                                                <div id="time-remain">17:00</div><br />
+                                                <div id="lbl-btn">Press the button to extend the parking time.</div><br />
+                                                <button id="topup-btn">Top Up</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

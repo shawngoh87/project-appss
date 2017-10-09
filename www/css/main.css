@@ -122,8 +122,6 @@ a.close-popover{
 .confirm-payment-button{
     background-color:white;
 }
-}
-
 /* JJL */
 
 .mylogo {
@@ -131,6 +129,13 @@ a.close-popover{
     display:block;
     width:50%;
     margin:8% auto;
+}
+
+.item-media img {
+    width: auto;
+    height: auto;
+    max-width: 40px;
+    border-radius: 50%;
 }
 
 /* Sen Kit */
