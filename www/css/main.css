@@ -80,7 +80,7 @@
     color:goldenrod;
 }
 
-#token{
+.token{
     right:0%;
     font-size:42px;
     color: #422608;
@@ -119,7 +119,7 @@ a.close-popover{
     width:100%;
 }
 
-#confirm-payment-button{
+.confirm-payment-button{
     background-color:white;
 }
 }

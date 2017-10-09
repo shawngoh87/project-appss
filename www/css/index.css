@@ -59,7 +59,7 @@ body {
     border-radius: 5px;
 }
 
-.button-login{
+.button-login-page{
     border: none;
     margin: 4px 10px;
     text-align: center;
@@ -70,12 +70,12 @@ body {
     text-decoration: none;
 }
 
-#login{
+.button-login-page.button-login{
     background-color: white;
     color: #277aa3;
 }
 
-#signup{
+.button-login-page.button-signup{
     background-color: #277aa3;
     color: white;
 }

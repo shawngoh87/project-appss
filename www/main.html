@@ -21,7 +21,7 @@
             <div id="tab-park" class="tab active">
                 <div class="wallet">
                     <div id="money-icon"><i class="material-icons">monetization_on</i></div>
-                    <div id="token">1000</div>
+                    <div class="token">1000</div>
                 </div>
                 <div id="parking-info" class="list-block">
                     <ul>
@@ -29,16 +29,16 @@
                         <li>
                             <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover">
                                 <div class="item-content">
-                                    <div class="item-media"><i id="selected-car-logo" class="material-icons">directions_car</i></div>
+                                    <div class="item-media"><i class="material-icons selected-car-logo">directions_car</i></div>
                                     <div class="item-inner">
-                                        <div id="selected-car-plate" class="item-title">Select Car</div>
+                                        <div class="item-title selected-car-plate">Select Car</div>
                                     </div>
                                 </div>
                             </a>
                             <div class="popover popover-menu-car">
                                 <div class="popover-inner">
                                     <div class="list-block">
-                                        <ul id="select-car">
+                                        <ul class="select-car">
                                             <li>
                                                 <label class="label-radio item-content">
                                                     <input type="radio" name="car-plate" value="BMW123" />
@@ -76,16 +76,16 @@
                         <li>
                             <a href="#" data-popover=".popover-menu-duration" class="item-link close-panel open-popover">
                                 <div class="item-content">
-                                    <div class="item-media"><i id="selected-duration-logo" class="material-icons">schedule</i></div>
+                                    <div class="item-media"><i class="material-icons selected-duration-logo">schedule</i></div>
                                     <div class="item-inner">
-                                        <div id="selected-duration" class="item-title">Duration</div>
+                                        <div class="item-title selected-duration">Duration</div>
                                     </div>
                                 </div>
                             </a>
                             <div class="popover popover-menu-duration">
                                 <div class="popover-inner">
                                     <div class="list-block">
-                                        <ul id="select-duration">
+                                        <ul class="select-duration">
                                             <li>
                                                 <label class="label-radio item-content">
                                                     <input type="radio" name="duration" value="1" />
@@ -158,8 +158,8 @@
                 <div class="content-block confirm-payment">
                     <p class="row">
                         <span class="col-33"></span>
-                        <span id="confirm-payment-button" class="col-33">
-                            <a href="#" id="confirm-payment" class="button button-raised">Confirm</a>
+                        <span class="col-33 confirm-payment-button">
+                            <a href="#" class="button button-raised">Confirm</a>
                         </span>
                         <span class="col-33"></span>
                     </p>
