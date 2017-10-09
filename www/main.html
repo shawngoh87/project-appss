@@ -27,7 +27,7 @@
                     <ul>
                         <shadow><a href="#" id="close-popover-menu" class="close-popover"></a></shadow>
                         <li>
-                            <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover">
+                            <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover select-car-menu">
                                 <div class="item-content">
                                     <div class="item-media"><i class="material-icons selected-car-logo">directions_car</i></div>
                                     <div class="item-inner">
@@ -135,6 +135,15 @@
                                                     </div>
                                                 </label>
                                             </li>
+                                            <li>
+                                                <label class="label-radio item-content">
+                                                    <input type="radio" name="duration" value="1000" />
+                                                    <div class="item-media"><i class="icon icon-form-radio"></i></div>
+                                                    <div class="item-inner">
+                                                        <div class="item-title">1000 Hours</div>
+                                                    </div>
+                                                </label>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -170,7 +179,7 @@
                     Cannot get pass login screen.-->
                 <div class="tabbar-labels-fixed">
                     <!--HACK: top padding removed-->
-                    <div class="toolbar tabbar tabbar-labels">
+                    <div class="toolbar tabbar tabbar-labels" style="top:0px">
                         <div class="toolbar-inner">
                             <a href="#active" class="tab-link active">
                                 <i class="icon material-icons">done_all</i>
@@ -189,20 +198,20 @@
                     <div class="">
                         <div class="tabs">
                             <div id="active" class="tab active">
-                                <div class="list-block media-list">
+                                <div class="list-block media-list" style="margin:0px">
                                     <ul>
                                         <li>
                                             <a href="#" data-popover=".popover-active1" class="item-link item-content open-popover">
                                                 <div class="item-inner">
                                                     <div class="item-title-row">
-                                                        <div class="item-title" id="car-icon"><i class="material-icons">child_friendly</i>ABC-123</div>
-                                                        <div class="item-after" id="time">38</div>
-                                                        <div class="item-after" id="remain">minutes <br />remaining</div>
+                                                        <div class="item-title" style="font-size:20px"><i class="material-icons">child_friendly</i>ABC-123</div>
+                                                        <div class="item-after" style="font-size:50px; position:absolute; right:20%">38</div>
+                                                        <div class="item-after" style="font-size:12px; padding-bottom:20px; bottom:0; right:2%; position:absolute">minutes <br />remaining</div>
                                                     </div>
                                                     <div class="item-subtitle"><i class="material-icons">place</i>Sungai Long, Kajang</div>
                                                 </div>
                                             </a>
-                                            <div class="popover popover-active1" id="popover-active">
+                                            <div class="popover popover-active1" style="width:300px; height:350px">
                                                 <div class="popover-angle"></div>
                                                 <div class="popover-inner">
                                                     <div class="content-block">
@@ -221,14 +230,14 @@
                                             <a href="#" data-popover=".popover-active2" class="item-link item-content open-popover">
                                                 <div class="item-inner">
                                                     <div class="item-title-row">
-                                                        <div class="item-title" id="car-icon"><i class="material-icons">child_friendly</i>DEF-456</div>
-                                                        <div class="item-after" id="time">2</div>
-                                                        <div class="item-after" id="remain">hours <br />remaining</div>
+                                                        <div class="item-title" style="font-size:20px"><i class="material-icons">child_friendly</i>DEF-456</div>
+                                                        <div class="item-after" style="font-size:50px; position:absolute; right:20%">2</div>
+                                                        <div class="item-after" style="font-size:12px; padding-bottom:20px; bottom:0; right:2%; position:absolute">hours <br />remaining</div>
                                                     </div>
                                                     <div class="item-subtitle"><i class="material-icons">place</i>Sungai Long, Kajang</div>
                                                 </div>
                                             </a>
-                                            <div class="popover popover-active2" id="popover-active">
+                                            <div class="popover popover-active2" style="width:300px; height:350px">
                                                 <div class="popover-angle"></div>
                                                 <div class="popover-inner">
                                                     <div class="content-block">
@@ -247,14 +256,14 @@
                                 </div>
                             </div>
                             <div id="history" class="tab">
-                                <div class="content-block" id="history-content">
-                                    <div class="list-block" id="history-list">
+                                <div class="content-block" style="margin:0px; padding:0px">
+                                    <div class="list-block" style="margin:0px">
                                         <ul>
                                             <li>
                                                 <a href="#" data-popover=".popover-history-1" class="item-link item-content open-popover">
                                                     <div class="item-media"><i class="material-icons">directions_car</i></div>
                                                     <div class="item-inner">
-                                                        <div id="car-icon"class="item-title">MVP6023</div>
+                                                        <div class="item-title">MVP6023</div>
                                                         <div class="item-after">7mins ago</div>
                                                     </div>
                                                 </a>
@@ -278,7 +287,7 @@
                                                 <a href="#" data-popover=".popover-history-2" class="item-link item-content open-popover">
                                                     <div class="item-media"><i class="material-icons">directions_car</i></div>
                                                     <div class="item-inner">
-                                                        <div id="car-icon" class="item-title">MVP6023</div>
+                                                        <div class="item-title">MVP6023</div>
                                                         <div class="item-after">3h ago</div>
                                                     </div>
                                                 </a>
@@ -302,7 +311,7 @@
                                                 <a href="#" data-popover=".popover-history-3" class="item-link item-content open-popover">
                                                     <div class="item-media"><i class="material-icons">directions_car</i></div>
                                                     <div class="item-inner">
-                                                        <div id="car-icon" class="item-title">RP6023</div>
+                                                        <div class="item-title">RP6023</div>
                                                         <div class="item-after">3d ago</div>
                                                     </div>
                                                 </a>
@@ -327,8 +336,8 @@
                                 </div>
                             </div>
                             <div id="topup" class="tab">
-                                <div class="content-block" id="topup-content">
-                                    <div class="list-block" id="topup-list">
+                                <div class="content-block" style="margin:0px; padding:0px">
+                                    <div class="list-block" style="margin:0px">
                                         <ul>
                                             <li>
                                                 <a href="#" data-popover=".popover-topup-1" class="item-link item-content open-popover">
@@ -394,8 +403,33 @@
                                     <div class="item-content">
                                         <div class="item-inner">
                                             <div class="item-title">
-                                                <div>
+                                                <div class="owned-car">
                                                     ABC 1111
+                                                </div>
+                                                <div class="cards-item-title">
+                                                    Name
+                                                </div>
+                                            </div>
+                                            <div class="item-after">
+                                                <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title">
+                                                <div class="owned-car">
+                                                    ABC 2222
                                                 </div>
                                                 <div class="cards-item-title">
                                                     Name

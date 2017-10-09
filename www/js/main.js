@@ -16,7 +16,7 @@ var mainView = myApp.addView('.view-main', {
 // Login auth
 $$('.button-login').on('click', function () {
     mainView.router.loadPage("main.html");
-   
+
     //var username = $$('.username').val();
     //var password = $$('.password').val();
 
@@ -49,7 +49,41 @@ function removeVehicle(item) {
 
 myApp.onPageInit('main', function (page) {
 
+    var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
+    var ownedCar, selectedCar = false, selectedDuration = false;
 
+    //---------------------------------------
+    // Get Car Select List from Vehicle Tab
+    //---------------------------------------
+    $$('.select-car-menu').on('click', function () {
+        $$('.car-choice').remove();
+        ownedCar = [];
+
+        $$('.owned-car').each(function () {
+            ownedCar.push($$(this).text());
+        });
+
+        if (ownedCar.length <= 0) {
+            myApp.alert('Please add your car', 'Notification');
+        }
+        else {
+            for (var i = 0; i < ownedCar.length; i++) {
+                $$(".select-car").append(
+                    '<li><label class="label-radio item-content car-choice">' +
+                    '<input type="radio" name="car-plate" value="' + ownedCar[i] + '" />' +
+                    '<div class="item-media"><i class="icon icon-form-radio"></i></div>' +
+                    '<div class="item-inner">' +
+                    '<div class="item-title">' + ownedCar[i] + '</div>' +
+                    '</div>' +
+                    '</label></li>'
+                    );
+            }
+        }
+    });
+
+    //--------------------
+    // Get Selected Car
+    //--------------------
     $$('.select-car').on('click', function () {
         carPlate = $$('input[name=car-plate]:checked').val();
         $$('.selected-car-plate').html(carPlate);
@@ -58,6 +92,9 @@ myApp.onPageInit('main', function (page) {
         $$('#close-popover-menu').click();
     })
 
+    //----------------------------------
+    // Get Selected Duration Function
+    //----------------------------------
     $$('.select-duration').on('click', function () {
         parkDuration = +$$('input[name=duration]:checked').val();
         if (parkDuration > 1) {
@@ -71,17 +108,18 @@ myApp.onPageInit('main', function (page) {
         $$('#close-popover-menu').click();
     })
 
+    //-----------------------
+    // Pay Button Function
+    //-----------------------
     $$('.confirm-payment').on('click', function () {
-        tokenNo = +$$('.token').text();
         if (selectedCar && selectedDuration) {
+            tokenNo = +$$('.token').text();
             tokenReq = parkDuration * 2;
             tokenBal = tokenNo - tokenReq;
-
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
-                //'Token balance is &emsp;&nbsp:' + tokenBal.toString() + '<br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
                 if (tokenBal < 0) {
@@ -99,8 +137,9 @@ myApp.onPageInit('main', function (page) {
                     $$('#tab-history-button').click();
                 }
             });
+
         }
-        else if(selectedCar){
+        else if (selectedCar) {
             myApp.alert('Please select your duration! Stupid!', 'Notification');
         }
         else if (selectedDuration) {
@@ -127,11 +166,12 @@ myApp.onPageInit('main', function (page) {
                   onClick: function () {
                       // TODO: Add validation/trimming function (refer to jom.js)
 
-                      var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>';
+                      var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div> <div class="cards-item-title">'
                       var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
                       var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
                       $$('#tab-vehicle').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
+
                   }
               },
             ]
