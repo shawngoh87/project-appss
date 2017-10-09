@@ -23,11 +23,13 @@
                     <div id="money-icon"><i class="material-icons">monetization_on</i></div>
                     <div class="token">1000</div>
                 </div>
+
                 <div id="parking-info" class="list-block">
                     <ul>
                         <shadow><a href="#" id="close-popover-menu" class="close-popover"></a></shadow>
+
                         <li>
-                            <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover">
+                            <a href="#" id="carSelector" data-popover=".popover-menu-car" class="item-link close-panel">
                                 <div class="item-content">
                                     <div class="item-media"><i class="material-icons selected-car-logo">directions_car</i></div>
                                     <div class="item-inner">
@@ -38,41 +40,12 @@
                             <div class="popover popover-menu-car">
                                 <div class="popover-inner">
                                     <div class="list-block">
-                                        <ul class="select-car">
-                                            <li>
-                                                <label class="label-radio item-content">
-                                                    <input type="radio" name="car-plate" value="BMW123" />
-                                                    <div class="item-media"><i class="icon icon-form-radio"></i></div>
-                                                    <div class="item-inner">
-                                                        <div class="item-title">BMW123</div>
-                                                    </div>
-                                                </label>
-                                            </li>
-
-                                            <li>
-                                                <label class="label-radio item-content">
-                                                    <input type="radio" name="car-plate" value="XXX456" />
-                                                    <div class="item-media"><i class="icon icon-form-radio"></i></div>
-                                                    <div class="item-inner">
-                                                        <div class="item-title">XXX456</div>
-                                                    </div>
-                                                </label>
-                                            </li>
-
-                                            <li>
-                                                <label class="label-radio item-content">
-                                                    <input type="radio" name="car-plate" value="XXX789" />
-                                                    <div class="item-media"><i class="icon icon-form-radio"></i></div>
-                                                    <div class="item-inner">
-                                                        <div class="item-title">XXX789</div>
-                                                    </div>
-                                                </label>
-                                            </li>
-                                        </ul>
+                                        <ul class="select-car"></ul>
                                     </div>
                                 </div>
                             </div>
                         </li>
+
                         <li>
                             <a href="#" data-popover=".popover-menu-duration" class="item-link close-panel open-popover">
                                 <div class="item-content">
@@ -371,6 +344,10 @@
                     </div>
                 </div>
             </div>
+
+            <!-------------------->
+            <!--Vehicle tab-->
+            <!-------------------->
             <div id="tab-vehicle" class="tab">
                 <a href="#" class="floating-button color-pink override-vehicle modal-vehicle"><i class="icon icon-plus"></i></a>
                 <div class="card">
@@ -399,6 +376,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-profile" class="tab">
                 <div class="list-block media-list">
                     <ul>
