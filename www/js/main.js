@@ -17,6 +17,7 @@ var myApp = new Framework7({
     // Enable Material theme
     material: true,
 });
+
 // Expose Internal DOM library
 var $$ = Dom7;
 
@@ -88,23 +89,35 @@ myApp.onPageInit('main', function (page) {
         if (selectedCar && selectedDuration) {
             tokenReq = parkDuration * 2;
             tokenBal = tokenNo - tokenReq;
+
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
-                'Token required is &emsp;:' + tokenReq.toString() + '<br>' +
-                'Token balance is &emsp;&nbsp:' + tokenBal.toString() + '<br>' +
+                'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+                //'Token balance is &emsp;&nbsp:' + tokenBal.toString() + '<br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
-                myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
-                $$('.token').html(tokenBal.toString());
-                $$('.selected-car-plate').html('Select Car');
-                $$('.selected-duration').html('Duration');
-                $$('.selected-car-logo').css('color', 'inherit');
-                $$('.selected-duration-logo').css('color', 'inherit');
-                selectedCar = false;
-                selectedDuration = false;
-                $$('#tab-history-button').click();
+                if (tokenBal < 0) {
+                    myApp.alert('Insufficient balance.', 'Notification');
+                }
+                else {
+                    myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                    $$('.token').html(tokenBal.toString());
+                    $$('.selected-car-plate').html('Select Car');
+                    $$('.selected-duration').html('Duration');
+                    $$('.selected-car-logo').css('color', 'inherit');
+                    $$('.selected-duration-logo').css('color', 'inherit');
+                    selectedCar = false;
+                    selectedDuration = false;
+                    $$('#tab-history-button').click();
+                }
             });
+        }
+        else if(selectedCar){
+            myApp.alert('Please select your duration! Stupid!', 'Notification');
+        }
+        else if (selectedDuration) {
+            myApp.alert('Please select your car! Stupid!', 'Notification');
         }
         else {
             myApp.alert('Please select your car and duration! Stupid!', 'Notification');
