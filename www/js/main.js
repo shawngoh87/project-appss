@@ -1,6 +1,6 @@
 ﻿// Init App
 var myApp = new Framework7({
-    modalTitle: 'Framework7',
+    modalTitle: 'Project Appss',
     // Enable Material theme
     material: true,
 });
@@ -11,17 +11,40 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
-$$('#login').on('click', function () {
-    var username = $$('#username').val();
-    var password = $$('#password').val();
 
-    if (username == 'utarstudent' && password == '123') {
-        mainView.router.loadPage("main.html");
-    }
-    else {
-        alert('wrong username or password!')
-    }
+// Login auth
+$$('#login').on('click', function () {
+    mainView.router.loadPage("main.html");
+   
+    //var username = $$('#username').val();
+    //var password = $$('#password').val();
+
+    //if (username == 'utarstudent' && password == '123') {
+    //    mainView.router.loadPage("main.html");
+    //}
+    //else {
+    //    alert('wrong username or password!')
+    //}
 })
+
+function removeVehicle(item) {
+    myApp.modal({
+        title: 'Delete?',
+        buttons: [
+          {
+              text: 'Cancel',
+              onClick: function () {/* Do Nothing */ }
+          },
+          {
+              text: 'Ok',
+              onClick: function () {
+                  // TODO: Add validation/trimming function (refer to jom.js)
+                  $$(item).closest('.card').remove();
+              }
+          },
+        ]
+    })
+}
 
 myApp.onPageInit('main', function (page) {
 
@@ -42,10 +65,9 @@ myApp.onPageInit('main', function (page) {
 
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>';
                       var str2 = '</div> <div class="cards-item-title">'
-                      var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="$$(this).closest(\'.card\').remove()"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
-                      var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeParentCard(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
+                      var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
+                      var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
                       $$('#tab-vehicle').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
-                      //$$('#car-list').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
                   }
               },
             ]

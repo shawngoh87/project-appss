@@ -1,32 +1,17 @@
-﻿/* Shawn */
-
-.override-vehicle{
-    bottom: 66px;
+﻿body {
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -webkit-user-select: none;
+	background-color:#323131;
+    background-attachment:fixed;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    width:100%;
+    background-color:#277aa3;
+    font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
+    font-size:12px;
 }
-
-.override-icon-size{
-    font-size: 18px;
-}
-
-.override-icon-color{
-    color: #000000;
-}
-
-.override-icon-link{
-    background-image: none;
-}
-
-/* Tse Li */
-
-.cards-item-title {
-    max-width: 50%;
-    font-size: small;
-    padding-left: 0;
-    padding-right: 16px;
-    color: rgba(0, 0, 0, 0.54);
-}
-
-/* Yean Choon */
 
 .list-block{
     background-color:white;
@@ -121,14 +106,4 @@ a.close-popover{
 
 #confirm-payment-button{
     background-color:white;
-}
-}
-
-/* JJL */
-
-.mylogo {
-
-    display:block;
-    width:50%;
-    margin:8% auto;
 }
