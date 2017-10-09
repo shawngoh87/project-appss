@@ -1,4 +1,17 @@
-﻿// Init App
+﻿var firebase = require("firebase");
+
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyDQfYGu4-ydBLkaKUDjoEnmdfwr5xavOXA",
+    authDomain: "project-appss-420.firebaseapp.com",
+    databaseURL: "https://project-appss-420.firebaseio.com",
+    projectId: "project-appss-420",
+    storageBucket: "project-appss-420.appspot.com",
+    messagingSenderId: "509444077185"
+};
+firebase.initializeApp(config);
+
+// Init App
 var myApp = new Framework7({
     modalTitle: 'Project Appss',
     // Enable Material theme
@@ -47,9 +60,6 @@ function removeVehicle(item) {
 }
 
 myApp.onPageInit('main', function (page) {
-    //Parking Info and Payment
-    var carPlate, parkDuration, tokenReq, tokenBal, confirmText, tokenNo;
-    var selectedCar = false, selectedDuration = false;
 
 
     $$('.select-car').on('click', function () {
