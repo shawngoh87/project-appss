@@ -103,6 +103,7 @@ myApp.onPageInit('main', function (page) {
                 $$('.selected-duration-logo').css('color', 'inherit');
                 selectedCar = false;
                 selectedDuration = false;
+                $$('#tab-history-button').click();
             });
         }
         else {
