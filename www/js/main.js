@@ -1,17 +1,4 @@
-﻿//var firebase = require("firebase");
-
-//// Initialize Firebase
-//var config = {
-//    apiKey: "AIzaSyDQfYGu4-ydBLkaKUDjoEnmdfwr5xavOXA",
-//    authDomain: "project-appss-420.firebaseapp.com",
-//    databaseURL: "https://project-appss-420.firebaseio.com",
-//    projectId: "project-appss-420",
-//    storageBucket: "project-appss-420.appspot.com",
-//    messagingSenderId: "509444077185"
-//};
-//firebase.initializeApp(config);
-
-// Init App
+﻿// Init App
 var myApp = new Framework7({
     modalTitle: 'Project Appss',
     // Enable Material theme
