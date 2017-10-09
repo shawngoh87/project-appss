@@ -156,13 +156,13 @@ a.close-popover{
     font-size:20px
 }
 
-#time{
+#lbl-time-left{
     font-size:50px; 
     position:absolute; 
     right:20%;
 }
 
-#remain{
+#lbl-time-remain{
     font-size:12px; 
     padding-bottom:20px; 
     bottom:0; 
@@ -194,17 +194,18 @@ a.close-popover{
     font-size:16px;
 }
 
-#topup-btn{
+#extend-btn{
     position:absolute; 
     right: 10px; 
     border-radius: 12px; 
-    width:200px; 
+    width:50%; 
     height:50px; 
     background-color:lightblue;
+    margin:0 25%;
 }
 
 #popover-active{
-    width:350px;
+    width:345px;
     height:350px;
 }
 
