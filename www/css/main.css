@@ -182,7 +182,7 @@ a.close-popover{
     position:absolute;
 }
 
-#car-plate,.owned-car,.select-car{
+#txt-car-plate,.owned-car,.select-car{
     text-transform: uppercase;
 }
 
