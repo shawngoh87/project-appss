@@ -206,13 +206,22 @@ myApp.onPageInit('main', function (page) {
               {
                   text: 'Ok',
                   onClick: function () {
+                      // TODO: Add validation/trimming function (refer to jom.js)       
+                                                             
+                                firebase.database().ref('users/user/cars/' + $$('#car-plate').val()).set({
+                                    description: $$('#car-hint').val()                                                          
+                                }); 
+                                
                       //write into database
 
                       firebase.database().ref('users/' + user.uid + '/cars/' + $$('#txt-car-plate').val().toUpperCase()).update({
                           Hint: $$('#txt-car-hint').val()
                       });
 
+                                
+                               
                       // TODO: Add validation/trimming function (refer to jom.js)
+
 
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div>';
