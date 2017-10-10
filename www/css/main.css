@@ -194,8 +194,8 @@ a.close-popover{
     text-transform: none;
 }
 
-#lbl-time,#history-info,#topup-info{
-    font-size:18px;
+#lbl-time, #history-info, #topup-info{
+    font-size: 18px;
 }
 
 #time-remain, #desc-cc{
