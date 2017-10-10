@@ -155,7 +155,7 @@ a.close-popover{
     top:0px;
 }
 
-.list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc{
+.list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline{
     margin:0px;
 }
 
