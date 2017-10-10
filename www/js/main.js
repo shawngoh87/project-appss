@@ -75,12 +75,6 @@ myApp.onPageInit('main', function (page) {
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, selectedCar = false, selectedDuration = false;
 
-    //-----------------------
-    //Initiate UI
-    //-----------------------
-    carRef.once('value').then(function (snapshot) {
-        console.log(snapshot.val());
-
     $$('.button-logout').on('click', function () {
         firebase.auth().signOut().then(function () {
             // Sign-out successful.
@@ -89,6 +83,12 @@ myApp.onPageInit('main', function (page) {
             // An error happened.
         });
     })
+
+    //-----------------------
+    //Initiate UI
+    //-----------------------
+    carRef.once('value').then(function (snapshot) {
+        console.log(snapshot.val());
 
     firebase.database().ref('users/' + user.uid + 'cars').once('value', function (snapshot) {
         console.log(snapshot.key);
