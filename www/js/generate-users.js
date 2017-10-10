@@ -5,12 +5,13 @@
 
 	Usage: 
 	-- Go to browser's developer console (F12).
-	-- Call Generator()
-	-- @params: MAX_USER		int		number of users
-				MAX_CARS		int		number of cars per user
-				MAX_HISTORY		int		number of history per car
-				MAX_TOPUP		int		number of topup transaction per user
-				MAX_PROMOCODE	int 	number of promocodes
+    -- Copy pasta the entire code into the console, press Enter.
+	-- Call Generator(USER, CARS, HISTORY, TOPUP, PROMOCODE)
+	-- @params: USER		int		number of users
+				CARS		int		number of cars per user
+				HISTORY		int		number of history per car
+				TOPUP		int		number of topup transaction per user
+				PROMOCODE	int 	number of promocodes
 */
 
 
@@ -144,7 +145,9 @@ function randomString(){
 
 var users = {};
 
-function Generator(MAX_USER, MAX_CARS, MAX_HISTORY, MAX_TOPUP, MAX_PROMOCODE){
+function Generator(MAX_USER, MAX_CARS, MAX_HISTORY, MAX_TOPUP, MAX_PROMOCODE) {
+
+    console.log("Generating users...");
 
     // History generator
     function generateHistory(carPlate){
@@ -245,4 +248,5 @@ function Generator(MAX_USER, MAX_CARS, MAX_HISTORY, MAX_TOPUP, MAX_PROMOCODE){
 
         firebase.database().ref('users/' + uid).set(users[uid]);
     }
-}
+};
+
