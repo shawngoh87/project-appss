@@ -88,10 +88,15 @@ myApp.onPageInit('main', function (page) {
     //Initiate UI
     //-----------------------
     carRef.once('value').then(function (snapshot) {
-        console.log(snapshot.val())});
-
-    firebase.database().ref('users/' + user.uid + 'cars').once('value', function (snapshot) {
-        console.log(snapshot.key);
+        for (var ownedCarPlate in snapshot.val()) {
+            carRef.child(ownedCarPlate).child('Hint').once('value').then(function(snapshot){
+                    var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+                    var str2 = '</div>';
+                    var str3 = '</div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
+                    var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
+                    $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.val() + str3);
+            });
+        }
     });
 
     //---------------------------------------
