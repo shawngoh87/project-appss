@@ -155,7 +155,7 @@ a.close-popover{
     top:0px;
 }
 
-.list-block.media-list, #history-list, #topup-list{
+.list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc{
     margin:0px;
 }
 
@@ -164,7 +164,7 @@ a.close-popover{
     padding:0px;
 }
 
-#car-icon, #location, #topup-icon,#topup-date,#history-car-plate{
+#car-icon, #location, #topup-icon,#topup-date,#history-car-plate, #timeline-date{
     font-size:20px
 }
 
@@ -198,7 +198,7 @@ a.close-popover{
     font-size:18px;
 }
 
-#time-remain{
+#time-remain, #desc-cc{
     font-size:28px;
 }
 
