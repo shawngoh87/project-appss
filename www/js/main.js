@@ -60,7 +60,7 @@ function removeVehicle(item) {
               onClick: function () {
                   //remove from database
                   firebase.database().ref('users/' + user.uid + '/cars/' + $$(item).closest('.card').find('.owned-car').text()).remove();
-                  // TODO: Add validation/trimming function (refer to jom.js)
+
                   $$(item).closest('.card').remove();
               }
           },
@@ -92,8 +92,8 @@ myApp.onPageInit('main', function (page) {
     carRef.once('value').then(function (snapshot) {
         for (var ownedCarPlate in snapshot.val()) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-            var str2 = '</div>';
-            var str3 = '</div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
+            var str2 = '</div><div class="cards-item-title">';
+            var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div></div></div></li></ul></div></div></div>';
             $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('Hint').val() + str3);
         }
     });
