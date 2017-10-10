@@ -82,6 +82,15 @@ myApp.onPageInit('main', function (page) {
     //Initiate UI
     //-----------------------
 
+    $$('.button-logout').on('click', function () {
+        firebase.auth().signOut().then(function () {
+            // Sign-out successful.
+            mainView.router.back();     // cant use router.loadPage(index.html), there are some issue
+        }).catch(function (error) {
+            // An error happened.
+        });
+    })
+
     firebase.database().ref('users/' + user.uid + 'cars').once('value', function (snapshot) {
         console.log(snapshot.key);
     });
