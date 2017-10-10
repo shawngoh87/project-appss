@@ -1,38 +1,149 @@
-﻿<div data-page="profile-report" class="pages navbar-fixed">
-    <div data-page="home" class="page with-subnavbar">
-        <div class="navbar">
-            <div class="navbar-inner">
-                <div class="left"><a href="index.html/tab-more" class="back link icon-only"><i class="icon icon-back"></i></a></div>
-                <div class="center">Report</div>
-            </div>
-            <div class="subnavbar">
-                <!-- Buttons row as tabs controller in Subnavbar-->
-                <div class="buttons-row">
-                    <!-- Link to 1st tab, active -->
-                    <a href="#report-car-loss" class="button active tab-link">Car Loss</a>
-                    <!-- Link to 2nd tab -->
-                    <a href="#report-illegal-park" class="button tab-link">Illegal Parking</a>
-                </div>
+﻿<div data-page="profile-report" class="pages navbar-fixed page with-subnavbar">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="index.html/tab-more" class="back link icon-only"><i class="icon icon-back"></i></a></div>
+            <div class="center">Report</div>
+        </div>
+        <div class="subnavbar">
+            <div class="buttons-row">
+                <a href="#report-car-loss" class="button active tab-link">Car Loss</a>
+                <a href="#report-illegal-park" class="button tab-link">Illegal Parking</a>
             </div>
         </div>
-        <!-- Tabs swipeable wrapper, required to switch tabs with swipes -->
-        <div class="tabs-swipeable-wrap">
-            <!-- Tabs, tabs wrapper -->
-            <div class="tabs">
-                <!-- Tab 1, active by default -->
-                <div id="report-car-loss" class="page-content tab active">
-                    <div class="content-block">
-                        ugfuif
-                    </div>
+    </div>
+
+    <div class="tabs-swipeable-wrap">
+        <div class="tabs">
+            <div id="report-car-loss" class="page-content tab active">
+                <div class="content-block-title">Car Owner Details</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Name</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Car Owner Name">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">IC No.</div>
+                                    <div class="item-input">
+                                        <input type="number" placeholder="Car Owner IC No.">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Passport No.(optional)</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Car Owner Passport No.">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">H/P number</div>
+                                    <div class="item-input">
+                                        <input type="tel" placeholder="Phone number">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-                <!-- Tab 2 -->
-                <div id="report-illegal-park" class="page-content tab">
-                    <div class="content-block">
-                        ... Tab 2 content ...
-                    </div>
+                <div class="content-block-title">Other Details</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Car Plate No.</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Car Plate No.">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Last Seen Location</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Where the car loss?">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Remarks</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Additional Information">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="report-illegal-park" class="page-content tab">
+                <div class="content-block-title">Illegal Parking Car Details</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Car Plate No.</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Car Plate No.">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Location</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Where the car park?">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Illegal Behavior</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="What have the car done?">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">Remarks</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="Additional Information">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-        
+
