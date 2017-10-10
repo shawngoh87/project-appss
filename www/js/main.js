@@ -88,7 +88,7 @@ myApp.onPageInit('main', function (page) {
     //Initiate UI
     //-----------------------
     carRef.once('value').then(function (snapshot) {
-        console.log(snapshot.val());
+        console.log(snapshot.val())});
 
     firebase.database().ref('users/' + user.uid + 'cars').once('value', function (snapshot) {
         console.log(snapshot.key);
