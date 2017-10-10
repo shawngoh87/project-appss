@@ -150,9 +150,10 @@ a.close-popover{
     border-radius: 50%;
 }
 
-/* Sen Kit */
-.toolbar.tabbar.tabbar-labels{
-    top:0px;
+
+    /* Sen Kit */
+    .toolbar.tabbar.tabbar-labels {
+    top: 0px;
 }
 
 .list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline{
