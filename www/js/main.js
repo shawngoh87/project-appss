@@ -12,12 +12,44 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
+//------------------------------------------
+// Check Whether User has signed in or not
+//------------------------------------------
+firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+        // User is signed in.
+        mainView.router.loadPage("main.html");
+    }
+    //else {
+    //    
+    //}
+});
 
-// Login auth
+//--------------------------
+// Login Authentication
+//-------------------------
 $$('.button-login').on('click', function () {
-    mainView.router.loadPage("main.html");
+    var si_email = $$('.user-email').val();
+    var si_password = $$('.password').val();
+
+    firebase.auth().signInWithEmailAndPassword(si_email, si_password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode == "auth/user-disabled")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/invalid-email")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/user-not-found")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/wrong-password")
+            myApp.alert(errorMessage, 'Error');
+    });
 })
 
+//---------------------------
+//Function to remove vehicle
+//---------------------------
 function removeVehicle(item) {
     myApp.modal({
         title: 'Delete?',
@@ -29,6 +61,8 @@ function removeVehicle(item) {
           {
               text: 'Ok',
               onClick: function () {
+                  //remove from database
+                  firebase.database().ref('users/' + user.uid + '/cars/' + $$(item).closest('.card').find('.owned-car').text()).remove();
                   // TODO: Add validation/trimming function (refer to jom.js)
                   $$(item).closest('.card').remove();
               }
@@ -37,10 +71,20 @@ function removeVehicle(item) {
     })
 }
 
+
 myApp.onPageInit('main', function (page) {
 
+    var user = firebase.auth().currentUser;
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, selectedCar = false, selectedDuration = false;
+
+    //-----------------------
+    //Initiate UI
+    //-----------------------
+
+    firebase.database().ref('users/' + user.uid + 'cars').once('value', function (snapshot) {
+        console.log(snapshot.key);
+    });
 
     //---------------------------------------
     // Get Car Select List from Vehicle Tab
@@ -140,8 +184,9 @@ myApp.onPageInit('main', function (page) {
         }
     });
 
-
+    //--------------------------------------------
     // Vehicle Tab - modal for adding vehicles
+    //----------------------------------------------
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
@@ -154,12 +199,18 @@ myApp.onPageInit('main', function (page) {
               {
                   text: 'Ok',
                   onClick: function () {
+                      //write into database
+
+                      firebase.database().ref('users/' + user.uid + '/cars/' + $$('#car-plate').val()).update({
+                          Hint: $$('#car-hint').val()
+                      });
+
                       // TODO: Add validation/trimming function (refer to jom.js)
 
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-                      var str2 = '</div> <div class="cards-item-title">'
-                      var str3 = '</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
-                      var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>'
+                      var str2 = '</div>';
+                      var str3 = '</div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
+                      var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
                       $$('#tab-vehicle').append(str1 + $$('#txt-car-plate').val() + str2 + $$('#car-hint').val() + str3);
 
                   }
