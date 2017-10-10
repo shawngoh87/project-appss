@@ -197,7 +197,7 @@ myApp.onPageInit('main', function (page) {
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
-            afterText: '<div class="input-field"><input type="text" id="car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="car-hint" class="modal-text-input" placeholder="Hint"></div>',
+            afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-hint" class="modal-text-input" placeholder="Hint"></div>',
             buttons: [
               {
                   text: 'Cancel',
@@ -208,8 +208,8 @@ myApp.onPageInit('main', function (page) {
                   onClick: function () {
                       //write into database
 
-                      firebase.database().ref('users/' + user.uid + '/cars/' + $$('#car-plate').val()).update({
-                          Hint: $$('#car-hint').val()
+                      firebase.database().ref('users/' + user.uid + '/cars/' + $$('#txt-car-plate').val().toUpperCase()).update({
+                          Hint: $$('#txt-car-hint').val()
                       });
 
                       // TODO: Add validation/trimming function (refer to jom.js)
@@ -218,7 +218,7 @@ myApp.onPageInit('main', function (page) {
                       var str2 = '</div>';
                       var str3 = '</div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
                       var STR = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div>ABC 1111</div> <div class="cards-item-title">Name</div> </div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
-                      $$('#tab-vehicle').append(str1 + $$('#car-plate').val() + str2 + $$('#car-hint').val() + str3);
+                      $$('#tab-vehicle').append(str1 + $$('#txt-car-plate').val().toUpperCase() + str2 + $$('#txt-car-hint').val() + str3);
 
                   }
               },
