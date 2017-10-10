@@ -219,11 +219,6 @@ myApp.onPageInit('main', function (page) {
                           Hint: $$('#txt-car-hint').val()
                       });
 
-                                
-                               
-                      
-
-
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div>';
                       var str3 = '</div> <div class="item-after"><a href="#" class="override-icon-color" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div> </div> </div> </li> </ul> </div> </div> </div>';
