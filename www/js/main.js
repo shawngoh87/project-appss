@@ -307,6 +307,63 @@ myApp.onPageInit('main', function (page) {
         })
     });
 
+
+    //-----------------------
+    // Get Topup History Function
+    //-----------------------
+    topupRef = firebase.database().ref('users/' + user.uid + '/topup_history').orderByKey();
+    topupRef.once('value').then(function (snapshot) {
+        var i = 0;
+        snapshot.forEach(function (childSnapshot) {
+            var topupKey = childSnapshot.key;
+
+            var topupData = childSnapshot.val();
+
+            var timeData = topupData.topup_time;
+            var topupTime = new Date(timeData);
+
+            var weekday = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+            var monthname=new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+            var monthnameFull=new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
+            //var formattedDate = weekday[pubDate.getDay()]+ ' '
+            //        +monthname[pubDate.getMonth()]+ ' '
+            //        +pubDate.getDate() + ', ' +pubDate.getFullYear()
+            var time = weekday[topupTime.getDay()] + ' ' + topupTime.getDate();
+
+            //update to Topup UI
+            var str_topup = '<div class="timeline-item">' + 
+                                '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
+	                            '<div class="timeline-item-divider"></div>' +
+	                            '<div class="timeline-item-content list-block inset">' +
+		                            '<ul>' +
+			                            '<li class="accordion-item">' +
+			                                '<a href="#" class="item-link item-content">' +
+                                                '<div class="item-inner">' +
+                                                    '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
+                                                    '<div class="item-after">RM' + topupData.amount + '</div>' +
+                                                '</div>' +
+                                            '</a>' +
+                                            '<div class="accordion-item-content" id="topup-accordion">' +
+                                                '<div class="content-block">' +
+                                                    '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getYear() + '<br></b></div>' +
+                                                    '<div id="topup-info">' +
+                                                        '<p>Amount: RM ' + topupData.amount + '<br></p>' +
+                                                        '<p>Expired Date: ' + topupData.expired_date + '<br></p>' +
+                                                        '<p id="lbl-cc">Credit Card Number:</p>' +
+                                                        '<p id="desc-cc">xxxx-xxxx-xxxx-' + topupData.credit_card_no % 10000 + '</p>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</li>' +
+                                    '</ul>' +
+                                '</div>' +
+                            '</div>';
+
+            $$('#timeline-topup').append(str_topup);
+		    i++;
+        });
+    });
+
     $$('.confirm-title-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {

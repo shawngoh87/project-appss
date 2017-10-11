@@ -259,6 +259,11 @@ a.close-popover{
     margin-top:10px
 }
 
+#topup-accordion{
+    background-color: lightgray;
+    border-radius:9px;
+}
+
 /*YM*/
 .profile-pic {
     border-radius: 50%;
