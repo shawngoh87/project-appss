@@ -110,7 +110,7 @@ myApp.onPageInit('main', function (page) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
             var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('hint').val() + str3);
+            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
 
             var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
             var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
@@ -250,6 +250,11 @@ myApp.onPageInit('main', function (page) {
                             timestamp: timestamp,
                             duration: parkDuration * 3600000
                         })
+                        carRef.child(carPlate).child('history').child(carPlate+timestamp).update({
+                            amount: tokenReq,
+                            duration: parkDuration * 60 + ' Minutes',
+                            start_time: timestamp
+                        })
                     }
                 })
             });
@@ -271,7 +276,7 @@ myApp.onPageInit('main', function (page) {
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
-            afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-hint" class="modal-text-input" placeholder="Hint"></div>',
+            afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-description" class="modal-text-input" placeholder="Description"></div>',
             buttons: [
               {
                   text: 'Cancel',
@@ -285,7 +290,8 @@ myApp.onPageInit('main', function (page) {
                             
                       //write into database
                       carRef.child(displayCarPlate).update({
-                          hint: $$('#txt-car-hint').val()
+                          description: $$('#txt-car-description').val(),
+                          timestamp_reg: Math.floor(Date.now())
                       });
 
                       //write to UI
@@ -293,7 +299,7 @@ myApp.onPageInit('main', function (page) {
                       var str2 = '</div><div class="cards-item-title">';
                       var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color"  ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
                       
-                      $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-hint').val() + str3);
+                      $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
 
                   }
               },
