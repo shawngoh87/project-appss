@@ -102,7 +102,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     
     //Get cars and update
-    carRef.once('value').then(function (snapshot) {
+    carRef.on('value',function (snapshot) {
         for (var ownedCarPlate in snapshot.val()) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
@@ -129,7 +129,7 @@ myApp.onPageInit('main', function (page) {
         }
     });
     //Get tokens
-    userRef.child('balance').once('value').then(function (snapshot) {
+    userRef.child('balance').on('value',function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
     //Get duration selection choices
