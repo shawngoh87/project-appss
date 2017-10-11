@@ -130,6 +130,16 @@ myApp.onPageInit('main', function (page) {
             }
         }
     });
+
+    carRef.once('value').then(function (snapshot) {
+        for (var ownedCarPlate in snapshot.val()) {
+            var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+            var str2 = '</div><div class="cards-item-title">';
+            var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
+        }
+    });
+
     //Get tokens
     userRef.child('balance').on('value',function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
