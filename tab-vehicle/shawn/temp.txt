@@ -1,0 +1,32 @@
+myApp.onPageInit("vehicle-history", function (page) {
+
+    function loadSpecificTransaction() {
+        var uid = firebase.auth().currentUser.uid;
+        var path = 'users/' + user.uid + '/cars/';
+
+        firebase.database().ref(path).once('value').then(function (snapshot) {
+            var data = snapshot.val();
+            console.log(data);
+            for (var eachPlate in data) {
+                console.log("Car plate key: " + eachPlate);
+                console.log("Values inside " + eachPlate + ": " + snapshot[eachPlate]);
+                console.log("History keys inside " + eachPlate + ": " + snapshot[eachPlate].history);
+                var dataHistory = snapshot[eachPlate].history;
+                for (var eachHistory in dataHistory) {
+                    console.log(eachHistory);
+                    console.log(dataHistory[eachHistory]);
+                }
+            }
+        });
+    }
+    loadSpecificTransaction();
+
+    var str1 = '<div class="card"> <div class="card-header">';
+    var loc = "Jalan stuff";
+    var str2 = '</div> <div class="card-footer"> <div class="col-75">';
+    var duration = "10hours";
+    var str3 = '</div> <div class="col-25">';
+    var total = "RM10";
+    var str4 = '</div> </div> </div>';
+    $$('.vehicle-history-page').append(str1 + loc + str2 + duration + str3 + total + str4);
+});
