@@ -78,7 +78,6 @@ function removeVehicle(item) {
     })
 }
 
-
 myApp.onPageInit('profile-settings', function (page) {
 
 });
@@ -111,13 +110,19 @@ myApp.onPageInit('main', function (page) {
             $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
 
             var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
+            var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
             var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
             var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
-            if (parkingActive == true) {
+            if (parkingActive) {
                 if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                    console.log(typeof(carPlate));
+                    carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                        amount: parkingAmount,
+                        duration: timestamp2Time(parkingDuration).name,
+                        start_time: parkingTimestamp
+                    })
                     carRef.child(ownedCarPlate).child('parking').update({
                         active: false,
-                        duration: 0
                     })
                 }
             }
@@ -127,7 +132,22 @@ myApp.onPageInit('main', function (page) {
     userRef.child('balance').once('value').then(function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
-
+    //Get duration selection choices
+    firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
+        for (var time in snapshot.val()) {
+            $$('.select-duration').append('\
+                    <li>\
+                        <label class="label-radio item-content">\
+                            <input type="radio" name="duration" value="'+snapshot.child(time).val()+'" />\
+                            <div class="item-media"><i class="icon icon-form-radio"></i></div>\
+                            <div class="item-inner">\
+                                <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
+                            </div>\
+                        </label>\
+                    </li>\
+                ');
+        }
+    })
 
     //---------------------------------------
     // Get Car Select List from Vehicle Tab
@@ -143,18 +163,24 @@ myApp.onPageInit('main', function (page) {
         if (ownedCar.length <= 0) {
             myApp.alert('Please add your car', 'Notification');
         }
-        else {
+        else
+        {
             carRef.once('value').then(function(snapshot){
                 for (var ownedCarPlate in snapshot.val()) {
 
                     var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
+                    var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
                     var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
                     var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
                     if (parkingActive) {
                         if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                            carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                                amount: parkingAmount,
+                                duration: timestamp2Time(parkingDuration).name,
+                                start_time: parkingTimestamp
+                            })
                             carRef.child(ownedCarPlate).child('parking').update({
                                 active: false,
-                                duration: 0
                             })
                             $$(".select-car").append(
                             '<li><label class="label-radio item-content car-choice">' +
@@ -199,12 +225,7 @@ myApp.onPageInit('main', function (page) {
     //----------------------------------
     $$('.select-duration').on('click', function () {
         parkDuration = +$$('input[name=duration]:checked').val();
-        if (parkDuration > 1) {
-            $$('.selected-duration').html(parkDuration + ' Hours');
-        }
-        else {
-            $$('.selected-duration').html(parkDuration + ' Hour');
-        }
+        $$('.selected-duration').html(timestamp2Time(parkDuration).name);
         $$('.selected-duration-logo').css('color', 'blue');
         selectedDuration = true;
         $$('#close-popover-menu').click();
@@ -215,7 +236,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     $$('.confirm-payment').on('click', function () {
         if (selectedCar && selectedDuration) {
-            tokenReq = parkDuration * 2;
+            tokenReq = parkDuration*2/3600000;
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
@@ -242,16 +263,12 @@ myApp.onPageInit('main', function (page) {
                         selectedDuration = false;
                         $$('#tab-history-button').click();
                         $$('#tab-active-button').click();
-                        timestamp = Math.floor(Date.now());
+                        var timestamp = Math.floor(Date.now());
                         carRef.child(carPlate).child('parking').update({
                             active: true,
-                            timestamp: timestamp,
-                            duration: parkDuration * 3600000
-                        })
-                        carRef.child(carPlate).child('history').child(carPlate+timestamp).update({
                             amount: tokenReq,
-                            duration: parkDuration * 60 + ' Minutes',
-                            start_time: timestamp
+                            timestamp: timestamp,
+                            duration: parkDuration
                         })
                     }
                 })
