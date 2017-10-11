@@ -115,7 +115,6 @@ myApp.onPageInit('main', function (page) {
             var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
             if (parkingActive) {
                 if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                    console.log(typeof(carPlate));
                     carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                         amount: parkingAmount,
                         duration: timestamp2Time(parkingDuration).name,
@@ -165,9 +164,9 @@ myApp.onPageInit('main', function (page) {
         }
         else
         {
-            carRef.once('value').then(function(snapshot){
+            carRef.once('value').then(function (snapshot) {
+                var availableCar = 0;
                 for (var ownedCarPlate in snapshot.val()) {
-
                     var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
                     var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
                     var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
@@ -191,6 +190,7 @@ myApp.onPageInit('main', function (page) {
                             '</div>' +
                             '</label></li>'
                             );
+                            availableCar++;
                         }
                     }
                     else {
@@ -203,7 +203,11 @@ myApp.onPageInit('main', function (page) {
                             '</div>' +
                             '</label></li>'
                             );
+                        availableCar++;
                     }
+                }
+                if (availableCar == 0) {
+                    myApp.alert('All car is currently not available','Notification')
                 }
             })
         }
