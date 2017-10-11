@@ -26,6 +26,7 @@
     color: rgba(0, 0, 0, 0.54);
 }
 
+
 .card-history {
     background: #fff;
     margin: 8px;
@@ -39,6 +40,34 @@
     color: white;
 }
 
+.row {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    -webkit-box-lines: multiple;
+    -moz-box-lines: multiple;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+}
+
+.row.no-gutter .col-25 {
+    width: 25%;
+}
+
+.row.no-gutter .col-75 {
+    width: 75%;
+
+}
 /* Yean Choon */
 
 .list-block{
