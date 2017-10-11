@@ -476,17 +476,6 @@ myApp.onPageInit('signup', function (page) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 myApp.onPageInit("vehicle-history", function (page) {
 
     function loadSpecificTransaction() {
@@ -520,7 +509,9 @@ myApp.onPageInit("vehicle-history", function (page) {
     loadSpecificTransaction();
 
     console.log(Appss.time);
-});/* ===== Color themes ===== HAVENT DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEE*/
+});
+
+/* ===== Color themes ===== HAVENT DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEE*/
 myApp.onPageInit('color-themes', function (page) {
     $$(page.container).find('.color-theme').click(function () {
         var classList = $$('body')[0].classList;
