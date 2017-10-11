@@ -110,16 +110,16 @@ myApp.onPageInit('main', function (page) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
             var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('Hint').val() + str3);
+            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('hint').val() + str3);
 
-            var parkingActive = snapshot.child(ownedCarPlate).child('Parking').child('Active').val();
-            var parkingDuration = snapshot.child(ownedCarPlate).child('Parking').child('Duration').val();
-            var parkingTimestamp = snapshot.child(ownedCarPlate).child('Parking').child('Timestamp').val();
+            var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
+            var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
+            var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
             if (parkingActive == true) {
                 if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                    carRef.child(ownedCarPlate).child('Parking').update({
-                        Active: false,
-                        Duration: 0
+                    carRef.child(ownedCarPlate).child('parking').update({
+                        active: false,
+                        duration: 0
                     })
                 }
             }
@@ -149,14 +149,14 @@ myApp.onPageInit('main', function (page) {
             carRef.once('value').then(function(snapshot){
                 for (var ownedCarPlate in snapshot.val()) {
 
-                    var parkingActive = snapshot.child(ownedCarPlate).child('Parking').child('Active').val();
-                    var parkingDuration = snapshot.child(ownedCarPlate).child('Parking').child('Duration').val();
-                    var parkingTimestamp = snapshot.child(ownedCarPlate).child('Parking').child('Timestamp').val();
+                    var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
+                    var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
+                    var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
                     if (parkingActive) {
                         if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                            carRef.child(ownedCarPlate).child('Parking').update({
-                                Active: false,
-                                Duration: 0
+                            carRef.child(ownedCarPlate).child('parking').update({
+                                active: false,
+                                duration: 0
                             })
                             $$(".select-car").append(
                             '<li><label class="label-radio item-content car-choice">' +
@@ -245,10 +245,10 @@ myApp.onPageInit('main', function (page) {
                         $$('#tab-history-button').click();
                         $$('#tab-active-button').click();
                         timestamp = Math.floor(Date.now());
-                        carRef.child(carPlate).child('Parking').update({
-                            Active: true,
-                            Timestamp: timestamp,
-                            Duration: parkDuration * 3600000
+                        carRef.child(carPlate).child('parking').update({
+                            active: true,
+                            timestamp: timestamp,
+                            duration: parkDuration * 3600000
                         })
                     }
                 })
@@ -285,7 +285,7 @@ myApp.onPageInit('main', function (page) {
                             
                       //write into database
                       carRef.child(displayCarPlate).update({
-                          Hint: $$('#txt-car-hint').val()
+                          hint: $$('#txt-car-hint').val()
                       });
 
                       //write to UI
