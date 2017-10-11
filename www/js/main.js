@@ -75,14 +75,7 @@ myApp.onPageInit('main', function (page) {
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, selectedCar = false, selectedDuration = false;
 
-    $$('.button-logout').on('click', function () {
-        firebase.auth().signOut().then(function () {
-            // Sign-out successful.
-            mainView.router.back();     // cant use router.loadPage(index.html), there are some issue
-        }).catch(function (error) {
-            // An error happened.
-        });
-    })
+    
 
     //-----------------------
     //Initiate UI
@@ -232,5 +225,15 @@ myApp.onPageInit('main', function (page) {
         })
     });
 
+    $$('.confirm-title-ok').on('click', function () {
+        myApp.confirm('Are you sure to logout?', 'Logout', function () {
+            firebase.auth().signOut().then(function () {
+                // Sign-out successful.
+                mainView.router.back();     // cant use router.loadPage(index.html), there are some issue
+            }).catch(function (error) {
+                // An error happened.
+            });
+            myApp.alert('Successfully logout!!!');
+        });
+    });
 });
-
