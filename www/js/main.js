@@ -93,7 +93,7 @@ myApp.onPageInit('main', function (page) {
         for (var ownedCarPlate in snapshot.val()) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
-            var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div></div></div></li></ul></div></div></div>';
+            var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
             $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('Hint').val() + str3);
         }
     });
@@ -216,13 +216,14 @@ myApp.onPageInit('main', function (page) {
                             
                       //write into database
 
-                      firebase.database().ref('users/' + user.uid + '/cars/' + $$('#txt-car-plate').val().toUpperCase()).update({
+                      firebase.database().ref('users/' + user.uid + '/cars/' + $$('#txt-car-plate').val().toUpperCase()).set({
                           Hint: $$('#txt-car-hint').val()
                       });
 
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div><div class="cards-item-title">';
-                      var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a></div></div></div></li></ul></div></div></div>';
+                      var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+                      
                       $$('#tab-vehicle').append(str1 + $$('#txt-car-plate').val().toUpperCase() + str2 + $$('#txt-car-hint').val() + str3);
 
                   }
