@@ -68,6 +68,18 @@ function removeVehicle(item) {
     })
 }
 
+
+myApp.onPageInit('profile-settings', function (page) {
+
+});
+myApp.onPageInit('profile-help', function (page) {
+
+});
+function myactive() {
+    $$("#tab-profile").addClass("active")
+    $$("#tab-park").removeClass("active")
+}
+
 myApp.onPageInit('main', function (page) {
 
     user = firebase.auth().currentUser;
