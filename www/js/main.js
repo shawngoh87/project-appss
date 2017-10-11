@@ -57,6 +57,7 @@ $$('.button-signup').on('click', function () {
 //---------------------------
 //FUnction to remove vehicle
 //---------------------------
+// Vehicle Tab - Remove vehicle via cancel icon
 function removeVehicle(item) {
     myApp.modal({
         title: 'Delete?',
@@ -70,7 +71,6 @@ function removeVehicle(item) {
               onClick: function () {
                   //remove from database
                   carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();
-
                   $$(item).closest('.card').remove();
               }
           },
@@ -97,8 +97,6 @@ myApp.onPageInit('main', function (page) {
     carRef = userRef.child('cars');
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, timeStamp, selectedCar = false, selectedDuration = false;
-
-    
 
     //-----------------------
     //Initiate UI
@@ -272,7 +270,7 @@ myApp.onPageInit('main', function (page) {
     });
 
 
-    // Vehicle Tab - modal for adding vehicles
+    // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
@@ -297,7 +295,7 @@ myApp.onPageInit('main', function (page) {
                       //write to UI
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div><div class="cards-item-title">';
-                      var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color"  ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+                      var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" onclick="$$(".current-car").val($$(this).closest(".owned-car").text())" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
                       
                       $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
 
@@ -459,3 +457,38 @@ myApp.onPageInit('signup', function (page) {
     })
 });
 
+
+myApp.onPageInit("vehicle-history", function (page) {
+
+    function loadSpecificTransaction() {
+        var uid = firebase.auth().currentUser.uid;
+        var path = 'users/' + user.uid + '/cars/' + $$('.current-car').val() + '';
+
+        firebase.database().ref(path).once('value').then(function (snapshot) {
+            var data = snapshot.val();
+
+            for (var eachPlate in data) {
+                var dataHistory = data[eachPlate].history;
+
+                for (var eachHistory in dataHistory) {
+                    var historyInstance = dataHistory[eachHistory];
+
+                    // For readability purpose
+                    var str1    = '<div class="card"> <div class="card-header">';
+                    var loc     = historyInstance.address;
+                    var str2    = '</div> <div class="card-footer"> <div class="col-75">';
+                    var dur     = historyInstance.duration;
+                    var str3    = '</div> <div class="col-25">';
+                    var total   = historyInstance.amount;
+                    var str4    = '</div> </div> </div>';
+
+                    $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
+                }
+            }
+        });
+    }
+
+    loadSpecificTransaction();
+
+    console.log(Appss.time);
+});
