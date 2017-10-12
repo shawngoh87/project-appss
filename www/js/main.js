@@ -12,6 +12,9 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
+// Global Variables
+var global = {};
+
 //------------------------------------------
 // Check Whether User has signed in or not
 //------------------------------------------
@@ -55,7 +58,7 @@ $$('.button-signup').on('click', function () {
 })
 
 //---------------------------
-//FUnction to remove vehicle
+// Function to remove vehicle
 //---------------------------
 // Vehicle Tab - Remove vehicle via cancel icon
 function removeVehicle(item) {
@@ -78,9 +81,40 @@ function removeVehicle(item) {
     })
 }
 
+// Vehicle tab - Load specific vehicle history via routing
+function loadSpecificTransaction(carPlate) {
+    var uid = firebase.auth().currentUser.uid;
+    var path = 'users/' + user.uid + '/cars/' + carPlate + '/history';
+    var pageContentHeader = '<div data-page="vehicle-history" class="page"> <div class="navbar"> <div class="navbar-inner"> <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div> <div class="center">History</div> </div> </div> <div class="page-content vehicle-history-page">';
+    var pageContentFooter = '</div></div>';
+    var pageContent = '';
+
+    firebase.database().ref(path).once('value').then(function (snapshot) {
+        var data = snapshot.val();
+
+        for (var eachHistory in data) {
+            var historyInstance = data[eachHistory];
+
+            // For readability purpose
+            var str1 = '<div class="card"> <div class="card-header">';
+            var loc = historyInstance.address;
+            var str2 = '</div> <div class="card-footer"> <div class="col-75">';
+            var dur = historyInstance.duration;
+            var str3 = '</div> <div class="col-25">';
+            var total = historyInstance.amount;
+            var str4 = '</div> </div> </div>';
+
+            pageContent += (str1 + loc + str2 + dur + str3 + total + str4);
+            $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
+        }
+        mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
+    });
+}
+
 myApp.onPageInit('profile-settings', function (page) {
 
 });
+
 myApp.onPageInit('profile-help', function (page) {
 
 });
@@ -129,7 +163,7 @@ myApp.onPageInit('main', function (page) {
         for (var ownedCarPlate in snapshot.val()) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
-            var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+            var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + ownedCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
             $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
         }
     });
@@ -368,7 +402,7 @@ myApp.onPageInit('main', function (page) {
                   text: 'Ok',
                   onClick: function () {
                       //Car Plate Format
-                      var displayCarPlate = $$('#txt-car-plate').val().toUpperCase().replace(/ /g,'');
+                      var displayCarPlate = $$('#txt-car-plate').val().toUpperCase().replace(/ /g, '');
                             
                       //write into database
                       carRef.child(displayCarPlate).update({
@@ -379,7 +413,7 @@ myApp.onPageInit('main', function (page) {
                       //write to UI
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div><div class="cards-item-title">';
-                      var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" onclick="$$(".current-car").val($$(this).closest(".owned-car").text())" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+                      var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
                       
                       $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
 
@@ -557,37 +591,9 @@ myApp.onPageInit('signup', function (page) {
 
 myApp.onPageInit("vehicle-history", function (page) {
 
-    function loadSpecificTransaction() {
-        var uid = firebase.auth().currentUser.uid;
-        var path = 'users/' + user.uid + '/cars/';
 
-        firebase.database().ref(path).once('value').then(function (snapshot) {
-            var data = snapshot.val();
 
-            for (var eachPlate in data) {
-                var dataHistory = data[eachPlate].history;
-
-                for (var eachHistory in dataHistory) {
-                    var historyInstance = dataHistory[eachHistory];
-
-                    // For readability purpose
-                    var str1    = '<div class="card"> <div class="card-header">';
-                    var loc     = historyInstance.address;
-                    var str2    = '</div> <div class="card-footer"> <div class="col-75">';
-                    var dur     = historyInstance.duration;
-                    var str3    = '</div> <div class="col-25">';
-                    var total   = historyInstance.amount;
-                    var str4    = '</div> </div> </div>';
-
-                    $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
-                }
-            }
-        });
-    }
-
-    loadSpecificTransaction();
-
-    console.log(Appss.time);
+    //loadSpecificTransaction();
 });
 
 // ===== Color themes ===== 
