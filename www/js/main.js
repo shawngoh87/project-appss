@@ -102,7 +102,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     
     //Get cars and update
-    carRef.on('value',function (snapshot) {
+    carRef.once('value').then(function (snapshot) {
         for (var ownedCarPlate in snapshot.val()) {
 
             var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
@@ -134,7 +134,7 @@ myApp.onPageInit('main', function (page) {
     });
 
     //Get tokens
-    userRef.child('balance').on('value',function (snapshot) {
+    userRef.child('balance').once('value').then(function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
     //Get duration selection choices
@@ -213,6 +213,7 @@ myApp.onPageInit('main', function (page) {
                     }
                 }
                 if (availableCar == 0) {
+                    $$('#close-popover-menu').click();
                     myApp.alert('All car is currently not available','Notification')
                 }
             })
