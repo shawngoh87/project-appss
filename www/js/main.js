@@ -103,7 +103,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     
     //Get cars and update
-    carRef.once('value').then(function (snapshot) {
+    carRef.on('value',function (snapshot) {
         for (var ownedCarPlate in snapshot.val()) {
 
             var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
@@ -135,7 +135,7 @@ myApp.onPageInit('main', function (page) {
     });
 
     //Get tokens
-    userRef.child('balance').once('value').then(function (snapshot) {
+    userRef.child('balance').on('value',function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
     //Get duration selection choices
@@ -214,7 +214,6 @@ myApp.onPageInit('main', function (page) {
                     }
                 }
                 if (availableCar == 0) {
-                    $$('#close-popover-menu').click();
                     myApp.alert('All car is currently not available','Notification')
                 }
             })
@@ -540,4 +539,17 @@ myApp.onPageInit('color-themes', function (page) {
         classList.add('theme-' + $$(this).attr('data-theme'));
     });
    
+});
+
+//Display User My Profile
+myApp.onPageInit('profile-myprofile', function (page) {
+    user = firebase.auth().currentUser;
+    userRef = firebase.database().ref('users/' + user.uid);
+
+    // Load username
+    firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-username').text(data);
+    })
 });
