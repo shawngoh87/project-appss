@@ -390,7 +390,7 @@ myApp.onPageInit('main', function (page) {
 		    i++;
         });
     });
-
+    //Logout button
     $$('.confirm-title-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
