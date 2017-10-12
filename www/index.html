@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
+
+
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
     <meta name="mobile-web-app-capable" content="yes">
@@ -13,59 +15,58 @@
     <link rel="stylesheet" href="dist/css/framework7.material.colors.css">
     <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,500,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="dist/css/framework7.material.min.css">
-      <link rel="stylesheet" href="dist/css/framework7.material.colors.min.css">
+    <link rel="stylesheet" href="dist/css/framework7.material.colors.min.css">
     <link rel="stylesheet" href="css/material-icons.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/signup.css">
     <link rel="stylesheet" href="css/map.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
     <div class="views">
-      <div class="view view-main">
-        <div class="pages navbar-fixed">
-            <div data-page="login-screen" id="login-page" class="page">
-                <div class="page-content">
-                    <div class="logo" id="login-logo">
-                        <img src="images/Car.png" class="logo-image" /><br />
-                        <h1 class="logo-name">Parking Appss</h1>
-                    </div>
-                    <div class="input-user-info">
-                        <form>
-                            <input type="text" class="user-text user-email" placeholder="user email" /><br />
-                            <input type="password" class="user-text password" placeholder="password" /><br />
-                            <input type="button" class="button-login-page button-login" value="LOGIN" /><br />
-                            <input type="button" class="button-login-page button-signup" value="Sign Up" /><br />
-                        </form>
-                    </div>
-                    <div class="input-user-help">
-                        <input type="button" id="forget-password" value="Forget Password" />
+        <div class="view view-main">
+            <div class="pages navbar-fixed">
+                <div data-page="login-screen" id="login-page" class="page">
+                    <div class="page-content">
+                        <div class="logo" id="login-logo">
+                            <img src="images/Car.png" class="logo-image" /><br />
+                            <h1 class="logo-name">Parking Appss</h1>
+                        </div>
+                        <div class="input-user-info">
+                            <form>
+                                <input type="text" class="user-text user-email" placeholder="user email" /><br />
+                                <input type="password" class="user-text password" placeholder="password" /><br />
+                                <input type="button" class="button-login-page button-login" value="LOGIN" /><br />
+                                <input type="button" class="button-login-page button-signup" value="Sign Up" /><br />
+                            </form>
+                        </div>
+                        <div class="input-user-help">
+                            <input type="button" id="forget-password" value="Forget Password" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-      <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
-      <script>
-          // Initialize Firebase
-          var config = {
+    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
             apiKey: "AIzaSyDQfYGu4-ydBLkaKUDjoEnmdfwr5xavOXA",
             authDomain: "project-appss-420.firebaseapp.com",
             databaseURL: "https://project-appss-420.firebaseio.com",
             projectId: "project-appss-420",
             storageBucket: "project-appss-420.appspot.com",
             messagingSenderId: "509444077185"
-          };
-          firebase.initializeApp(config);
-      </script>
+        };
+        firebase.initializeApp(config);
+    </script>
     <script type="text/javascript" src="dist/js/framework7.js"></script>
-    <script type="text/javascript" src="js/main.js"></script> 
+    <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/generate-users.js"></script>
     <script type="text/javascript" src="js/lib.js"></script>
-        <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkAPBdlCu1HYnVjUtrp8c-OocmTYQ3fhs">
-        </script>
-  </body>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkAPBdlCu1HYnVjUtrp8c-OocmTYQ3fhs"></script>
+</body>
 </html>
