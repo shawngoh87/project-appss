@@ -281,6 +281,62 @@ myApp.onPageInit('main', function (page) {
                             timestamp: timestamp,
                             duration: parkDuration
                         })
+
+                        //write data to UI
+                        var location, promoCode = null;
+                        var current_time = Date.now();
+                        var end_time = timestamp + parkDuration;
+                        var end_time_dis = new Date(end_time);
+                        var remain_time = (end_time + 3600000) - current_time;
+                        var time_unit;
+
+                        if (timestamp2Time(remain_time).hour == 0) {
+                            if (timestamp2Time(remain_time).minute > 1)
+                                time_unit = "minutes";
+                            else
+                                time_unit = "minute";
+                        }
+                        else {
+                            if (timestamp2Time(remain_time).hour > 1)
+                                time_unit = "hours";
+                            else
+                                time_unit = "hour";
+                        }
+
+                        var str_active = '<li>' +
+                                            '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
+                                                '<div class="item-inner">' +
+                                                    '<div class="item-title-row">' +
+                                                        '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
+                                                        '<div id="lbl-time-left" class="item-after">' + timestamp2Time(remain_time).hour + '</div>' +
+                                                        '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                                     '</div>' +
+                                                     '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                                '</div>' +
+                                            '</a>' +
+                                            '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
+                                                '<div class="popover-angle"></div>' +
+                                                '<div class="popover-inner">' +
+                                                    '<div class="content-block">' +
+                                                        '<div id="active-car-plate">' + carPlate + '</div>' +
+                                                        '<div id="location">' + location + '</div><br />' +
+                                                        '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                                        '<div id="lbl-time">Expected End Time:</div>' +
+                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + '</div><br />' +
+                                                        '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                        '<div id="btns">' +
+                                                            '<button id="terminate-btn">Terminate</button>' +
+                                                            '<button id="extend-btn">Extend</button>' +
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                            '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
+                                                '<span></span>' +
+                                            '</div>' +
+                                        '</li>';
+
+                        $$('#ulist-active').append(str_active);
                     }
                 })
             });
@@ -589,4 +645,47 @@ myApp.onPageInit('profile-myprofile', function (page) {
         $$('.load-address').html(data);
     })
     */
+});
+
+myApp.onPageInit("select-location", function (page) {
+
+    var map, infoWindow;
+
+    initMap();
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 18
+        });
+        infoWindow = new google.maps.InfoWindow;
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                infoWindow.setPosition(pos);
+                infoWindow.setContent('Location found.');
+                infoWindow.open(map);
+                map.setCenter(pos);
+            }, function () {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        }
+        else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
 });
