@@ -84,6 +84,7 @@ myApp.onPageInit('profile-settings', function (page) {
 myApp.onPageInit('profile-help', function (page) {
 
 });
+
 function myactive() {
     $$("#tab-profile").addClass("active")
     $$("#tab-park").removeClass("active")
@@ -401,6 +402,13 @@ myApp.onPageInit('main', function (page) {
             myApp.alert('Successfully logout!!!');
         });
     });
+
+    // Load username
+    firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-username').text(data);
+    })
 });
 
 myApp.onPageInit('signup', function (page) {
