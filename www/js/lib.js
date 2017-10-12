@@ -25,7 +25,7 @@ function timestamp2Time(value) {
         str2 = str2 + ' ';
     }
     if (time.second - time.minute * 60 > 0) {
-        str2 = time.second - time.minute * 60 + ' Second';
+        str3 = time.second - time.minute * 60 + ' Second';
         if (time.second - time.minute * 60 > 1) {
             str3 = str3 + 's';
         }
@@ -36,7 +36,6 @@ function timestamp2Time(value) {
 
     return time;
 }
-
 
 //Appss.time = Math.floor(Date.now());
 //Appss.geolocate = null;
