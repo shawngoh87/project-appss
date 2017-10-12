@@ -185,8 +185,8 @@ a.close-popover{
     margin-bottom: 10px;
 }
 
-    /* Sen Kit */
-    .toolbar.tabbar.tabbar-labels {
+/* Sen Kit */
+.toolbar.tabbar.tabbar-labels {
     top: 0px;
 }
 
@@ -233,26 +233,37 @@ a.close-popover{
     font-size: 18px;
 }
 
-#time-remain, #desc-cc{
+#time-remain,#desc-cc{
     font-size:28px;
 }
 
-#lbl-btn{
-    font-size:16px;
+#extend-btn, #terminate-btn{
+    float: left;
+    border-radius: 12px; 
+    width:45%; 
+    height:50px; 
+    margin:0 2.5%;
 }
 
 #extend-btn{
-    position:absolute; 
-    right: 10px; 
-    border-radius: 12px; 
-    width:50%; 
-    height:50px; 
-    margin:0 25%;
+    background-color:blue;
+    color: white
 }
+
+#terminate-btn{
+    background-color:red;
+    color: white
+}
+
 
 #popover-active{
     width:345px;
     height:350px;
+}
+
+#lbl-btns{
+    text-align:center;
+    font-size:16px
 }
 
 #promo{

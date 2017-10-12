@@ -252,6 +252,10 @@ myApp.onPageInit('main', function (page) {
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
+
+            //initialize a "i" value for looping in future - Sen Kit
+            var i = 0;
+            //-----------------
             myApp.confirm(confirmText, 'Confirmation', function () {
                 userRef.child('balance').once('value').then(function (snapshot) {
                     tokenNo = snapshot.val();
@@ -280,6 +284,63 @@ myApp.onPageInit('main', function (page) {
                             timestamp: timestamp,
                             duration: parkDuration
                         })
+
+                        //write data to UI
+                        var location, promoCode = null;
+                        var current_time = Date.now();
+                        var end_time = timestamp + parkDuration;
+                        var end_time_dis = new Date(end_time);
+                        var remain_time = (end_time + 3600000) - current_time;
+                        var time_unit;
+                        
+                        if (timestamp2Time(remain_time).hour == 0) {
+                            if (timestamp2Time(remain_time).minute > 1)
+                                time_unit = "minutes";
+                            else
+                                time_unit = "minute";
+                        }
+                        else{
+                            if (timestamp2Time(remain_time).hour > 1)
+                                time_unit = "hours";
+                            else
+                                time_unit = "hour";
+                        }
+
+                        var str_active = '<li>' +
+                                            '<a href="#" data-popover=".popover-active' + i + '" class="item-link item-content open-popover">' +
+                                                '<div class="item-inner">' +
+                                                    '<div class="item-title-row">' +
+                                                        '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
+                                                        '<div id="lbl-time-left" class="item-after">' + timestamp2Time(remain_time).hour + '</div>' +
+                                                        '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                                     '</div>' +
+                                                     '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                                '</div>' +
+                                            '</a>' +
+                                            '<div class="popover popover-active' + i + '" id="popover-active">' +
+                                                '<div class="popover-angle"></div>' +
+                                                '<div class="popover-inner">' +
+                                                    '<div class="content-block">' +
+                                                        '<div id="active-car-plate">' + carPlate + '</div>' +
+                                                        '<div id="location">' + location + '</div><br />' +
+                                                        '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                                        '<div id="lbl-time">Expected End Time:</div>' +
+                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + '</div><br />' +
+                                                        '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                        '<div id="btns">' +
+                                                            '<button id="terminate-btn">Terminate</button>' +
+                                                            '<button id="extend-btn">Extend</button>' +
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                            '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
+                                                '<span></span>' +
+                                            '</div>' +
+                                        '</li>';
+
+                    $$('#ulist-active').append(str_active);
+                    i++;
                     }
                 })
             });
@@ -295,7 +356,6 @@ myApp.onPageInit('main', function (page) {
             myApp.alert('Please select your car and duration! Stupid!', 'Notification');
         }
     });
-
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
