@@ -159,6 +159,7 @@ function removeVehicle(item) {
 }
 
 myApp.onPageInit('main', function (page) {
+
     //Parking Info and Payment
     var carPlate, parkDuration, tokenReq, tokenBal, confirmText, tokenNo;
     var selectedCar = false, selectedDuration = false;
