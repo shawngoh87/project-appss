@@ -91,6 +91,7 @@ function myactive() {
 }
 
 myApp.onPageInit('main', function (page) {
+
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
     carRef = userRef.child('cars');
@@ -100,7 +101,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     //Initiate UI
     //-----------------------
-
+    
     //Get cars and update
     carRef.on('value',function (snapshot) {
         for (var ownedCarPlate in snapshot.val()) {
@@ -252,10 +253,6 @@ myApp.onPageInit('main', function (page) {
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
-
-            //initialize a "i" value for looping in future - Sen Kit
-            var i = 0;
-            //-----------------
             myApp.confirm(confirmText, 'Confirmation', function () {
                 userRef.child('balance').once('value').then(function (snapshot) {
                     tokenNo = snapshot.val();
@@ -284,63 +281,6 @@ myApp.onPageInit('main', function (page) {
                             timestamp: timestamp,
                             duration: parkDuration
                         })
-
-                        //write data to UI
-                        var location, promoCode = null;
-                        var current_time = Date.now();
-                        var end_time = timestamp + parkDuration;
-                        var end_time_dis = new Date(end_time);
-                        var remain_time = (end_time + 3600000) - current_time;
-                        var time_unit;
-                        
-                        if (timestamp2Time(remain_time).hour == 0) {
-                            if (timestamp2Time(remain_time).minute > 1)
-                                time_unit = "minutes";
-                            else
-                                time_unit = "minute";
-                        }
-                        else{
-                            if (timestamp2Time(remain_time).hour > 1)
-                                time_unit = "hours";
-                            else
-                                time_unit = "hour";
-                        }
-
-                        var str_active = '<li>' +
-                                            '<a href="#" data-popover=".popover-active' + i + '" class="item-link item-content open-popover">' +
-                                                '<div class="item-inner">' +
-                                                    '<div class="item-title-row">' +
-                                                        '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
-                                                        '<div id="lbl-time-left" class="item-after">' + timestamp2Time(remain_time).hour + '</div>' +
-                                                        '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                                                     '</div>' +
-                                                     '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
-                                                '</div>' +
-                                            '</a>' +
-                                            '<div class="popover popover-active' + i + '" id="popover-active">' +
-                                                '<div class="popover-angle"></div>' +
-                                                '<div class="popover-inner">' +
-                                                    '<div class="content-block">' +
-                                                        '<div id="active-car-plate">' + carPlate + '</div>' +
-                                                        '<div id="location">' + location + '</div><br />' +
-                                                        '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                                                        '<div id="lbl-time">Expected End Time:</div>' +
-                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + '</div><br />' +
-                                                        '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                                                        '<div id="btns">' +
-                                                            '<button id="terminate-btn">Terminate</button>' +
-                                                            '<button id="extend-btn">Extend</button>' +
-                                                        '</div>' +
-                                                    '</div>' +
-                                                '</div>' +
-                                            '</div>' +
-                                            '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
-                                                '<span></span>' +
-                                            '</div>' +
-                                        '</li>';
-
-                    $$('#ulist-active').append(str_active);
-                    i++;
                     }
                 })
             });
@@ -356,6 +296,7 @@ myApp.onPageInit('main', function (page) {
             myApp.alert('Please select your car and duration! Stupid!', 'Notification');
         }
     });
+
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
@@ -466,19 +407,12 @@ myApp.onPageInit('main', function (page) {
         var data = snapshot.val();
         $$('.load-username').html(data);
     })
-
-
+    
     //Get tokens in profile
-    userRef.child('balance').on('value',function (snapshot) {
-        $$('.load-token').html(+snapshot.val().toFixed(2));
+    userRef.child('balance').once('value').then(function (snapshot) {
+        $$('.load-token').append(snapshot.val().toFixed());
     })
-    /*
-    // Load balance
-    firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.token').text(data);
-    })
-     */
+    
 });
 
 myApp.onPageInit('signup', function (page) {
@@ -600,7 +534,7 @@ myApp.onPageInit("vehicle-history", function (page) {
     console.log(Appss.time);
 });
 
-/* ===== Color themes ===== HAVENT DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEE*/
+// ===== Color themes ===== 
 myApp.onPageInit('color-themes', function (page) {
     $$(page.container).find('.color-theme').click(function () {
         var classList = $$('body')[0].classList;
@@ -655,46 +589,4 @@ myApp.onPageInit('profile-myprofile', function (page) {
         $$('.load-address').html(data);
     })
     */
-});
-myApp.onPageInit("select-location", function (page) {
-
-    var map, infoWindow;
-
-    initMap();
-
-    function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 18
-        });
-        infoWindow = new google.maps.InfoWindow;
-
-        // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                infoWindow.setPosition(pos);
-                infoWindow.setContent('Location found.');
-                infoWindow.open(map);
-                map.setCenter(pos);
-            }, function () {
-                handleLocationError(true, infoWindow, map.getCenter());
-            });
-        }
-        else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-    }
-
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
-    }
 });

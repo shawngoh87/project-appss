@@ -290,3 +290,7 @@ a.close-popover{
     margin: 7% auto;
     max-width: 100px;
 }
+
+.mini-icon-size{
+    font-size:13px;
+}
