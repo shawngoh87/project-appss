@@ -449,7 +449,7 @@ myApp.onPageInit('main', function (page) {
         });
     });
 
-    $$('.confirm-title-ok').on('click', function () {
+    $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
                 // Sign-out successful.
