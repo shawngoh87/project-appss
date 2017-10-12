@@ -464,9 +464,21 @@ myApp.onPageInit('main', function (page) {
     // Load username
     firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-username').text(data);
+        $$('.load-username').html(data);
     })
+
+
+    //Get tokens in profile
+    userRef.child('balance').on('value',function (snapshot) {
+        $$('.load-token').html(+snapshot.val().toFixed(2));
+    })
+    /*
+    // Load balance
+    firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        $$('.token').text(data);
+    })
+     */
 });
 
 myApp.onPageInit('signup', function (page) {
@@ -608,46 +620,39 @@ myApp.onPageInit('profile-myprofile', function (page) {
     // Load username
     firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-username').text(data);
+        $$('.load-username').html(data);
     })
     // Load real_name
     firebase.database().ref('users/' + user.uid + '/real_name').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-real-name').text(data);
+        $$('.load-real-name').html(data);
     })
     // Load email
     firebase.database().ref('users/' + user.uid + '/email').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-email').text(data);
+        $$('.load-email').html(data);
     })
     // Load phone_no
     firebase.database().ref('users/' + user.uid + '/phone_no').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-phone-no').text(data);
+        $$('.load-phone-no').html(data);
     })
     // Load gender
     firebase.database().ref('users/' + user.uid + '/gender').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-gender').text(data);
+        $$('.load-gender').html(data);
     })
     // Load birthday
     //NEED TO CHANGE THE WAY TO GET AND DISPLAY/////////////////
     firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-birthday').text(data);
+        $$('.load-birthday').html(data);
     })
     /*
     // Load address HAVENT DONEEEEEEEEEEEEEE
     firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-birthday').text(data);
+        $$('.load-address').html(data);
     })
     */
 });
