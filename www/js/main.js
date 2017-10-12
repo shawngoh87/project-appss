@@ -389,7 +389,7 @@ myApp.onPageInit('main', function (page) {
 		    i++;
         });
     });
-    //Logout button
+
     $$('.confirm-title-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
@@ -552,4 +552,43 @@ myApp.onPageInit('profile-myprofile', function (page) {
         console.log(data);
         $$('.load-username').text(data);
     })
+    // Load real_name
+    firebase.database().ref('users/' + user.uid + '/real_name').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-real-name').text(data);
+    })
+    // Load email
+    firebase.database().ref('users/' + user.uid + '/email').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-email').text(data);
+    })
+    // Load phone_no
+    firebase.database().ref('users/' + user.uid + '/phone_no').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-phone-no').text(data);
+    })
+    // Load gender
+    firebase.database().ref('users/' + user.uid + '/gender').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-gender').text(data);
+    })
+    // Load birthday
+    //NEED TO CHANGE THE WAY TO GET AND DISPLAY/////////////////
+    firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-birthday').text(data);
+    })
+    /*
+    // Load address HAVENT DONEEEEEEEEEEEEEE
+    firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
+        var data = snapshot.val();
+        console.log(data);
+        $$('.load-birthday').text(data);
+    })
+    */
 });
