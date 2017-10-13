@@ -413,7 +413,7 @@ myApp.onPageInit('main', function (page) {
                       //write to UI
                       var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
                       var str2 = '</div><div class="cards-item-title">';
-                      var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+                      var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" onclick="$$(".current-car").val($$(this).closest(".owned-car").text())" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
                       
                       $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
 
