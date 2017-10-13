@@ -111,6 +111,50 @@ function loadSpecificTransaction(carPlate) {
     });
 }
 
+//---------------------------------
+//Function to refresh active card
+//--------------------------------
+function refreshActiveHistory() {
+    $$('.actively-parking-car').each(function () {
+        var endTime = $$(this).find('#timestamp-active-end').val();
+        var remainTime = endTime - Date.now();
+        var timeVal;
+        var timeUnit;
+
+        if (remainTime > 999) {
+
+            if (timestamp2Time(remainTime).second >= 60) {
+                if (timestamp2Time(remainTime).minute >= 60) {
+                    timeVal = timestamp2Time(remainTime).hour;
+                    timeUnit = 'hour';
+                    if (timestamp2Time(remainTime).hour > 1) {
+                        timeUnit += 's';
+                    }
+                }
+                else {
+                    timeVal = timestamp2Time(remainTime).minute;
+                    timeUnit = 'minute';
+                    if (timestamp2Time(remainTime).minute > 1) {
+                        timeUnit += 's';
+                    }
+                }
+            }
+            else {
+                timeVal = timestamp2Time(remainTime).second;
+                timeUnit = 'second';
+                if (timestamp2Time(remainTime).second > 1) {
+                    timeUnit += 's';
+                }
+            }
+            $$(this).find('#lbl-time-left').html(timeVal);
+            $$(this).find('#lbl-time-remain').html(timeUnit + '<br />remaining');
+        }
+        else {
+            $$(this).remove();
+        }
+    });
+}
+
 myApp.onPageInit('profile-settings', function (page) {
 
 });
@@ -163,7 +207,7 @@ myApp.onPageInit('main', function (page) {
         for (var ownedCarPlate in snapshot.val()) {
             var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">';
-            var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + ownedCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+            var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + ownedCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
             $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
         }
     });
@@ -188,6 +232,88 @@ myApp.onPageInit('main', function (page) {
                 ');
         }
     })
+
+    //Get History of Active Car
+    activeCarRef = carRef.orderByKey();
+    activeCarRef.once('value').then(function (snapshot) {
+        for (var activeCarPlate in snapshot.val()) {
+            var activeStatus = snapshot.child(activeCarPlate).child('parking').child('active').val();
+            var activeAmount = snapshot.child(activeCarPlate).child('parking').child('amount').val();
+            var activeDuration = snapshot.child(activeCarPlate).child('parking').child('duration').val();
+            var activeTimestamp = snapshot.child(activeCarPlate).child('parking').child('timestamp').val();
+            if (activeStatus) {
+                //write data to UI
+                var location, promoCode = null;
+                var current_time = Date.now();
+                var end_time = activeTimestamp + activeDuration;
+                var end_time_dis = new Date(end_time);
+                var remain_time = end_time - current_time;
+                var time_unit;
+
+                if (timestamp2Time(remain_time).second >= 60) {
+                    if (timestamp2Time(remain_time).minute >= 60) {
+                        time_val = timestamp2Time(remain_time).hour;
+                        time_unit = 'hour';
+                        if (timestamp2Time(remain_time).hour > 1) {
+                            time_unit += 's';
+                        }
+                    }
+                    else {
+                        time_val = timestamp2Time(remain_time).minute;
+                        time_unit = 'minute';
+                        if (timestamp2Time(remain_time).minute > 1) {
+                            time_unit += 's';
+                        }
+                    }
+                }
+                else {
+                    time_val = timestamp2Time(remain_time).second;
+                    time_unit = 'second';
+                    if (timestamp2Time(remain_time).second > 1) {
+                        time_unit += 's';
+                    }
+                }
+
+                var str_active = '<li class="actively-parking-car">' +
+                                    '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                                        '<div class="item-inner">' +
+                                            '<div class="item-title-row">' +
+                                                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                                                '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                                                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                             '</div>' +
+                                             '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                        '</div>' +
+                                    '</a>' +
+                                    '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                                        '<div class="popover-angle"></div>' +
+                                        '<div class="popover-inner">' +
+                                            '<div class="content-block">' +
+                                                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                                                '<div id="location">' + location + '</div><br />' +
+                                                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                                '<div id="lbl-time">Expected End Time:</div>' +
+                                                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                                                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                '<div id="btns">' +
+                                                    '<button id="terminate-btn">Terminate</button>' +
+                                                    '<button id="extend-btn">Extend</button>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
+                                        '<span></span>' +
+                                    '</div>' +
+                                '</li>';
+
+                $$('#ulist-active').append(str_active);
+            }
+        }
+    });
+
+
 
     //---------------------------------------
     // Get Car Select List from Vehicle Tab
@@ -321,28 +447,41 @@ myApp.onPageInit('main', function (page) {
                         var current_time = Date.now();
                         var end_time = timestamp + parkDuration;
                         var end_time_dis = new Date(end_time);
-                        var remain_time = (end_time + 3600000) - current_time;
+                        var remain_time = end_time - current_time;
+                        var time_val;
                         var time_unit;
 
-                        if (timestamp2Time(remain_time).hour == 0) {
-                            if (timestamp2Time(remain_time).minute > 1)
-                                time_unit = "minutes";
-                            else
-                                time_unit = "minute";
+                        if (timestamp2Time(remain_time).second >= 60) {
+                            if (timestamp2Time(remain_time).minute >= 60) {
+                                time_val = timestamp2Time(remain_time).hour;
+                                time_unit = 'hour';
+                                if (timestamp2Time(remain_time).hour > 1) {
+                                    time_unit += 's';
+                                }
+                            }
+                            else {
+                                time_val = timestamp2Time(remain_time).minute;
+                                time_unit = 'minute';
+                                if (timestamp2Time(remain_time).minute > 1) {
+                                    time_unit += 's';
+                                }
+                            }
                         }
                         else {
-                            if (timestamp2Time(remain_time).hour > 1)
-                                time_unit = "hours";
-                            else
-                                time_unit = "hour";
+                            time_val = timestamp2Time(remain_time).second;
+                            time_unit = 'second';
+                            if (timestamp2Time(remain_time).second > 1) {
+                                time_unit += 's';
+                            }
                         }
 
-                        var str_active = '<li>' +
+                        var str_active = '<li class="actively-parking-car">' +
                                             '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
                                                 '<div class="item-inner">' +
                                                     '<div class="item-title-row">' +
                                                         '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
-                                                        '<div id="lbl-time-left" class="item-after">' + timestamp2Time(remain_time).hour + '</div>' +
+                                                        '<input id="timestamp-active-end" value="' + end_time + '" />'+
+                                                        '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                                      '</div>' +
                                                      '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
@@ -356,7 +495,7 @@ myApp.onPageInit('main', function (page) {
                                                         '<div id="location">' + location + '</div><br />' +
                                                         '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                         '<div id="lbl-time">Expected End Time:</div>' +
-                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + '</div><br />' +
+                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() +'</div><br />' +
                                                         '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
                                                         '<div id="btns">' +
                                                             '<button id="terminate-btn">Terminate</button>' +
@@ -386,6 +525,10 @@ myApp.onPageInit('main', function (page) {
             myApp.alert('Please select your car and duration! Stupid!', 'Notification');
         }
     });
+
+    $$('#tab-history-button').on('click', function () {
+        refreshActiveHistory();
+    })
 
 
     // Vehicle Tab - Adding vehicle via floating action button
@@ -448,11 +591,11 @@ myApp.onPageInit('main', function (page) {
             //update to Topup UI
             var str_topup = '<div class="timeline-item">' + 
                                 '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
-	                            '<div class="timeline-item-divider"></div>' +
-	                            '<div class="timeline-item-content list-block inset">' +
-		                            '<ul>' +
-			                            '<li class="accordion-item">' +
-			                                '<a href="#" class="item-link item-content">' +
+                                '<div class="timeline-item-divider"></div>' +
+                                '<div class="timeline-item-content list-block inset">' +
+                                    '<ul>' +
+                                        '<li class="accordion-item">' +
+                                            '<a href="#" class="item-link item-content">' +
                                                 '<div class="item-inner">' +
                                                     '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
                                                     '<div class="item-after">RM' + topupData.amount + '</div>' +
@@ -475,7 +618,7 @@ myApp.onPageInit('main', function (page) {
                             '</div>';
 
             $$('#timeline-topup').append(str_topup);
-		    i++;
+            i++;
         });
     });
 
