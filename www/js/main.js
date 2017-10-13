@@ -14,6 +14,7 @@ var mainView = myApp.addView('.view-main', {
 
 // Global Variables
 var global = {};
+var user, userRef;
 
 //------------------------------------------
 // Check Whether User has signed in or not
@@ -22,11 +23,17 @@ firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // User is signed in.
         mainView.router.loadPage("main.html");
+        initUserInfo();
     }
     //else {
     //    
     //}
 });
+
+function initUserInfo() {
+    user = firebase.auth().currentUser;
+    userRef = firebase.database().ref('users/' + user.uid);
+}
 
 //--------------------------
 // Login Authentication
@@ -190,8 +197,6 @@ function myactive() {
 
 myApp.onPageInit('main', function (page) {
 
-    user = firebase.auth().currentUser;
-    userRef = firebase.database().ref('users/' + user.uid);
     carRef = userRef.child('cars');
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, timeStamp, selectedCar = false, selectedDuration = false;
@@ -257,7 +262,7 @@ myApp.onPageInit('main', function (page) {
     })
 
     //Get History of Active Car
-    activeCarRef = carRef.orderByKey();
+    var activeCarRef = carRef.orderByKey();
     activeCarRef.once('value').then(function (snapshot) {
         for (var activeCarPlate in snapshot.val()) {
             var activeStatus = snapshot.child(activeCarPlate).child('parking').child('active').val();
