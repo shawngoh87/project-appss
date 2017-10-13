@@ -999,7 +999,7 @@ myApp.onPageInit("select-location", function (page) {
                 };
                 map.setCenter(pos);
                 addMarker(pos, map);
-                geocodeLatLng(geocoder, map, pos);
+                geocodeLatLng(geocoder, pos);
                 initAutocomplete(map);
             }, function () {
                 handleLocationError(true, infoWindow, map.getCenter());
