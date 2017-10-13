@@ -326,7 +326,7 @@ myApp.onPageInit('main', function (page) {
                                                 '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
                                                 '<div id="btns">' +
                                                     '<button id="terminate-btn">Terminate</button>' +
-                                                    '<button id="extend-btn">Extend</button>' +
+                                                    '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
                                                 '</div>' +
                                             '</div>' +
                                         '</div>' +
@@ -511,7 +511,7 @@ myApp.onPageInit('main', function (page) {
                                                 '<div class="item-inner">' +
                                                     '<div class="item-title-row">' +
                                                         '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
-                                                        '<input id="timestamp-active-end" value="' + end_time + '" />'+
+                                                        '<input id="timestamp-active-end" value="' + end_time + '" />' +
                                                         '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                                      '</div>' +
@@ -526,11 +526,11 @@ myApp.onPageInit('main', function (page) {
                                                         '<div id="location">' + location + '</div><br />' +
                                                         '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                         '<div id="lbl-time">Expected End Time:</div>' +
-                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() +'</div><br />' +
+                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
                                                         '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
                                                         '<div id="btns">' +
                                                             '<button id="terminate-btn">Terminate</button>' +
-                                                            '<button id="extend-btn">Extend</button>' +
+                                                            '<button id="extend-btn" value="' + carPlate +'" onclick="extendParkingTime(this.value)">Extend</button>' +
                                                         '</div>' +
                                                     '</div>' +
                                                 '</div>' +
@@ -677,6 +677,58 @@ myApp.onPageInit('main', function (page) {
     })
     
 });
+
+
+//---------------------------------------
+// Extend Button Function
+//---------------------------------------
+function extendParkingTime(theCar) {
+    console.log("haha");
+    $$('#close-popover-menu').click();
+    
+    if ($$('.picker-modal.modal-in').length > 0) {
+        myApp.closeModal('.picker-modal.modal-in');
+    }
+
+    myApp.pickerModal(
+        '<div class="picker-modal">' +
+            '<div class="toolbar">' +
+                '<div class="toolbar-inner">' +
+                    '<div class="left" id="extendCarPlate">' + theCar + '</div>' +
+                    '<div class="right"><a href="#" class="close-picker">Cancel</a></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="picker-modal-inner">' +
+                '<div class="content-block" id="extend-content">' +
+                    '<div id="lbl-extend">Please select the duration to extend the parking time.</div>' +
+                    '<div class="list-block"  id="duration-content">' +
+                        '<ul>' +
+                            '<li>' +
+                                '<a href="#" data-popover=".popover-menu-duration" class="item-link close-panel open-popover">' +
+                                    '<div class="item-content">' +
+                                        '<div class="item-media"><i class="material-icons selected-duration-logo">schedule</i></div>' +
+                                        '<div class="item-inner">' +
+                                            '<div class="item-title selected-duration">Duration</div>' +
+                                        '</div>' +
+                                     '</div>' +
+                                '</a>' +
+                                '<div class="popover popover-menu-duration">' +
+                                    '<div class="popover-inner">' +
+                                        '<div class="list-block">' +
+                                            '<ul class="select-duration">' +
+                                            '</ul>' +
+                                         '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</li>' +
+                        '</ul>' +
+                    '</div><br />' +
+                    '<div><button id="confirm-btn">Confirm</button></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>'
+    ) 
+};
 
 myApp.onPageInit('signup', function (page) {
     var su_email;

@@ -190,7 +190,7 @@ a.close-popover{
     top: 0px;
 }
 
-.list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline{
+.list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline, #extend-content, #duration-content{
     margin:0px;
 }
 
@@ -199,7 +199,7 @@ a.close-popover{
     padding:0px;
 }
 
-#car-icon, #location, #topup-icon,#topup-date,#history-car-plate, #timeline-date{
+#car-icon, #location, #topup-icon,#topup-date,#history-car-plate, #timeline-date, #extendCarPlate{
     font-size:20px
 }
 
@@ -245,7 +245,15 @@ a.close-popover{
     margin:0 2.5%;
 }
 
-#extend-btn{
+#confirm-btn{
+    position:absolute;
+    width:60%;
+    margin:0 20%;
+    height:50px;
+    border-radius:12px
+}
+
+#extend-btn, #confirm-btn{
     background-color:blue;
     color: white
 }
@@ -261,7 +269,7 @@ a.close-popover{
     height:350px;
 }
 
-#lbl-btns{
+#lbl-btns, #lbl-extend{
     text-align:center;
     font-size:16px
 }
@@ -278,6 +286,11 @@ a.close-popover{
 #topup-accordion{
     background-color: lightgray;
     border-radius:9px;
+}
+
+.close-picker{
+    color:white;
+    font-size:15px
 }
 
 /*YM*/
