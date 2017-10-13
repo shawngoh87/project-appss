@@ -294,3 +294,8 @@ a.close-popover{
 .mini-icon-size{
     font-size:13px;
 }
+
+#timestamp-active-end {
+    visibility: hidden;
+    width: 0px;
+}
