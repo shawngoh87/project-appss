@@ -72,9 +72,14 @@ function removeVehicle(item) {
           {
               text: 'Ok',
               onClick: function () {
-                  //remove from database
+                  $$('.actively-parking-car').each(function () {
+                      console.log($$(this).find('#car-icon').text().replace(/child_friendly/g,''))
+                      if ($$(this).find('#car-icon').text().replace(/child_friendly/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
+                          $$(this).remove();
+                      }
+                  })
                   carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();
-                  $$(item).closest('.card').remove();
+                  $$(item).closest('.card').remove()
               }
           },
         ]
@@ -151,6 +156,21 @@ function refreshActiveHistory() {
         }
         else {
             $$(this).remove();
+            var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
+            var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
+            var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
+            var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
+            carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                amount: parkingAmount,
+                address: "Sungai Long",
+                promocode: "ILOVEDOUBLEPARK",
+                location: "",
+                duration: timestamp2Time(parkingDuration).name,
+                start_time: parkingTimestamp
+            })
+            carRef.child(ownedCarPlate).child('parking').update({
+                active: false,
+            })
         }
     });
 }
@@ -192,6 +212,9 @@ myApp.onPageInit('main', function (page) {
                 if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                     carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                         amount: parkingAmount,
+                        address: "Sungai Long",
+                        promocode: "ILOVEDOUBLEPARK",
+                        location: "",
                         duration: timestamp2Time(parkingDuration).name,
                         start_time: parkingTimestamp
                     })
@@ -342,6 +365,9 @@ myApp.onPageInit('main', function (page) {
                         if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                             carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                                 amount: parkingAmount,
+                                address: "Sungai Long",
+                                promocode: "ILOVEDOUBLEPARK",
+                                location: "",
                                 duration: timestamp2Time(parkingDuration).name,
                                 start_time: parkingTimestamp
                             })
