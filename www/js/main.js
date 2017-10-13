@@ -14,7 +14,7 @@ var mainView = myApp.addView('.view-main', {
 
 // Global Variables
 var global = {};
-var user, userRef;
+var user, userRef, carRef;
 
 //------------------------------------------
 // Check Whether User has signed in or not
@@ -33,6 +33,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 function initUserInfo() {
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
+    carRef = userRef.child('cars');
 }
 
 //--------------------------
@@ -197,7 +198,6 @@ function myactive() {
 
 myApp.onPageInit('main', function (page) {
 
-    carRef = userRef.child('cars');
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, timeStamp, selectedCar = false, selectedDuration = false;
 
