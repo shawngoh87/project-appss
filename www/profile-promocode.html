@@ -6,60 +6,31 @@
         </div>
         <div class="toolbar tabbar">
             <div class="toolbar-inner">
-                <a href="#promo-available" class="button active tab-link">AVAILABLE</a>
-                <a href="#promo-all" class="button tab-link">ALL</a>
+                <a href="#promo-tab-available" class="button active tab-link">AVAILABLE</a>
+                <a href="#promo-tab-all" class="button tab-link">ALL</a>
             </div>
         </div>
     </div>
     <div class="tabs-swipeable-wrap tabs-animated-wrap">
         <div class="tabs">
             <!-- Available -->
-            <div id="promo-available" class="page-content tab active">
+            <div id="promo-tab-available" class="page-content tab active">
                 <div class="content-block">
                     <div class="list-block accordion-list">
-                        <ul>
-                            <li class="accordion-item">
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">CYBERSALE2017</div>
-                                    </div>
-                                </a>
-                                <div class="accordion-item-content">
-                                    <div class="content-block">
-                                        <p>what discount</p>
-                                        <p>condition</p>
-                                        <p>expiry date</p>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="accordion-item">
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">HBD17X</div>
-                                    </div>
-                                </a>
-                                <div class="accordion-item-content">
-                                    <div class="content-block">
-                                        <p>what discount</p>
-                                        <p>condition</p>
-                                        <p>expiry date</p>
-                                    </div>
-                                </div>
-                            </li>
+                        <ul class="promo-list-available">
+                            <!--Display promocode if available-->
                         </ul>
                     </div>
-
-
                 </div>
             </div>
 
             <!-- ALL -->
-            <div id="promo-all" class="page-content tab">
+            <div id="promo-tab-all" class="page-content tab">
 
                 <div class="content-block">
                     <div class="list-block accordion-list">
-                        <ul>
+                        <ul class="promo-list-all">
+                            <!--
                             <li class="accordion-item">
                                 <a href="#" class="item-link item-content">
                                     <div class="item-inner">
@@ -120,6 +91,7 @@
                                     </div>
                                 </div>
                             </li>
+                            -->
                         </ul>
                     </div>
                 </div>

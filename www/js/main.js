@@ -920,3 +920,40 @@ myApp.onPageInit("select-location", function (page) {
         infoWindow.open(map);
     }
 });
+
+//Promocode
+myApp.onPageInit('profile-promocode', function (page) {
+    //Display Promocode
+    function loadPromocode() {
+        var uid = firebase.auth().currentUser.uid;
+        var path = 'users/' + user.uid + '/promotion';
+
+        firebase.database().ref(path).once('value').then(function (snapshot) {
+            var data = snapshot.val();
+
+            for (var eachPromotion in data) {
+                var promocode = data[eachPromotion];
+
+                // For readability purpose
+                var str1 = '<li class="accordion-item"> <a href="#" class="item-link item-content"> <div class="item-inner"> <div class="item-title">'
+                var str2 = '</div> <div class="item-after" style = "color: springgreen" >'
+                var p_status = promocode.status;
+                var str99 = '</div > </div > </a > <div class="accordion-item-content"> <div class="content-block"> <p>Discount Amount: '
+                var p_amount = promocode.amount;
+                var str3 = ' tokens</p> <p>Expiry Date: '
+                var p_expiry_date = promocode.expiry_date;
+                var str4 = '</p> <p>'
+                var p_text = promocode.text;
+                var str5 = '</p> </div> </div> </li>'
+
+                    
+
+                console.log(str1 + eachPromotion + str2 + p_amount + str3 + p_expiry_date + str4 + p_text + str5);
+                $$('.promo-list-all').append(str1 + eachPromotion + str2 + p_status + str99 + p_amount + str3 + p_expiry_date + str4 + p_text + str5);
+            }
+
+        });
+    }
+
+    loadPromocode();
+});
