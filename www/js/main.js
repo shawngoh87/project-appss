@@ -812,13 +812,7 @@ myApp.onPageInit('signup', function (page) {
     })
 });
 
-
-
 myApp.onPageInit("vehicle-history", function (page) {
-
-
-
-    //loadSpecificTransaction();
 });
 
 // ===== Color themes ===== 
