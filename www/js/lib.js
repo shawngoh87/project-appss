@@ -1,4 +1,5 @@
 ﻿var Appss = {};
+Appss.time = Math.floor(Date.now());
 
 
 //------------------------------------
@@ -37,5 +38,29 @@ function timestamp2Time(value) {
     return time;
 }
 
-//Appss.time = Math.floor(Date.now());
-//Appss.geolocate = null;
+// Asynchronous console.log
+function asyncLog(context) {
+    let logger =  new Promise((resolve, reject) => {
+        console.log(context);
+    });
+
+    return logger;
+}
+
+// Performance check
+function ticktock(func) {
+    var t1, t0 = performance.now();
+    let caller = new Promise((resolve, reject) => {
+        func.call();
+    });
+    caller.then(
+        function () {
+            console.log('Function took ' + (performance.now() - t0) + 'ms.');
+            t1 = performance.now();
+        },
+        function () {
+            console.log('Function error!');
+        }
+    );
+}
+
