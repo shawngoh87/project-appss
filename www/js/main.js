@@ -1009,7 +1009,6 @@ myApp.onPageInit('color-themes', function (page) {
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
     user = firebase.auth().currentUser;
-    userRef = firebase.database().ref('users/' + user.uid);
 
     $$('.load-username').html(Db.user.username);
     $$('.load-real-name').html(Db.user.real_name);
@@ -1274,4 +1273,45 @@ myApp.onPageInit('profile-promocode', function (page) {
     }
 
     loadPromocode();
+});
+
+// Change password
+myApp.onPageInit('settings-change-password', function (page) {
+    var user = firebase.auth().currentUser;
+    $$('#update-password').on('click', function () {
+        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+            user.updatePassword($$('#new-password').val()).then(function () {
+                // Update successful.
+                myApp.alert('Your password has been updated!');
+            }).catch(function (error) {
+                // An error happened.
+            });
+        } else
+            myApp.alert('Password and confirm password does not match', 'Error!');
+    })
+})
+
+//Change Address
+myApp.onPageInit('settings-change-address', function (page) {
+    user = firebase.auth().currentUser;
+
+    $$('.load-address').html(Db.user.address);
+
+    $$('#update-address').on('click', function () {
+        if ($$('#new-address').val() != ("")) {
+
+            userRef.update({
+                address: $$('#new-address').val()
+            }).then(function () {
+            myApp.alert('Your address has been updated successfully!');
+            }).catch(function (error) {
+
+            });
+        }
+            else{
+            myApp.alert('Please enter your new address', 'Error!');
+        }
+    });
+
+
 });

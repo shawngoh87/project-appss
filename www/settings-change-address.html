@@ -2,7 +2,7 @@
     <div class="navbar">
         <div class="navbar-inner">
             <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div>
-            <div class="center">My Profile</div>
+            <div class="center">Change Address</div>
         </div>
     </div>
     <div class="page-content">
@@ -11,28 +11,25 @@
                 <li>
                     <div class="item-content">
                         <div class="item-inner">
-                            <div class="item-title label">Address</div>
+                            <div class="item-text" style="font-size:80%">Old Address</div>
+                            <div class="load-address"></div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-text" style="font-size:80%">New Address</div>
                             <div class="item-input">
-                                <input type="text" placeholder="Address line 1" value="">
-                                <input type="text" placeholder="Address line 2">
-                                <input type="text" placeholder="Address line 3">
-                            </div>
-                            <div class="item-title label">Postcode</div>
-                            <div class="item-input">
-                                <input type="number" placeholder="Postcode">
-                            </div>
-                            <div class="item-title label">City</div>
-                            <div class="item-input">
-                                <input type="text" placeholder="City">
-                            </div>
-                            <div class="item-title label">State</div>
-                            <div class="item-input">
-                                <input type="text" placeholder="State">
+                                <input type="text" id="new-address" placeholder="Enter Your New Address">
                             </div>
                         </div>
                     </div>
                 </li>
             </ul>
+        </div>
+        <div class="content-block">
+            <input type="button" id="update-address" class="button button-fill button-raised" value="Submit" />
         </div>
     </div>
 </div>
