@@ -1,19 +1,39 @@
-﻿<!--<head>
-    <link rel="stylesheet" href="css/material-icons.css">
-    <link rel="stylesheet" href="dist/css/framework7.material.css">
-    <link rel="stylesheet" href="dist/css/framework7.material.colors.css">
-    <title></title>
-</head>
-<body>-->
-    <div data-page="select-location" class="page navbar-fixed">
-        <div class="navbar">
-            <div class="navbar-inner">
-                <div class="left"><a href="profile.html" class="back link icon-only"><i class="icon icon-back"></i></a></div>
-                <div class="center"><h1 id="profile-title">Location</h1></div>
-                <div class="right"></div>
-            </div>
+﻿<div data-page="select-location" class="page navbar-fixed">
+
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left"><a href="profile.html" class="back link icon-only"><i class="icon icon-back"></i></a></div>
+            <div class="center"><h1 id="profile-title">Location</h1></div>
+            <div class="right"></div>
         </div>
     </div>
-    <!--<script type="text/javascript" src="dist/js/framework7.js"></script>
-    <script type="text/javascript" src="js/kitchen-sink.js"></script>
-</body>-->
+
+    <div class="page-content">
+
+        <input id="pac-input" class="controls" type="text" placeholder="Set Your Own Location">
+        <div id="map"></div>
+
+        <div id="bot-part">
+            <div id="default-addr-accord" class="list-block accordion-list">
+                <ul>
+                    <li class="accordion-item">
+                        <a href="#" class="item-link item-content">
+                            <div class="item-inner">
+                                <div class="item-title">Your Default Location</div>
+                            </div>
+                        </a>
+                        <div class="accordion-item-content">
+                            <div class="content-block">
+                                <p id="default-address"></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <input type="button" id="use-default-loca" class="round-blue-button" value="Use default location" />
+            <input type="button" id="use-selfset-loca" class="round-blue-button" value="Use self-set location" />
+        </div>
+        
+    </div>                
+</div>
