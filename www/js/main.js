@@ -26,6 +26,17 @@ firebase.auth().onAuthStateChanged(function (user) {
         $$('.index-preloader').show();
         initUserInfo();
         Loaded = 0;
+        // Load local storage after 5 seconds.
+        setTimeout(function () {
+            console.log('Timedout');
+            if (!Loaded) {
+                Db.user = JSON.parse(localStorage.getItem('user'));
+                console.log('Unable to load from firebase. Local storage used instead.');
+                console.log(Db.user);
+                $$('.index-preloader').hide();
+            }
+            else console.log('Global DB initialized correctly. Local storage is not used.');
+        }, 5000);
     }
     else {
         // User signed out.
@@ -41,6 +52,7 @@ function initUserInfo() {
         // Succeeded promise
         function (snapshot) {
             Db.user = snapshot.val();
+            localStorage.setItem('user', JSON.stringify(Db.user));
             if (!Loaded) { mainView.router.loadPage("main.html"); Loaded = 1; } // Route to main.html only once.
             $$('.index-preloader').hide();
             console.log(Db.user);
