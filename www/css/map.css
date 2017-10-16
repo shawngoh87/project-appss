@@ -1,12 +1,6 @@
-﻿#use-default-loca {
-    width: 43%;
-    margin-left: 4%;
-}
-
-#use-selfset-loca {
-    width: 43%;
-    position: relative;
-    margin-left: 4%;
+﻿#use-selfset-loca {
+    width: 33%;
+    margin-left:33%;
 }
 
 #bot-part {
