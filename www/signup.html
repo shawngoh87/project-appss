@@ -10,8 +10,9 @@
         </div>
     </div>
 
-    <div class="page-content">   
-        <div class="sign-up-title"><h2>Sign Up Form</h2></div>
+    <div class="page-content">
+
+        <div class="content-block-title sign-up-title">Sign Up Form</div>
         <form class="list-block inputs-list">
             <ul>
                 <!------------------------>
@@ -23,7 +24,7 @@
                         <div class="item-inner">
                             <div class="item-title floating-label">E-mail</div>
                             <div class="item-input">
-                                <input type="email" id="su-email" class="user-text" placeholder="" value="jimi@gmail.com"/>
+                                <input type="email" id="su-email" class="user-text" placeholder="" />
                             </div>
                         </div>
                     </div>
@@ -38,12 +39,12 @@
                         <div class="item-inner">
                             <div class="item-title floating-label">Username</div>
                             <div class="item-input">
-                                <input type="text" id="su-username" class="user-text" placeholder="" value="jimi"/>
+                                <input type="text" id="su-username" class="user-text" placeholder="" />
                             </div>
                         </div>
                     </div>
                 </li>
-                
+
                 <!------------------------>
                 <!--Password input-->
                 <!------------------------>
@@ -53,7 +54,7 @@
                         <div class="item-inner">
                             <div class="item-title floating-label">Password (6 characters or more)</div>
                             <div class="item-input">
-                                <input type="password" id="su-password" class="user-text" placeholder="" value="123456"/>
+                                <input type="password" id="su-password" class="user-text" placeholder="" />
                             </div>
                         </div>
                     </div>
@@ -68,12 +69,12 @@
                         <div class="item-inner">
                             <div class="item-title floating-label">Confirm Password</div>
                             <div class="item-input">
-                                <input type="password" id="su-confirm-password" class="user-text" placeholder="" value="123456"/>
+                                <input type="password" id="su-confirm-password" class="user-text" placeholder="" />
                             </div>
                         </div>
                     </div>
                 </li>
-                
+
                 <!---------------------------->
                 <!--Phone number input-->
                 <!---------------------------->
@@ -83,18 +84,31 @@
                         <div class="item-inner">
                             <div class="item-title floating-label">Phone</div>
                             <div class="item-input">
-                                <input type="tel" id="su-phone-no" class="user-text" placeholder="" value="000-111"/>
+                                <input type="tel" id="su-phone-no" class="user-text" placeholder="" />
                             </div>
                         </div>
                     </div>
                 </li>
 
-
+                <!---------------------------->
+                <!--IC number input-->
+                <!---------------------------->
+                <li>
+                    <div class="item-content">
+                        <div class="item-media"><i class="material-icons">account_box</i></div>
+                        <div class="item-inner">
+                            <div class="item-title floating-label">IC number (Optional)</div>
+                            <div class="item-input">
+                                <input type="text" id="su-ic" class="user-text" placeholder="" />
+                            </div>
+                        </div>
+                    </div>
+                </li>
             </ul>
 
             <div class="item-content">
-                <input type="button" class="button-signup-submit" value="Submit" /><br />
-                <input type="button" class="signup-back" value="Back" /><br />
+                <input type="button" id="button-signup-submit" class="round-blue-button" value="Submit" /><br />
+                <input type="button" id="button-signup-back" class="round-blue-button" value="Back" /><br />
             </div>
         </form>
 
