@@ -14,7 +14,7 @@ var mainView = myApp.addView('.view-main', {
 
 // Global Variables
 var Db = {};
-var Loaded, user, userRef, carRef;
+var Loaded, user, userRef, carRef, carRead;
 var carRead;
 var expired = false, extendDuration, extendedDuration = false;
 
@@ -70,25 +70,25 @@ firebase.auth().onAuthStateChanged(function (user) {
 });
 
 function initUserInfo() {
-user = firebase.auth().currentUser;
-userRef = firebase.database().ref('users/' + user.uid);
-carRef = userRef.child('cars');
-firebase.database().ref('users/' + user.uid).on('value',
-    // Succeeded promise
-    function (snapshot) {
-        console.log('Promise succees from DB.');
-        Db.user = snapshot.val();
-        localStorage.setItem('user', JSON.stringify(Db.user));
-        if (!Loaded) { mainView.router.loadPage("main.html"); Loaded = 1; } // Route to main.html only once.
-        $$('.index-preloader').hide();
-        console.log(Db.user);
-        carRead = Db.user.cars;
-    },
-    // Failed promise
-    function (err) {
-        console.log(err);
-    }
-);    
+    user = firebase.auth().currentUser;
+    userRef = firebase.database().ref('users/' + user.uid);
+    carRef = userRef.child('cars');
+    firebase.database().ref('users/' + user.uid).on('value',
+        // Succeeded promise
+        function (snapshot) {
+            console.log('Promise succees from DB.');
+            Db.user = snapshot.val();
+            localStorage.setItem('user', JSON.stringify(Db.user));
+            if (!Loaded) { mainView.router.loadPage("main.html"); Loaded = 1; } // Route to main.html only once.
+            $$('.index-preloader').hide();
+            console.log(Db.user);
+            carRead = Db.user.cars;
+        },
+        // Failed promise
+        function (err) {
+            console.log(err);
+        }
+    );
 }
 
 //----------------------------------
@@ -108,28 +108,28 @@ $$('#forget-password').on('click', function () {
             });
         }
     });
-}); 
+});
 
 //--------------------------
 // Login Authentication
 //-------------------------
 $$('.button-login').on('click', function () {
-var si_email = $$('.user-email').val();
-var si_password = $$('.password').val();
+    var si_email = $$('.user-email').val();
+    var si_password = $$('.password').val();
 
-firebase.auth().signInWithEmailAndPassword(si_email, si_password).catch(function (error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    if (errorCode == "auth/user-disabled")
-        myApp.alert(errorMessage, 'Error');
-    else if (errorCode == "auth/invalid-email")
-        myApp.alert(errorMessage, 'Error');
-    else if (errorCode == "auth/user-not-found")
-        myApp.alert(errorMessage, 'Error');
-    else if (errorCode == "auth/wrong-password")
-        myApp.alert(errorMessage, 'Error');
-});
+    firebase.auth().signInWithEmailAndPassword(si_email, si_password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode == "auth/user-disabled")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/invalid-email")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/user-not-found")
+            myApp.alert(errorMessage, 'Error');
+        else if (errorCode == "auth/wrong-password")
+            myApp.alert(errorMessage, 'Error');
+    });
 })
 
 //--------------------
@@ -188,6 +188,7 @@ function loadSpecificTransaction(carPlate) {
         var str4 = '</div> </div> </div>';
 
         pageContent += (str1 + loc + str2 + dur + str3 + total + str4);
+        $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
     }
     mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
 }
@@ -278,7 +279,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     //Initiate UI
     //-----------------------
-    
+
     //Get cars and update
 
     for (var ownedCarPlate in carRead) {
@@ -299,128 +300,119 @@ myApp.onPageInit('main', function (page) {
                 carRef.child(ownedCarPlate).child('parking').update({
                     active: false,
                 })
-                }
             }
-    }
-
-    
-    // Init vehicle tab
-    function initTabVehicle() {
-        var cars = Db.user.cars;
-        for (var carPlate in cars) {
-            var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-            var str2 = '</div><div class="cards-item-title">';
-            var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-            $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
         }
     }
-    initTabVehicle();
-    
-    
+
+    // Init vehicle tab
+    var cars = Db.user.cars;
+    for (var carPlate in cars) {
+        var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+        var str2 = '</div><div class="cards-item-title">';
+        var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+        $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
+    }
 
     //Get tokens
-    userRef.child('balance').on('value',function (snapshot) {
+    userRef.child('balance').on('value', function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
-
     //Get duration selection choices
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
             $$('.select-duration').each(function () {
                 $$(this).append(
                     '<li>\
-                    <label class="label-radio item-content">\
-                        <input type="radio" name="duration" value="'+ snapshot.child(time).val() + '" />\
-                        <div class="item-media"><i class="icon icon-form-radio"></i></div>\
-                        <div class="item-inner">\
-                            <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
-                        </div>\
-                    </label>\
-                </li>'
-                    );
+                <label class="label-radio item-content">\
+                    <input type="radio" name="duration" value="'+ snapshot.child(time).val() + '" />\
+                    <div class="item-media"><i class="icon icon-form-radio"></i></div>\
+                    <div class="item-inner">\
+                        <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
+                    </div>\
+                </label>\
+            </li>'
+                );
             });
         }
     })
 
     //Get History of Active Car
-    var activeCarRef = carRef.orderByKey();
-    activeCarRef.once('value').then(function (snapshot) {
-        for (var activeCarPlate in snapshot.val()) {
-            var activeStatus = snapshot.child(activeCarPlate).child('parking').child('active').val();
-            var activeAmount = snapshot.child(activeCarPlate).child('parking').child('amount').val();
-            var activeDuration = snapshot.child(activeCarPlate).child('parking').child('duration').val();
-            var activeTimestamp = snapshot.child(activeCarPlate).child('parking').child('timestamp').val();
-            if (activeStatus) {
-                //write data to UI
-                var location, promoCode = null;
-                var current_time = Date.now();
-                var end_time = activeTimestamp + activeDuration;
-                var end_time_dis = new Date(end_time);
-                var remain_time = end_time - current_time;
-                var time_unit;
+    var activeCarRead = carRead;
+    for (var activeCarPlate in activeCarRead) {
+        var activeStatus = activeCarRead[activeCarPlate].parking.active;
+        var activeAmount = activeCarRead[activeCarPlate].parking.amount;
+        var activeDuration = activeCarRead[activeCarPlate].parking.duration;
+        var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
+        if (activeStatus) {
+            //write data to UI
+            var location, promoCode = null;
+            var current_time = Date.now();
+            var end_time = activeTimestamp + activeDuration;
+            var end_time_dis = new Date(end_time);
+            var remain_time = end_time - current_time;
+            var time_unit;
 
-                if (timestamp2Time(remain_time).second >= 60) {
-                    if (timestamp2Time(remain_time).minute >= 60) {
-                        time_val = timestamp2Time(remain_time).hour;
-                        time_unit = 'hour';
-                        if (timestamp2Time(remain_time).hour > 1) {
-                            time_unit += 's';
-                        }
-                    }
-                    else {
-                        time_val = timestamp2Time(remain_time).minute;
-                        time_unit = 'minute';
-                        if (timestamp2Time(remain_time).minute > 1) {
-                            time_unit += 's';
-                        }
-                    }
-                }
-                else {
-                    time_val = timestamp2Time(remain_time).second;
-                    time_unit = 'second';
-                    if (timestamp2Time(remain_time).second > 1) {
+            if (timestamp2Time(remain_time).second >= 60) {
+                if (timestamp2Time(remain_time).minute >= 60) {
+                    time_val = timestamp2Time(remain_time).hour;
+                    time_unit = 'hour';
+                    if (timestamp2Time(remain_time).hour > 1) {
                         time_unit += 's';
                     }
                 }
-
-                var str_active = '<li class="actively-parking-car">' +
-                                    '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
-                                        '<div class="item-inner">' +
-                                            '<div class="item-title-row">' +
-                                                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
-                                                '<input id="timestamp-active-end" value="' + end_time + '" />' +
-                                                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
-                                                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                                                '</div>' +
-                                                '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
-                                        '</div>' +
-                                    '</a>' +
-                                    '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
-                                        '<div class="popover-angle"></div>' +
-                                        '<div class="popover-inner">' +
-                                            '<div class="content-block">' +
-                                                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
-                                                '<div id="location">' + location + '</div><br />' +
-                                                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                                                '<div id="lbl-time">Expected End Time:</div>' +
-                                                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                                                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                                                '<div id="btns">' +
-                                                    '<button id="terminate-btn">Terminate</button>' +
-                                                    '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
-                                                '</div>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</div>' +
-                                    '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
-                                        '<span></span>' +
-                                    '</div>' +
-                                '</li>';
-
-                $$('#ulist-active').append(str_active);
+                else {
+                    time_val = timestamp2Time(remain_time).minute;
+                    time_unit = 'minute';
+                    if (timestamp2Time(remain_time).minute > 1) {
+                        time_unit += 's';
+                    }
+                }
             }
+            else {
+                time_val = timestamp2Time(remain_time).second;
+                time_unit = 'second';
+                if (timestamp2Time(remain_time).second > 1) {
+                    time_unit += 's';
+                }
+            }
+
+            var str_active = '<li class="actively-parking-car">' +
+                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                '<div class="item-inner">' +
+                '<div class="item-title-row">' +
+                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                '</div>' +
+                '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                '</div>' +
+                '</a>' +
+                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                '<div class="popover-angle"></div>' +
+                '<div class="popover-inner">' +
+                '<div class="content-block">' +
+                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                '<div id="location">' + location + '</div><br />' +
+                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                '<div id="lbl-time">Expected End Time:</div>' +
+                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                '<div id="btns">' +
+                '<button id="terminate-btn">Terminate</button>' +
+                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
+                '<span></span>' +
+                '</div>' +
+                '</li>';
+
+            $$('#ulist-active').append(str_active);
         }
-    });
+    }
 
 
 
@@ -517,7 +509,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     $$('.confirm-payment').on('click', function () {
         if (selectedCar && selectedDuration) {
-            tokenReq = parkDuration*2/3600000;
+            tokenReq = parkDuration * 2 / 3600000;
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
@@ -639,6 +631,7 @@ myApp.onPageInit('main', function (page) {
         refreshActiveHistory();
     })
 
+
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
@@ -659,14 +652,14 @@ myApp.onPageInit('main', function (page) {
                         carRef.child(displayCarPlate).update({
                             description: $$('#txt-car-description').val(),
                             timestamp_reg: Math.floor(Date.now()),
-                            history:''
+                            history: ''
                         });
 
                         carRef.child(displayCarPlate).child('parking').update({
                             active: false,
                             duration: 0,
                             amount: 0,
-                            timestamp:''
+                            timestamp: ''
 
                         })
 
@@ -698,8 +691,8 @@ myApp.onPageInit('main', function (page) {
             var topupTime = new Date(timeData);
 
             var weekday = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-            var monthname=new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-            var monthnameFull=new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
+            var monthname = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+            var monthnameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
             //var formattedDate = weekday[pubDate.getDay()]+ ' '
             //        +monthname[pubDate.getMonth()]+ ' '
             //        +pubDate.getDate() + ', ' +pubDate.getFullYear()
@@ -756,7 +749,6 @@ myApp.onPageInit('main', function (page) {
     $$('.load-token').append(Db.user.balance.toFixed());
 });
 
-
 //---------------------------------------
 // Extend Button Function
 //---------------------------------------
@@ -775,16 +767,16 @@ function extendParkingTime(theCar) {
                         </div>\
                     </label>\
                 </li>'
-                    );
+                );
             });
         }
     })
 
     //Initiate variables
-    
 
-    $$('.actively-parking-car').each(function(){
-        if($$(this).find('#car-icon').text().replace(/child_friendly/g,'') == theCar) {
+
+    $$('.actively-parking-car').each(function () {
+        if ($$(this).find('#car-icon').text().replace(/child_friendly/g, '') == theCar) {
             if ($$(this).find('#timestamp-active-end').val() - Date.now() <= 0) {
                 expired = true;
             }
@@ -825,14 +817,13 @@ function extendParkingTime(theCar) {
             '<div class="popover popover-menu-duration-extend">' +
             '<div class="popover-inner">' +
             '<div class="list-block">' +
-            '<ul class = ".select-extend-duration">' +
-            $$('.select-duration').html() +
+            '<ul class = "select-extend-duration">' +
             '</ul>' +
             '</div>' +
             '</div>' +
             '</div>' +
             '</div><br />' +
-            '<div><button id="confirm-btn">Confirm</button></div>' +
+            '<div><button id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button></div>' +
             '</div>' +
             '</div>' +
             '</div>'
@@ -850,7 +841,6 @@ function extendParkingTime(theCar) {
         $$('#close-popover-menu').click();
     })
 };
-
 //---------------------------------------
 // Extend Function
 //---------------------------------------
@@ -895,7 +885,7 @@ function extendConfirmed(theCar) {
 
                 var newAmount = amount + tokenReq;
                 var newDuration = duration + extendDuration;
-               
+
                 carRef.child(theCar).child('parking').update({
                     active: true,
                     amount: newAmount,
@@ -915,18 +905,19 @@ myApp.onPageInit('signup', function (page) {
     var su_password;
     var su_username;
     var su_phone;
+    var su_ic;
 
     //-----------------------------
     // back button function
     //-----------------------------
-    $$('.signup-back').on('click', function () {
+    $$('#button-signup-back').on('click', function () {
         mainView.router.back();
     })
 
     //-----------------------------
     // submit button for signUp 
     //-----------------------------
-    $$('.button-signup-submit').on('click', function () {
+    $$('#button-signup-submit').on('click', function () {
         if ($$('#su-email').val() == "") {
             //empty email input textbox case
             myApp.alert('Please enter your email.', 'Error');
@@ -952,6 +943,7 @@ myApp.onPageInit('signup', function (page) {
             su_password = $$('#su-password').val();
             su_username = $$('#su-username').val();
             su_phone = $$('#su-phone-no').val();
+            su_ic = $$('#su-ic').val();
 
             firebase.auth().createUserWithEmailAndPassword(su_email, su_password).then(function (data) {
                 var curr_user = firebase.auth().currentUser;
@@ -1029,7 +1021,9 @@ myApp.onPageInit('profile-myprofile', function (page) {
 
 });
 
-
+//---------------------------
+// Select Location function
+//---------------------------
 myApp.onPageInit("select-location", function (page) {
 
     var default_pos = {
@@ -1246,9 +1240,9 @@ myApp.onPageInit('profile-promocode', function (page) {
     //Display Promocode
     function loadPromocode() {
         var uid = firebase.auth().currentUser.uid;
-        var p_path = 'users/' + user.uid + '/promotion';
+        var path = 'users/' + user.uid + '/promotion';
 
-        firebase.database().ref(p_path).orderByKey().once('value').then(function (snapshot) {
+        firebase.database().ref(path).once('value').then(function (snapshot) {
             var data = snapshot.val();
 
             for (var eachPromotion in data) {
@@ -1257,7 +1251,8 @@ myApp.onPageInit('profile-promocode', function (page) {
                 // For readability purpose
                 var str1 = '<li class="accordion-item"> <a href="#" class="item-link item-content"> <div class="item-inner"> <div class="item-title">'
                 var str2 = '</div>'
-
+                //only for all
+                var str_a = '<div class="item-after" style = "color: springgreen" > '
                 if (promocode.status.toLowerCase() == 'available') {
                     $$('.promo-list-available').append(str1 + eachPromotion + str2 + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text);
                     var str_all = '<div class="item-after" style = "color: springgreen" >Available</div>'
@@ -1280,19 +1275,3 @@ myApp.onPageInit('profile-promocode', function (page) {
 
     loadPromocode();
 });
-
-// Change password
-myApp.onPageInit('settings-change-password', function (page) {
-    var user = firebase.auth().currentUser;
-    $$('#update-password').on('click', function () {
-        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
-            user.updatePassword($$('#new-password').val()).then(function () {
-                // Update successful.
-                myApp.alert('Your password is updated');
-            }).catch(function (error) {
-                // An error happened.
-            });
-        } else
-            myApp.alert('Password and confirm password does not match', 'Error!');
-    })
-})
