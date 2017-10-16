@@ -23,6 +23,7 @@ var Loaded, user, userRef, carRef;
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // User is signed in.
+        console.log(user);
         $$('.index-preloader').show();
         initUserInfo();
         Loaded = 0;
@@ -262,6 +263,7 @@ myApp.onPageInit('main', function (page) {
         }
     });
 
+    
     // Init vehicle tab
     var cars = Db.user.cars;
     for (var carPlate in cars) {
@@ -270,6 +272,7 @@ myApp.onPageInit('main', function (page) {
         var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
         $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
     }
+    
 
     //Get tokens
     userRef.child('balance').on('value',function (snapshot) {
@@ -1084,3 +1087,19 @@ myApp.onPageInit('profile-promocode', function (page) {
 
     loadPromocode();
 });
+
+// Change password
+myApp.onPageInit('settings-change-password', function (page) {
+    var user = firebase.auth().currentUser;
+    $$('#update-password').on('click', function () {
+        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+            user.updatePassword($$('#new-password').val()).then(function () {
+                // Update successful.
+                myApp.alert('Your password is updated');
+            }).catch(function (error) {
+                // An error happened.
+            });
+        } else
+            myApp.alert('Password and confirm password does not match', 'Error!');
+    })
+})
