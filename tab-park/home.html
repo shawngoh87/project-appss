@@ -1,121 +1,75 @@
 <div data-page="select-location" class="page navbar-fixed">
-    <style>
-         /* Always set the map height explicitly to define the size of the div
-        * element that contains the map. */
-		#map {
-			position:absolute;
-			height:50%;
-			width:90%;
-			top:10%;
-			left:5%;
-		}
-		    
-         /* Optional: Makes the sample page fill the window. */
-         html, body {
-             height: 100%;
-             margin: 0;
-             padding: 0;
-         }
-
-         #description {
-             font-family: Roboto;
-             font-size: 15px;
-             font-weight: 300;
-         }
-
-         #infowindow-content .title {
-             font-weight: bold;
-         }
-
-         #infowindow-content {
-             display: none;
-         }
-
-         #map #infowindow-content {
-             display: inline;
-         }
-
-         .pac-card {
-             margin: 10px 10px 0 0;
-             border-radius: 2px 0 0 2px;
-             box-sizing: border-box;
-             -moz-box-sizing: border-box;
-             outline: none;
-             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-             background-color: #fff;
-             font-family: Roboto;
-         }
-
-        #pac-container {
-            padding-bottom: 12px;
-            margin-right: 12px;      
-         }
-
-        .pac-container {
-            z-index: 20000;
-        }
-
-         .pac-controls {
-             display: inline-block;
-             padding: 5px 11px;
-         }
-
-        .pac-controls label {
-            font-family: Roboto;
-            font-size: 13px;
-            font-weight: 300;
-        }
-
-         #pac-input {
-             background-color: #fff;
-             font-family: Roboto;
-             font-size: 15px;
-             font-weight: 300;
-             margin-left: 12px;
-             padding: 0 11px 0 13px;
-             text-overflow: ellipsis;
-             width: 80%;
-         }
-
-             #pac-input:focus {
-                 border-color: #4d90fe;
-             }
-
-         #title {
-             color: #fff;
-             background-color: #4d90fe;
-             font-size: 25px;
-             font-weight: 500;
-             padding: 6px 12px;
-         }
-
-         #target {
-             width: 345px;
-         }
-    </style>
 
     <div class="navbar">
         <div class="navbar-inner">
             <div class="left"><a href="profile.html" class="back link icon-only"><i class="icon icon-back"></i></a></div>
             <div class="center"><h1 id="profile-title">Location</h1></div>
-            <div class="right"></div>
+            <div class="right">
+                <a href="#" data-popup=".POI-popup" class="open-popup">P</a>
+            </div>
         </div>
     </div>
 
-    <div>
-        <h1>space</h1>
-        <h1>space</h1>
-        <h1>space</h1>
-        <h1>space</h1>
-        <h1>space</h1>
-        <h1>space</h1>
-        <h1>space</h1>
-        <p id="default-address"></p>
-        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-        <input type="button" id="use-default-loca" value="Use default location" />
-        <input type="button" id="use-selfset-loca" value="Use self-set location" />
+    <div class="page-content">
+        <input id="pac-input" class="controls" type="text" placeholder="Set Your Own Location">
+        <div id="map"></div>
+
+        <!------------------------------>
+        <!--This Part is beneath maps-->
+        <!------------------------------>
+        <div id="bot-part">
+            <div id="default-addr-accord" class="list-block accordion-list">
+                <ul>
+                    <li class="accordion-item">
+                        <a href="#" class="item-link item-content">
+                            <div class="item-inner">
+                                <div class="item-title">Your Default Location</div>
+                            </div>
+                        </a>
+                        <div class="accordion-item-content">
+                            <div class="content-block">
+                                <p id="default-address"></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <span class="col-33"></span>
+            <input type="button" id="use-selfset-loca" class="round-blue-button" value="Submit" />            
+        </div>
     </div>
 
-    <div id="map"></div>
+    <!---------------------------->
+    <!--Nearby POI Popup-->
+    <!---------------------------->
+    <div class="popup POI-popup">
+        <div class="view navbar-fixed">
+            <div class="pages">
+                <div class="page">
+
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <div class="center">Nearby POI</div>
+                            <div class="right"><a href="#" class="link close-popup">Done</a></div>
+                        </div>
+                    </div>
+
+                    <div class="page-content">
+                        <div class="content-block">
+                            <!---------------------------->
+                            <!-- Content will be here -->
+                            <!---------------------------->
+                            <div class="list-block media-list">
+                                <ul id="POI-content">
+                                    
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
