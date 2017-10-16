@@ -143,7 +143,6 @@ function loadSpecificTransaction(carPlate) {
         var str4 = '</div> </div> </div>';
 
         pageContent += (str1 + loc + str2 + dur + str3 + total + str4);
-        $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
     }
     mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
 }
@@ -265,19 +264,24 @@ myApp.onPageInit('main', function (page) {
 
     
     // Init vehicle tab
-    var cars = Db.user.cars;
-    for (var carPlate in cars) {
-        var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-        var str2 = '</div><div class="cards-item-title">';
-        var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-        $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
+    function initTabVehicle() {
+        var cars = Db.user.cars;
+        for (var carPlate in cars) {
+            var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+            var str2 = '</div><div class="cards-item-title">';
+            var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+            $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
+        }
     }
+    initTabVehicle();
+    
     
 
     //Get tokens
     userRef.child('balance').on('value',function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
     })
+
     //Get duration selection choices
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
@@ -875,37 +879,13 @@ myApp.onPageInit('profile-myprofile', function (page) {
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
 
-    // Load username
-    firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-username').html(data);
-    })
-    // Load real_name
-    firebase.database().ref('users/' + user.uid + '/real_name').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-real-name').html(data);
-    })
-    // Load email
-    firebase.database().ref('users/' + user.uid + '/email').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-email').html(data);
-    })
-    // Load phone_no
-    firebase.database().ref('users/' + user.uid + '/phone_no').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-phone-no').html(data);
-    })
-    // Load gender
-    firebase.database().ref('users/' + user.uid + '/gender').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-gender').html(data);
-    })
-    // Load birthday
-    //NEED TO CHANGE THE WAY TO GET AND DISPLAY/////////////////
-    firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
-        var data = snapshot.val();
-        $$('.load-birthday').html(data);
-    })
+    $$('.load-username').html(Db.user.username);
+    $$('.load-real-name').html(Db.user.real_name);
+    $$('.load-email').html(Db.user.email);
+    $$('.load-phone-no').html(Db.user.phone_no);
+    $$('.load-gender').html(Db.user.gender);
+    $$('.load-birthday').html(Db.user.birthday);
+
     /*
     // Load address 
     firebase.database().ref('users/' + user.uid + '/address').once('value').then(function (snapshot) {
