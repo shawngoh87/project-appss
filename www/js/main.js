@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Loaded, user, userRef, carRef;
-
+var expired = false, extendDuration, extendedDuration = false;
 
 //------------------------------------------
 // Check Whether User has signed in or not
@@ -601,7 +601,6 @@ myApp.onPageInit('main', function (page) {
         refreshActiveHistory();
     })
 
-
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
@@ -674,7 +673,7 @@ myApp.onPageInit('main', function (page) {
                                             '</a>' +
                                             '<div class="accordion-item-content" id="topup-accordion">' +
                                                 '<div class="content-block">' +
-                                                    '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getYear() + '<br></b></div>' +
+                                                    '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getFullYear() + '<br></b></div>' +
                                                     '<div id="topup-info">' +
                                                         '<p>Amount: RM ' + topupData.amount + '<br></p>' +
                                                         '<p>Expired Date: ' + topupData.expired_date + '<br></p>' +
@@ -723,7 +722,28 @@ myApp.onPageInit('main', function (page) {
 // Extend Button Function
 //---------------------------------------
 function extendParkingTime(theCar) {
-    var expired = false;
+    //Get duration selection choices
+    firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
+        for (var time in snapshot.val()) {
+            $$('.select-extend-duration').each(function () {
+                $$(this).append(
+                    '<li>\
+                    <label class="label-radio item-content">\
+                        <input type="radio" name="ex-duration" value="'+ snapshot.child(time).val() + '" />\
+                        <div class="item-media"><i class="icon icon-form-radio"></i></div>\
+                        <div class="item-inner">\
+                            <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
+                        </div>\
+                    </label>\
+                </li>'
+                    );
+            });
+        }
+    })
+
+    //Initiate variables
+    
+
     $$('.actively-parking-car').each(function(){
         if($$(this).find('#car-icon').text().replace(/child_friendly/g,'') == theCar) {
             if ($$(this).find('#timestamp-active-end').val() - Date.now() <= 0) {
@@ -766,20 +786,89 @@ function extendParkingTime(theCar) {
                             '<div class="popover popover-menu-duration-extend">' +
                                 '<div class="popover-inner">' +
                                     '<div class="list-block">' +
-                                    '<ul class = ".select-extend-duration">' +
-                                        $$('.select-duration').html() +
+                                    '<ul class = "select-extend-duration">' +
                                         '</ul>' +
                                         '</div>' +
                                 '</div>' +
                             '</div>' +
                         '</div><br />' +
-                        '<div><button id="confirm-btn">Confirm</button></div>' +
+                        '<div><button id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button></div>' +
                     '</div>' +
                 '</div>' +
             '</div>'
         )
     }
+
+    //----------------------------------
+    // Get Selected Duration Function
+    //----------------------------------
+    $$('.select-extend-duration').on('click', function () {
+        extendDuration = +$$('input[name=ex-duration]:checked').val();
+        $$('.selected-duration').html(timestamp2Time(extendDuration).name);
+        $$('.selected-duration-logo').css('color', 'blue');
+        extendedDuration = true;
+        $$('#close-popover-menu').click();
+    })
 };
+
+//---------------------------------------
+// Extend Function
+//---------------------------------------
+function extendConfirmed(theCar) {
+    if (extendedDuration == false) {
+        myApp.alert('Please select your duration! Stupid!', 'Notification');
+    }
+    else {
+        var tokenNO, tokenReq, tokenBal
+
+        tokenReq = extendDuration * 2 / 3600000;
+        extendConfirmText =
+            'Selected Car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
+            'Duration extended is&emsp;:' + $$('.selected-duration').text() + '<br>' +
+            'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+            'Confirm Transaction?';
+        myApp.confirm(extendConfirmText, 'Confirmation', function () {
+            userRef.child('balance').once('value').then(function (snapshot) {
+                tokenNo = snapshot.val();
+                tokenBal = tokenNo - tokenReq;
+                if (tokenBal < 0) {
+                    myApp.alert('Insufficient balance.', 'Notification');
+                }
+                else {
+                    myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                    userRef.update({
+                        balance: tokenBal
+                    })
+                    $$('.token').html(+tokenBal.toFixed(2));
+                    $$('.selected-duration').html('Duration');
+                    $$('.selected-duration-logo').css('color', 'inherit');
+                    extendedDuration = false;
+                    $$('.close-picker').click();
+                }
+            })
+
+            //Update to firebase
+            carRef.child(theCar).once('value').then(function (snapshot) {
+                var amount = snapshot.child('parking').child('amount').val();
+                var duration = snapshot.child('parking').child('duration').val();
+                var timestamp = snapshot.child('parking').child('timestamp').val();
+
+                var newAmount = amount + tokenReq;
+                var newDuration = duration + extendDuration;
+               
+                carRef.child(theCar).child('parking').update({
+                    active: true,
+                    amount: newAmount,
+                    timestamp: timestamp,
+                    duration: newDuration
+                })
+            })
+        })
+        $$('#tab-history-button').click();
+        $$('#tab-active-button').click();
+    }
+}
+
 
 myApp.onPageInit('signup', function (page) {
     var su_email;
