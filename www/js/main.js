@@ -32,9 +32,17 @@ firebase.auth().onAuthStateChanged(function (user) {
             console.log('Timedout');
             if (!Loaded) {
                 Db.user = JSON.parse(localStorage.getItem('user'));
-                console.log('Unable to load from firebase. Local storage used instead.');
-                console.log(Db.user);
-                $$('.index-preloader').hide();
+                if (Db.user) { // local storage available
+                    console.log('Unable to load from firebase. Local storage used instead.');
+                    console.log(Db.user);
+                    mainView.router.loadPage("main.html");
+                    $$('.index-preloader').hide();
+                }
+                else {
+                    console.log('Neither cache nor DB available. Please wait.')
+                    // You gotta wait for firebase DB then :/
+                }
+                
             }
             else console.log('Global DB initialized correctly. Local storage is not used.');
         }, 5000);
@@ -42,6 +50,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     else {
         // User signed out.
         // Turn off .on() listeners here.
+        localStorage.clear();
     }
 });
 
@@ -52,6 +61,7 @@ function initUserInfo() {
     firebase.database().ref('users/' + user.uid).on('value',
         // Succeeded promise
         function (snapshot) {
+            console.log('Promise succees from DB.');
             Db.user = snapshot.val();
             localStorage.setItem('user', JSON.stringify(Db.user));
             if (!Loaded) { mainView.router.loadPage("main.html"); Loaded = 1; } // Route to main.html only once.
