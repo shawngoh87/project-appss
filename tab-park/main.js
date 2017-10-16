@@ -1,4 +1,4 @@
-﻿// Init App
+// Init App
 var myApp = new Framework7({
     modalTitle: 'Project Appss',
     // Enable Material theme
@@ -12,18 +12,46 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
+// Global Variables
+var Db = {};
+var Loaded, user, userRef, carRef;
+var carRead;
+
+
 //------------------------------------------
 // Check Whether User has signed in or not
 //------------------------------------------
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // User is signed in.
-        mainView.router.loadPage("main.html");
+        $$('.index-preloader').show();
+        initUserInfo();
+        Loaded = 0;
     }
-    //else {
-    //    
-    //}
+    else {
+        // User signed out.
+        // Turn off .on() listeners here.
+    }
 });
+
+function initUserInfo() {
+    user = firebase.auth().currentUser;
+    userRef = firebase.database().ref('users/' + user.uid);
+    carRef = userRef.child('cars');
+    firebase.database().ref('users/' + user.uid).on('value',
+        // Succeeded promise
+        function (snapshot) {
+            Db.user = snapshot.val();
+            if (!Loaded) { mainView.router.loadPage("main.html"); Loaded = 1; } // Route to main.html only once.
+            $$('.index-preloader').hide();
+            console.log(Db.user);
+        },
+        // Failed promise
+        function (err) {
+            console.log(err);
+        }
+    );
+	carRead = Db.user.cars;
 
 //--------------------------
 // Login Authentication
@@ -55,7 +83,7 @@ $$('.button-signup').on('click', function () {
 })
 
 //---------------------------
-//FUnction to remove vehicle
+// Function to remove vehicle
 //---------------------------
 // Vehicle Tab - Remove vehicle via cancel icon
 function removeVehicle(item) {
@@ -69,18 +97,114 @@ function removeVehicle(item) {
           {
               text: 'Ok',
               onClick: function () {
-                  //remove from database
+                  $$('.actively-parking-car').each(function () {
+                      if ($$(this).find('#car-icon').text().replace(/child_friendly/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
+                          $$(this).remove();
+                      }
+                  })
                   carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();
-                  $$(item).closest('.card').remove();
+                  $$(item).closest('.card').remove()
               }
           },
         ]
     })
 }
 
+// Vehicle tab - Load specific vehicle history via routing
+function loadSpecificTransaction(carPlate) {
+    var uid = firebase.auth().currentUser.uid;
+    var pageContentHeader = '<div data-page="vehicle-history" class="page"> <div class="navbar"> <div class="navbar-inner"> <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div> <div class="center">History</div> </div> </div> <div class="page-content vehicle-history-page">';
+    var pageContentFooter = '</div></div>';
+    var pageContent = '';
+
+    var history = Db.user.cars[carPlate].history; // Clone it to prevent async bugs
+    for (var eachHistory in history) {
+        var historyInstance = history[eachHistory];
+
+        // For readability purpose
+        var str1 = '<div class="card"> <div class="card-header">';
+        var loc = historyInstance.address;
+        var str2 = '</div> <div class="card-footer"> <div class="col-75">';
+        var dur = historyInstance.duration;
+        var str3 = '</div> <div class="col-25">';
+        var total = historyInstance.amount;
+        var str4 = '</div> </div> </div>';
+
+        pageContent += (str1 + loc + str2 + dur + str3 + total + str4);
+        $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
+    }
+    mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
+}
+
+//---------------------------------
+//Function to refresh active card
+//--------------------------------
+function refreshActiveHistory() {
+    $$('.actively-parking-car').each(function () {
+        var ownedCarPlate = $$(this).find('#car-icon').text().replace(/child_friendly/g, '');
+        var endTime = $$(this).find('#timestamp-active-end').val();
+        var remainTime = endTime - Date.now();
+        var timeVal;
+        var timeUnit;
+
+        if (remainTime > 999) {
+
+            if (timestamp2Time(remainTime).second >= 60) {
+                if (timestamp2Time(remainTime).minute >= 60) {
+                    timeVal = timestamp2Time(remainTime).hour;
+                    timeUnit = 'hour';
+                    if (timestamp2Time(remainTime).hour > 1) {
+                        timeUnit += 's';
+                    }
+                }
+                else {
+                    timeVal = timestamp2Time(remainTime).minute;
+                    timeUnit = 'minute';
+                    if (timestamp2Time(remainTime).minute > 1) {
+                        timeUnit += 's';
+                    }
+                }
+            }
+            else {
+                timeVal = timestamp2Time(remainTime).second;
+                timeUnit = 'second';
+                if (timestamp2Time(remainTime).second > 1) {
+                    timeUnit += 's';
+                }
+            }
+            $$(this).find('#lbl-time-left').html(timeVal);
+            $$(this).find('#lbl-time-remain').html(timeUnit + '<br />remaining');
+        }
+        else {
+            $$(this).remove();
+                for (var ownedCarPlate in carRead) {
+                    var parkingActive = carRead[ownedCarPlate].parking.active;
+                    var parkingAmount = carRead[ownedCarPlate].parking.amount;
+                    var parkingDuration = carRead[ownedCarPlate].parking.duration;
+                    var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
+                    if (parkingActive) {
+                        if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                            carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                                amount: parkingAmount,
+                                promocode: "ILOVEDOUBLEPARK",
+                                location: "",
+                                duration: timestamp2Time(parkingDuration).name,
+                                start_time: parkingTimestamp
+                            })
+                            carRef.child(ownedCarPlate).child('parking').update({
+                                active: false,
+                            })
+                        }
+                    }
+                }
+        }
+    });
+    }
+
 myApp.onPageInit('profile-settings', function (page) {
 
 });
+
 myApp.onPageInit('profile-help', function (page) {
 
 });
@@ -91,28 +215,28 @@ function myactive() {
 }
 
 myApp.onPageInit('main', function (page) {
-    user = firebase.auth().currentUser;
-    userRef = firebase.database().ref('users/' + user.uid);
-    carRef = userRef.child('cars');
+
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
     var ownedCar, timeStamp, selectedCar = false, selectedDuration = false;
 
     //-----------------------
     //Initiate UI
     //-----------------------
-
+    
     //Get cars and update
-    carRef.on('value',function (snapshot) {
-        for (var ownedCarPlate in snapshot.val()) {
 
-            var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
-            var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
-            var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
-            var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
+        for (var ownedCarPlate in carRead) {
+
+            var parkingActive = carRead[ownedCarPlate].parking.active;
+            var parkingAmount = carRead[ownedCarPlate].parking.amount;
+            var parkingDuration = carRead[ownedCarPlate].parking.duration;
+            var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
             if (parkingActive) {
                 if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                     carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                         amount: parkingAmount,
+                        promocode: "ILOVEDOUBLEPARK",
+                        location: "",
                         duration: timestamp2Time(parkingDuration).name,
                         start_time: parkingTimestamp
                     })
@@ -122,16 +246,15 @@ myApp.onPageInit('main', function (page) {
                 }
             }
         }
-    });
 
-    carRef.once('value').then(function (snapshot) {
-        for (var ownedCarPlate in snapshot.val()) {
-            var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-            var str2 = '</div><div class="cards-item-title">';
-            var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" class="override-icon-color" href="main.html#tab-history"><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-            $$('#tab-vehicle').append(str1 + ownedCarPlate + str2 + snapshot.child(ownedCarPlate).child('description').val() + str3);
-        }
-    });
+    // Init vehicle tab
+    var cars = Db.user.cars;
+    for (var carPlate in cars) {
+        var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+        var str2 = '</div><div class="cards-item-title">';
+        var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + carPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+        $$('#tab-vehicle').append(str1 + carPlate + str2 + cars[carPlate].description + str3);
+    }
 
     //Get tokens
     userRef.child('balance').on('value',function (snapshot) {
@@ -140,23 +263,106 @@ myApp.onPageInit('main', function (page) {
     //Get duration selection choices
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
-            $$('.select-duration').append('\
-                    <li>\
-                        <label class="label-radio item-content">\
-                            <input type="radio" name="duration" value="'+snapshot.child(time).val()+'" />\
-                            <div class="item-media"><i class="icon icon-form-radio"></i></div>\
-                            <div class="item-inner">\
-                                <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
-                            </div>\
-                        </label>\
-                    </li>\
-                ');
+            $$('.select-duration').each(function () {
+                $$(this).append(
+                    '<li>\
+                    <label class="label-radio item-content">\
+                        <input type="radio" name="duration" value="'+ snapshot.child(time).val() + '" />\
+                        <div class="item-media"><i class="icon icon-form-radio"></i></div>\
+                        <div class="item-inner">\
+                            <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
+                        </div>\
+                    </label>\
+                </li>'
+                    );
+            });
         }
     })
+
+    //Get History of Active Car
+    var activeCarRead = carRead;
+        for (var activeCarPlate in activeCarRead) {
+            var activeStatus = activeCarRead[activeCarPlate].parking.active;
+            var activeAmount = activeCarRead[activeCarPlate].parking.amount;
+            var activeDuration = activeCarRead[activeCarPlate].parking.duration;
+            var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
+            if (activeStatus) {
+                //write data to UI
+                var location, promoCode = null;
+                var current_time = Date.now();
+                var end_time = activeTimestamp + activeDuration;
+                var end_time_dis = new Date(end_time);
+                var remain_time = end_time - current_time;
+                var time_unit;
+
+                if (timestamp2Time(remain_time).second >= 60) {
+                    if (timestamp2Time(remain_time).minute >= 60) {
+                        time_val = timestamp2Time(remain_time).hour;
+                        time_unit = 'hour';
+                        if (timestamp2Time(remain_time).hour > 1) {
+                            time_unit += 's';
+                        }
+                    }
+                    else {
+                        time_val = timestamp2Time(remain_time).minute;
+                        time_unit = 'minute';
+                        if (timestamp2Time(remain_time).minute > 1) {
+                            time_unit += 's';
+                        }
+                    }
+                }
+                else {
+                    time_val = timestamp2Time(remain_time).second;
+                    time_unit = 'second';
+                    if (timestamp2Time(remain_time).second > 1) {
+                        time_unit += 's';
+                    }
+                }
+
+                var str_active = '<li class="actively-parking-car">' +
+                                    '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                                        '<div class="item-inner">' +
+                                            '<div class="item-title-row">' +
+                                                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                                                '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                                                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                                '</div>' +
+                                                '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                        '</div>' +
+                                    '</a>' +
+                                    '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                                        '<div class="popover-angle"></div>' +
+                                        '<div class="popover-inner">' +
+                                            '<div class="content-block">' +
+                                                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                                                '<div id="location">' + location + '</div><br />' +
+                                                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                                '<div id="lbl-time">Expected End Time:</div>' +
+                                                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                                                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                '<div id="btns">' +
+                                                    '<button id="terminate-btn">Terminate</button>' +
+                                                    '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
+                                        '<span></span>' +
+                                    '</div>' +
+                                '</li>';
+
+                $$('#ulist-active').append(str_active);
+            }
+        }
+
+
 
     //---------------------------------------
     // Get Car Select List from Vehicle Tab
     //---------------------------------------
+
     $$('.select-car-menu').on('click', function () {
         $$('.car-choice').remove();
         ownedCar = [];
@@ -170,17 +376,19 @@ myApp.onPageInit('main', function (page) {
         }
         else
         {
-            carRef.once('value').then(function (snapshot) {
+            
                 var availableCar = 0;
-                for (var ownedCarPlate in snapshot.val()) {
-                    var parkingActive = snapshot.child(ownedCarPlate).child('parking').child('active').val();
-                    var parkingAmount = snapshot.child(ownedCarPlate).child('parking').child('amount').val();
-                    var parkingDuration = snapshot.child(ownedCarPlate).child('parking').child('duration').val();
-                    var parkingTimestamp = snapshot.child(ownedCarPlate).child('parking').child('timestamp').val();
+                for (var ownedCarPlate in carRead) {
+                    var parkingActive = carRead[ownedCarPlate].parking.active;
+                    var parkingAmount = carRead[ownedCarPlate].parking.amount;
+                    var parkingDuration = carRead[ownedCarPlate].parking.duration;
+                    var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
                     if (parkingActive) {
                         if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                             carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                                 amount: parkingAmount,
+                                promocode: "ILOVEDOUBLEPARK",
+                                location: "",
                                 duration: timestamp2Time(parkingDuration).name,
                                 start_time: parkingTimestamp
                             })
@@ -215,7 +423,6 @@ myApp.onPageInit('main', function (page) {
                 if (availableCar == 0) {
                     myApp.alert('All car is currently not available','Notification')
                 }
-            })
         }
     });
 
@@ -252,13 +459,9 @@ myApp.onPageInit('main', function (page) {
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
-
-            //initialize a "i" value for looping in future - Sen Kit
-            var i = 0;
-            //-----------------
             myApp.confirm(confirmText, 'Confirmation', function () {
-                userRef.child('balance').once('value').then(function (snapshot) {
-                    tokenNo = snapshot.val();
+                
+                    tokenNo = Db.user.child('balance');
                     tokenBal = tokenNo - tokenReq;
                     if (tokenBal < 0) {
                         myApp.alert('Insufficient balance.', 'Notification');
@@ -290,34 +493,47 @@ myApp.onPageInit('main', function (page) {
                         var current_time = Date.now();
                         var end_time = timestamp + parkDuration;
                         var end_time_dis = new Date(end_time);
-                        var remain_time = (end_time + 3600000) - current_time;
+                        var remain_time = end_time - current_time;
+                        var time_val;
                         var time_unit;
-                        
-                        if (timestamp2Time(remain_time).hour == 0) {
-                            if (timestamp2Time(remain_time).minute > 1)
-                                time_unit = "minutes";
-                            else
-                                time_unit = "minute";
+
+                        if (timestamp2Time(remain_time).second >= 60) {
+                            if (timestamp2Time(remain_time).minute >= 60) {
+                                time_val = timestamp2Time(remain_time).hour;
+                                time_unit = 'hour';
+                                if (timestamp2Time(remain_time).hour > 1) {
+                                    time_unit += 's';
+                                }
+                            }
+                            else {
+                                time_val = timestamp2Time(remain_time).minute;
+                                time_unit = 'minute';
+                                if (timestamp2Time(remain_time).minute > 1) {
+                                    time_unit += 's';
+                                }
+                            }
                         }
-                        else{
-                            if (timestamp2Time(remain_time).hour > 1)
-                                time_unit = "hours";
-                            else
-                                time_unit = "hour";
+                        else {
+                            time_val = timestamp2Time(remain_time).second;
+                            time_unit = 'second';
+                            if (timestamp2Time(remain_time).second > 1) {
+                                time_unit += 's';
+                            }
                         }
 
-                        var str_active = '<li>' +
-                                            '<a href="#" data-popover=".popover-active' + i + '" class="item-link item-content open-popover">' +
+                        var str_active = '<li class="actively-parking-car">' +
+                                            '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
                                                 '<div class="item-inner">' +
                                                     '<div class="item-title-row">' +
                                                         '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
-                                                        '<div id="lbl-time-left" class="item-after">' + timestamp2Time(remain_time).hour + '</div>' +
+                                                        '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                                        '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                                                     '</div>' +
-                                                     '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                                        '</div>' +
+                                                        '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
                                                 '</div>' +
                                             '</a>' +
-                                            '<div class="popover popover-active' + i + '" id="popover-active">' +
+                                            '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
                                                 '<div class="popover-angle"></div>' +
                                                 '<div class="popover-inner">' +
                                                     '<div class="content-block">' +
@@ -325,11 +541,11 @@ myApp.onPageInit('main', function (page) {
                                                         '<div id="location">' + location + '</div><br />' +
                                                         '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                         '<div id="lbl-time">Expected End Time:</div>' +
-                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + '</div><br />' +
+                                                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
                                                         '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
                                                         '<div id="btns">' +
                                                             '<button id="terminate-btn">Terminate</button>' +
-                                                            '<button id="extend-btn">Extend</button>' +
+                                                            '<button id="extend-btn" value="' + carPlate +'" onclick="extendParkingTime(this.value)">Extend</button>' +
                                                         '</div>' +
                                                     '</div>' +
                                                 '</div>' +
@@ -339,10 +555,8 @@ myApp.onPageInit('main', function (page) {
                                             '</div>' +
                                         '</li>';
 
-                    $$('#ulist-active').append(str_active);
-                    i++;
+                        $$('#ulist-active').append(str_active);
                     }
-                })
             });
 
         }
@@ -357,37 +571,41 @@ myApp.onPageInit('main', function (page) {
         }
     });
 
+    $$('#tab-history-button').on('click', function () {
+        refreshActiveHistory();
+    })
+
+
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
         myApp.modal({
             title: 'Add vehicle',
             afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-description" class="modal-text-input" placeholder="Description"></div>',
             buttons: [
-              {
-                  text: 'Cancel',
-                  onClick: function () {/* Do Nothing */ }
-              },
-              {
-                  text: 'Ok',
-                  onClick: function () {
-                      //Car Plate Format
-                      var displayCarPlate = $$('#txt-car-plate').val().toUpperCase().replace(/ /g,'');
+                {
+                    text: 'Cancel',
+                    onClick: function () {/* Do Nothing */ }
+                },
+                {
+                    text: 'Ok',
+                    onClick: function () {
+                        //Car Plate Format
+                        var displayCarPlate = $$('#txt-car-plate').val().toUpperCase().replace(/ /g, '');
                             
-                      //write into database
-                      carRef.child(displayCarPlate).update({
-                          description: $$('#txt-car-description').val(),
-                          timestamp_reg: Math.floor(Date.now())
-                      });
+                        //write into database
+                        carRef.child(displayCarPlate).update({
+                            description: $$('#txt-car-description').val(),
+                            timestamp_reg: Math.floor(Date.now())
+                        });
 
-                      //write to UI
-                      var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
-                      var str2 = '</div><div class="cards-item-title">';
-                      var str3 = '</div></div><div class="item-after"><a href="vehicle-history.html" onclick="$$(".current-car").val($$(this).closest(".owned-car").text())" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">o</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
-                      
-                      $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                        //write to UI
+                        var str1 = '<div class="card"> <div class="card-content"> <div class="list-block"> <ul> <li> <div class="item-content"> <div class="item-inner"> <div class="item-title"> <div class="owned-car">';
+                        var str2 = '</div><div class="cards-item-title">';
+                        var str3 = '</div></div><div class="item-after"><a href="#" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" class="override-icon-color" ><i class="material-icons override-icon-size item-link">history</i></a> <div class="no-colour">oo</div> <a class="override-icon-color" href="#" onclick="removeVehicle(this);"><i class="material-icons override-icon-size item-link">cancel</i></a> </div> </div> </div> </li> </ul> </div> </div> </div>';
+                        $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
 
-                  }
-              },
+                    }
+                },
             ]
         })
     });
@@ -418,11 +636,11 @@ myApp.onPageInit('main', function (page) {
             //update to Topup UI
             var str_topup = '<div class="timeline-item">' + 
                                 '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
-	                            '<div class="timeline-item-divider"></div>' +
-	                            '<div class="timeline-item-content list-block inset">' +
-		                            '<ul>' +
-			                            '<li class="accordion-item">' +
-			                                '<a href="#" class="item-link item-content">' +
+                                '<div class="timeline-item-divider"></div>' +
+                                '<div class="timeline-item-content list-block inset">' +
+                                    '<ul>' +
+                                        '<li class="accordion-item">' +
+                                            '<a href="#" class="item-link item-content">' +
                                                 '<div class="item-inner">' +
                                                     '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
                                                     '<div class="item-after">RM' + topupData.amount + '</div>' +
@@ -445,11 +663,11 @@ myApp.onPageInit('main', function (page) {
                             '</div>';
 
             $$('#timeline-topup').append(str_topup);
-		    i++;
+            i++;
         });
     });
 
-    $$('.confirm-title-ok').on('click', function () {
+    $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
                 // Sign-out successful.
@@ -466,7 +684,76 @@ myApp.onPageInit('main', function (page) {
         var data = snapshot.val();
         $$('.load-username').html(data);
     })
+    
+    //Get tokens in profile
+    userRef.child('balance').once('value').then(function (snapshot) {
+        $$('.load-token').append(snapshot.val().toFixed());
+    })
+    
 });
+
+
+//---------------------------------------
+// Extend Button Function
+//---------------------------------------
+function extendParkingTime(theCar) {
+    var expired = false;
+    $$('.actively-parking-car').each(function(){
+        if($$(this).find('#car-icon').text().replace(/child_friendly/g,'') == theCar) {
+            if ($$(this).find('#timestamp-active-end').val() - Date.now() <= 0) {
+                expired = true;
+            }
+        }
+    });
+    if (expired) {
+        $$('#close-popover-menu').click();
+        myApp.alert('The parking session of this car was expired', 'Notification');
+        refreshActiveHistory();
+    }
+    else {
+        $$('#close-popover-menu').click();
+
+        if ($$('.picker-modal.modal-in').length > 0) {
+            myApp.closeModal('.picker-modal.modal-in');
+        }
+
+        myApp.pickerModal(
+            '<div class="picker-modal">' +
+                '<div class="toolbar">' +
+                    '<div class="toolbar-inner">' +
+                        '<div class="left" id="extendCarPlate">' + theCar + '</div>' +
+                        '<div class="right"><a href="#" class="close-picker">Cancel</a></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="picker-modal-inner">' +
+                    '<div class="content-block" id="extend-content">' +
+                        '<div id="lbl-extend">Please select the duration to extend the parking time.</div>' +
+                        '<div class="list-block"  id="duration-content">' +
+                            '<a href="#" data-popover=".popover-menu-duration-extend" class="item-link close-panel open-popover">' +
+                                '<div class="item-content">' +
+                                    '<div class="item-media"><i class="material-icons selected-duration-logo">schedule</i></div>' +
+                                    '<div class="item-inner">' +
+                                        '<div class="item-title selected-duration">Duration</div>' +
+                                    '</div>' +
+                                    '</div>' +
+                            '</a>' +
+                            '<div class="popover popover-menu-duration-extend">' +
+                                '<div class="popover-inner">' +
+                                    '<div class="list-block">' +
+                                    '<ul class = ".select-extend-duration">' +
+                                        $$('.select-duration').html() +
+                                        '</ul>' +
+                                        '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div><br />' +
+                        '<div><button id="confirm-btn">Confirm</button></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        )
+    }
+};
 
 myApp.onPageInit('signup', function (page) {
     var su_email;
@@ -550,44 +837,7 @@ myApp.onPageInit('signup', function (page) {
     })
 });
 
-
-
-myApp.onPageInit("vehicle-history", function (page) {
-
-    function loadSpecificTransaction() {
-        var uid = firebase.auth().currentUser.uid;
-        var path = 'users/' + user.uid + '/cars/';
-
-        firebase.database().ref(path).once('value').then(function (snapshot) {
-            var data = snapshot.val();
-
-            for (var eachPlate in data) {
-                var dataHistory = data[eachPlate].history;
-
-                for (var eachHistory in dataHistory) {
-                    var historyInstance = dataHistory[eachHistory];
-
-                    // For readability purpose
-                    var str1    = '<div class="card"> <div class="card-header">';
-                    var loc     = historyInstance.address;
-                    var str2    = '</div> <div class="card-footer"> <div class="col-75">';
-                    var dur     = historyInstance.duration;
-                    var str3    = '</div> <div class="col-25">';
-                    var total   = historyInstance.amount;
-                    var str4    = '</div> </div> </div>';
-
-                    $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
-                }
-            }
-        });
-    }
-
-    loadSpecificTransaction();
-
-    console.log(Appss.time);
-});
-
-/* ===== Color themes ===== HAVENT DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEE*/
+// ===== Color themes ===== 
 myApp.onPageInit('color-themes', function (page) {
     $$(page.container).find('.color-theme').click(function () {
         var classList = $$('body')[0].classList;
@@ -596,7 +846,6 @@ myApp.onPageInit('color-themes', function (page) {
         }
         classList.add('theme-' + $$(this).attr('data-theme'));
     });
-   
 });
 
 //Display User My Profile
@@ -607,61 +856,147 @@ myApp.onPageInit('profile-myprofile', function (page) {
     // Load username
     firebase.database().ref('users/' + user.uid + '/username').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-username').text(data);
+        $$('.load-username').html(data);
     })
     // Load real_name
     firebase.database().ref('users/' + user.uid + '/real_name').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-real-name').text(data);
+        $$('.load-real-name').html(data);
     })
     // Load email
     firebase.database().ref('users/' + user.uid + '/email').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-email').text(data);
+        $$('.load-email').html(data);
     })
     // Load phone_no
     firebase.database().ref('users/' + user.uid + '/phone_no').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-phone-no').text(data);
+        $$('.load-phone-no').html(data);
     })
     // Load gender
     firebase.database().ref('users/' + user.uid + '/gender').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-gender').text(data);
+        $$('.load-gender').html(data);
     })
     // Load birthday
     //NEED TO CHANGE THE WAY TO GET AND DISPLAY/////////////////
     firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-birthday').text(data);
+        $$('.load-birthday').html(data);
     })
     /*
     // Load address HAVENT DONEEEEEEEEEEEEEE
     firebase.database().ref('users/' + user.uid + '/birthday').once('value').then(function (snapshot) {
         var data = snapshot.val();
-        console.log(data);
-        $$('.load-birthday').text(data);
+        $$('.load-address').html(data);
     })
     */
 });
+
+
 myApp.onPageInit("select-location", function (page) {
 
-    var map, infoWindow;
+    $$('#test-button').on('click', function () {
+        alert('lat: ' + user_pos.lat + ' lng: ' + user_pos.lng);
+    })
 
+    var user_pos = {
+        lat: 0,
+        lng: 0
+    };
     initMap();
 
+    function initAutocomplete(map) {
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function () {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function () {
+            var places = searchBox.getPlaces();
+
+            if (places.length === 0) {
+                return;
+            }
+
+            // Clear out the old markers.
+            markers.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function (place) {
+                if (!place.geometry) {
+                    myApp.alert("Returned place contains no geometry");
+                    return;
+                }
+                var icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                };
+
+                // Create a marker for each place.
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: icon,
+                    title: place.name,
+                    position: place.geometry.location
+                }));
+
+                user_pos['lat'] = place.geometry.location.lat();
+                user_pos['lng'] = place.geometry.location.lng();
+
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+    }
+
+    function addMarker(location, map) {
+        var marker = new google.maps.Marker({
+            position: location,
+            map: map
+        });
+    }
+
+    function geocodeLatLng(geocoder, latlng) {
+        geocoder.geocode({ 'location': latlng }, function (results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+                    $$('#default-address').html(results[0].formatted_address);
+                } else {
+                    myApp.alert('No results found');
+                }
+            } else {
+                myApp.alert('Geocoder failed due to: ' + status);
+            }
+        });
+    }
+
     function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
+        var map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: -34.397, lng: 150.644 },
             zoom: 18
         });
-        infoWindow = new google.maps.InfoWindow;
+        var infoWindow = new google.maps.InfoWindow;
+        var geocoder = new google.maps.Geocoder;
 
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
@@ -670,25 +1005,63 @@ myApp.onPageInit("select-location", function (page) {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
-                infoWindow.setPosition(pos);
-                infoWindow.setContent('Location found.');
-                infoWindow.open(map);
                 map.setCenter(pos);
+                addMarker(pos, map);
+                geocodeLatLng(geocoder, pos);
+                initAutocomplete(map);
             }, function () {
                 handleLocationError(true, infoWindow, map.getCenter());
             });
         }
-        else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
+
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                                    'Error: The Geolocation service failed.' :
+                                    'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
         }
     }
+});
 
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
+//Promocode
+myApp.onPageInit('profile-promocode', function (page) {
+    //Display Promocode
+    function loadPromocode() {
+        var uid = firebase.auth().currentUser.uid;
+        var path = 'users/' + user.uid + '/promotion';
+
+        firebase.database().ref(path).once('value').then(function (snapshot) {
+            var data = snapshot.val();
+
+            for (var eachPromotion in data) {
+                var promocode = data[eachPromotion];
+
+                // For readability purpose
+                var str1 = '<li class="accordion-item"> <a href="#" class="item-link item-content"> <div class="item-inner"> <div class="item-title">'
+                var str2 = '</div>'
+                //only for all
+                var str_a = '<div class="item-after" style = "color: springgreen" > '
+                var p_status = promocode.status;
+                var str_b = '</div >'
+                //till here
+                var str3 = '</div > </a > <div class="accordion-item-content"> <div class="content-block"> <p>Discount Amount: '
+                var p_amount = promocode.amount;
+                var str4 = ' tokens</p> <p>Expiry Date: '
+                var p_expiry_date = promocode.expiry_date;
+                var str5 = '</p> <p>'
+                var p_text = promocode.text;
+                var str6 = '</p> </div> </div> </li>'
+
+                    
+                if (p_status.toLowerCase() == 'available'){
+                    $$('.promo-list-available').append(str1 + eachPromotion + str2 + str3 + p_amount + str4 + p_expiry_date + str5 + p_text );
+                }
+                $$('.promo-list-all').append(str1 + eachPromotion + str2 + str_a + p_status + str_b + str3 + p_amount + str4 + p_expiry_date + str5 + p_text + str6);
+            }
+
+        });
     }
+
+    loadPromocode();
 });
