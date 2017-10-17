@@ -1364,7 +1364,7 @@ myApp.onPageInit('settings-change-password', function (page) {
         } else
             myApp.alert('Password and confirm password does not match', 'Error!');
     })
-})
+});
 
 //Change Address
 myApp.onPageInit('settings-change-address', function (page) {
@@ -1389,4 +1389,67 @@ myApp.onPageInit('settings-change-address', function (page) {
     });
 
 
+});
+
+//Make Report (CarLoss/IllegalPark)
+myApp.onPageInit('profile-report', function (page) {
+    userRef = firebase.database().ref('users/' + user.uid);
+
+    var cl_owner_name;
+    var cl_owner_ic;
+    var cl_owner_pass;
+    var cl_phone;
+    var cl_plate;
+    var cl_location;
+    var cl_remarks;
+    //-----------------------------
+    // submit button for Carloss Report 
+    //-----------------------------
+    $$('#cl-submit').on('click', function () {
+        if ($$('#cl-owner-name').val() == "") {
+            //empty email input textbox case
+            myApp.alert("Please enter car owner's name.", 'Error');
+        }
+        else if (($$('#cl-owner-ic').val() == "") && ($$('#cl-owner-pass').val() == "")) {
+            //empty password input textbox case
+            myApp.alert("Please enter car owner's IC No. or passport.", 'Error');
+        }
+        else if ($$('#cl-phone').val() == "") {
+            //empty phone number input textbox case
+            myApp.alert('Please enter your phone number.', 'Error');
+        }
+        else if ($$('#cl-plate').val() == "") {
+            //empty phone number input textbox case
+            myApp.alert('Please enter your car plate number.', 'Error');
+        }
+        else if ($$('#cl-location').val() == "") {
+            //empty phone number input textbox case
+            myApp.alert('Where did you lost your car?', 'Error');
+        }
+        else {
+            cl_owner_name = $$('#cl-owner-name').val();
+            cl_owner_ic = $$('#cl-owner-ic').val();
+            cl_owner_pass = $$('#cl-owner-pass').val();
+            cl_phone = $$('#cl-phone').val();
+            cl_plate = $$('#cl-plate').val();
+            cl_location = $$('#cl-location').val();
+            cl_remarks = $$('#cl-remarks').val();
+
+            userRef.child('report').child('car_loss').push({
+                cl_owner_name: cl_owner_name,
+                cl_owner_ic: cl_owner_ic,
+                cl_owner_pass: cl_owner_pass,
+                cl_phone: cl_phone,
+                cl_plate: cl_plate,
+                cl_location: cl_location,
+                cl_remarks: cl_remarks
+            }).then(function () {
+                myApp.alert('Report Submitted!');
+            }).catch(function (error) {
+
+            });
+
+        }
+
+    });
 });
