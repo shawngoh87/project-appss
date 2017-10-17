@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Loaded, user, userRef, carRef, carRead;
-var carRead;
+var carRead, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration, extendedDuration = false;
 
 // Global user position Var
@@ -276,7 +276,7 @@ function myactive() {
 myApp.onPageInit('main', function (page) {
 
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
-    var ownedCar, timeStamp, selectedCar = false, selectedDuration = false;
+    var ownedCar, timeStamp;
 
     //-----------------------
     //Initiate UI
@@ -318,22 +318,6 @@ myApp.onPageInit('main', function (page) {
     //Get tokens
     userRef.child('balance').on('value', function (snapshot) {
         $$('.token').html(+snapshot.val().toFixed(2));
-    })
-    //Get duration selection choices
-    firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
-        for (var time in snapshot.val()) {
-            $$('.select-duration').append(
-                    '<li>\
-                <label class="label-radio item-content">\
-                    <input type="radio" name="duration" value="'+ snapshot.child(time).val() + '" />\
-                    <div class="item-media"><i class="icon icon-form-radio"></i></div>\
-                    <div class="item-inner">\
-                        <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
-                    </div>\
-                </label>\
-            </li>'
-            );
-        }
     })
 
     //Get History of Active Car
@@ -491,22 +475,28 @@ myApp.onPageInit('main', function (page) {
         $$('#close-popover-menu').click();
     })
 
-    //----------------------------------
-    // Get Selected Duration Function
-    //----------------------------------
-    $$('.select-duration').on('click', function () {
-        parkDuration = +$$('input[name=duration]:checked').val();
-        $$('.selected-duration').html(timestamp2Time(parkDuration).name);
-        $$('.selected-duration-logo').css('color', 'blue');
-        selectedDuration = true;
-        $$('#close-popover-menu').click();
+    //----------------------
+    //Get Selected Duration
+    //----------------------
+    $$('.selected-duration').html(clockPass($$('.park-duration').val()))
+    parkDuration = $$('.park-duration').val();
+
+    setInterval(function () {
+        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
+        parkDuration = $$('.park-duration').val();
+    },60000)
+
+    $$('.park-duration').on('change', function () {
+        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
+        parkDuration = $$('.park-duration').val();
+        console.log(clockPass($$('.park-duration').val()));
     })
 
     //-----------------------
     // Pay Button Function
     //-----------------------
     $$('.confirm-payment').on('click', function () {
-        if (selectedCar && selectedDuration) {
+        if (selectedCar && selectedLocation && parkDuration>0) {
             tokenReq = parkDuration * 2 / 3600000;
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
@@ -529,9 +519,9 @@ myApp.onPageInit('main', function (page) {
                     $$('.selected-car-plate').html('Select Car');
                     $$('.selected-duration').html('Duration');
                     $$('.selected-car-logo').css('color', 'inherit');
-                    $$('.selected-duration-logo').css('color', 'inherit');
+                    $$('.selected-location-logo').css('color', 'inherit');
                     selectedCar = false;
-                    selectedDuration = false;
+                    selectedLocation = false;
                     $$('#tab-history-button').click();
                     $$('#tab-active-button').click();
                     var timestamp = Math.floor(Date.now());
@@ -615,14 +605,8 @@ myApp.onPageInit('main', function (page) {
             });
 
         }
-        else if (selectedCar) {
-            myApp.alert('Please select your duration! Stupid!', 'Notification');
-        }
-        else if (selectedDuration) {
-            myApp.alert('Please select your car! Stupid!', 'Notification');
-        }
         else {
-            myApp.alert('Please select your car and duration! Stupid!', 'Notification');
+            myApp.alert('Please complete your info', 'Notification');
         }
     });
 
@@ -1097,6 +1081,7 @@ myApp.onPageInit("select-location", function (page) {
         mainView.router.back();
         $$('.selected-location').html(user_pos['city']);
         $$('.selected-location-logo').css('color', 'red');
+        selectedLocation = true;
     })
 
     initMap();

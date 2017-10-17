@@ -63,3 +63,19 @@ function ticktock(func) {
         }
     );
 }
+
+function clockPass(value) {
+    var datestamp = Math.floor(Date.now()) + +value;
+    var date = new Date(datestamp);
+    var h, m, aORp = 'a';
+    h = date.getHours();
+    m = date.getMinutes();
+    if (h > 12) {
+        if (m > 0) {
+            h -= 12;
+            aORp = 'p';
+        }
+    }
+    var str = h + ':' + m + aORp + '.m.';
+    return str
+}

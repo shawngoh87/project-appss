@@ -45,24 +45,6 @@
                             </div>
                         </li>
                         <li>
-                            <a href="#" data-popover=".popover-menu-duration" class="item-link close-panel open-popover">
-                                <div class="item-content">
-                                    <div class="item-media"><i class="material-icons selected-duration-logo">schedule</i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title selected-duration">Duration</div>
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="popover popover-menu-duration">
-                                <div class="popover-inner">
-                                    <div class="list-block">
-                                        <ul class="select-duration">
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
                             <a href="selectLocation.html" class="item-link close-panel">
                                 <div class="item-content">
                                     <div class="item-media"><i class="material-icons selected-location-logo">location_on</i></div>
@@ -71,6 +53,20 @@
                                     </div>
                                 </div>
                             </a>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon material-icons selected-duration-logo">schedule</i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">Park until:</div>
+                                    <div class="selected-duration"></div>
+                                    <div class="item-input">
+                                        <div class="range-slider">
+                                            <input type="range" class="park-duration" min="0" max="10800000" value="3600000" step="1800000" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
