@@ -480,7 +480,7 @@ myApp.onPageInit('main', function (page) {
     //----------------------
     function getDuration() {
         parkDuration = $$('.park-duration').val();
-        tokenReq = parkDuration * 2 / 3600000;
+        tokenReq = +(parkDuration * 2 / 600000).toFixed(2);
         $$('.selected-duration').html(clockPass(parkDuration));
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
         $$('.required-token').html(tokenReq);
@@ -492,7 +492,7 @@ myApp.onPageInit('main', function (page) {
         getDuration();
     },60000)
 
-    $$('.park-duration').on('change', function () {
+    $$('.park-duration').on('input', function () {
         getDuration();
     })
 
