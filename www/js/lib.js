@@ -70,11 +70,14 @@ function clockPass(value) {
     var h, m, aORp = 'a';
     h = date.getHours();
     m = date.getMinutes();
-    if (h > 12) {
+    if (h >= 12) {
         if (m > 0) {
             h -= 12;
             aORp = 'p';
         }
+    }
+    if (m < 10) {
+        m = '0' + m;
     }
     var str = h + ':' + m + aORp + '.m.';
     return str

@@ -157,7 +157,7 @@ a.close-popover{
 
 .content-block.confirm-payment{
     position:absolute;
-    top:60%;
+    top:70%;
     width:100%;
 }
 
@@ -311,4 +311,9 @@ a.close-popover{
 #timestamp-active-end {
     visibility: hidden;
     width: 0px;
+}
+
+.slider-info.row{
+    margin-top:0px;
+    margin-bottom:0px;
 }

@@ -478,18 +478,22 @@ myApp.onPageInit('main', function (page) {
     //----------------------
     //Get Selected Duration
     //----------------------
-    $$('.selected-duration').html(clockPass($$('.park-duration').val()))
-    parkDuration = $$('.park-duration').val();
+    function getDuration() {
+        parkDuration = $$('.park-duration').val();
+        tokenReq = parkDuration * 2 / 3600000;
+        $$('.selected-duration').html(clockPass(parkDuration));
+        $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
+        $$('.required-token').html(tokenReq);
+    }
+
+    getDuration();
 
     setInterval(function () {
-        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
-        parkDuration = $$('.park-duration').val();
+        getDuration();
     },60000)
 
     $$('.park-duration').on('change', function () {
-        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
-        parkDuration = $$('.park-duration').val();
-        console.log(clockPass($$('.park-duration').val()));
+        getDuration();
     })
 
     //-----------------------
@@ -497,7 +501,6 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     $$('.confirm-payment').on('click', function () {
         if (selectedCar && selectedLocation && parkDuration>0) {
-            tokenReq = parkDuration * 2 / 3600000;
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +

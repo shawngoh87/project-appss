@@ -58,11 +58,23 @@
                             <div class="item-content">
                                 <div class="item-media"><i class="icon material-icons selected-duration-logo">schedule</i></div>
                                 <div class="item-inner">
-                                    <div class="item-title label">Park until:</div>
-                                    <div class="selected-duration"></div>
+                                    <div class="item-title label">
+                                        <p class="slider-info row">
+                                            <span class="col-30">Park until:</span>
+                                            <span class="col-50">Duration:</span>
+                                            <span class="col-20">Token:</span>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p class="slider-info row">
+                                            <span class="col-30 selected-duration"></span>
+                                            <span class="col-55 selected-park-duration"></span>
+                                            <span class="col-15 required-token"></span>
+                                        </p>
+                                    </div>
                                     <div class="item-input">
                                         <div class="range-slider">
-                                            <input type="range" class="park-duration" min="0" max="10800000" value="3600000" step="1800000" />
+                                            <input type="range" class="park-duration" min="1800000" max="18000000" value="3600000" step="1800000" />
                                         </div>
                                     </div>
                                 </div>
