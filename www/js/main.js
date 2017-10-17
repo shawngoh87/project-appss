@@ -894,6 +894,63 @@ function extendConfirmed(theCar) {
     }
 }
 
+//---------------------------------------
+// Terminate Function
+//---------------------------------------
+function terminateParkingTime(theCar) {
+    var timeVal, timeUnit;
+    var terminateDuration = Db.user.cars[theCar].parking.duration;
+    var terminateTimestamp = Db.user.cars[theCar].parking.timestamp;
+    
+    var terminateRemainTime = (terminateTimestamp + terminateDuration) - Date.now();
+    var terminateTime = new Date(terminateTimestamp + terminateDuration);
+
+    if (timestamp2Time(terminateRemainTime).second >= 60) {
+        if (timestamp2Time(terminateRemainTime).minute >= 60) {
+            timeVal = timestamp2Time(terminateRemainTime).hour;
+            timeUnit = 'hour';
+            if (timestamp2Time(terminateRemainTime).hour > 1) {
+                timeUnit += 's';
+            }
+        }
+        else {
+            timeVal = timestamp2Time(terminateRemainTime).minute;
+            timeUnit = 'minute';
+            if (timestamp2Time(terminateRemainTime).minute > 1) {
+                timeUnit += 's';
+            }
+        }
+    }
+    else {
+        timeVal = timestamp2Time(terminateRemainTime).second;
+        timeUnit = 'second';
+        if (timestamp2Time(terminateRemainTime).second > 1) {
+            timeUnit += 's';
+        }
+    }
+
+    terminateConfirmText =
+            'Are you sure that you want to terminate the follwing parking?<br>' +
+            'Car Plate Number&emsp;&nbsp:' + theCar.toString() + '<br>' +
+            'Time Remaining&emsp;:' + timeVal + ' ' + timeUnit + '<br>' +
+            'Expected End Time is :<br>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '<br><br>' +
+            'Confirm to Terminate?';
+
+    myApp.confirm(terminateConfirmText, 'Confirmation', function () {
+        //Update to firebase
+        carRef.child(theCar).child('parking').update({
+            active: false,
+            amount: 0,
+            timestamp: 0,
+            duration: 0
+        })
+        myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
+        $$('.close-picker').click();
+    })
+    refreshActiveHistory();
+    $$('#close-popover-menu').click();
+}
+
 
 myApp.onPageInit('signup', function (page) {
     var su_email;
@@ -950,6 +1007,7 @@ myApp.onPageInit('signup', function (page) {
                 }).catch(function (error) {
                     // An error happened.
                 });
+
 
                 //--------------------------------
                 // Set user info to database
