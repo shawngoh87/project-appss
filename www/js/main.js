@@ -1437,4 +1437,46 @@ myApp.onPageInit('profile-report', function (page) {
         }
 
     });
+
+
+    var ip_plate;
+    var ip_location;
+    var ip_behavior;
+    var ip_remarks;
+    //-----------------------------
+    // submit button for illegal parking
+    //-----------------------------
+    $$('#ip-submit').on('click', function () {
+        if ($$('#ip-plate').val() == "") {
+            //empty email input textbox case
+            myApp.alert('Please enter the car plate of illegal parked car.', 'Error');
+        }
+        else if ($$('#ip-location').val() == "") {
+            //empty password input textbox case
+            myApp.alert('Please enter the loaction.', 'Error');
+        }
+        else if ($$('#ip-behavior').val() == "") {
+            //empty username input textbox case
+            myApp.alert('Please enter the behavior of illegal parked car.', 'Error');
+        }
+        else {
+            ip_plate = $$('#ip-plate').val();
+            ip_location = $$('#ip-location').val();
+            ip_behavior = $$('#ip-behavior').val();
+            ip_remarks = $$('#ip-remarks').val();
+
+            userRef.child('report').child('illegal_park').push({
+                ip_plate: ip_plate,
+                ip_location: ip_location,
+                ip_behavior: ip_behavior,
+                ip_remarks: ip_remarks
+            }).then(function () {
+                myApp.alert('Report Submitted!');
+            }).catch(function (error) {
+                });
+        }
+
+    });
+
+
 });
