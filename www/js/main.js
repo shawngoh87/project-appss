@@ -334,7 +334,10 @@ myApp.onPageInit('main', function (page) {
             var end_time = activeTimestamp + activeDuration;
             var end_time_dis = new Date(end_time);
             var remain_time = end_time - current_time;
-            var time_unit;
+            var time_unit, time_val;
+            console.log(end_time)
+            console.log(current_time)
+            console.log(remain_time)
 
             if (timestamp2Time(remain_time).second >= 60) {
                 if (timestamp2Time(remain_time).minute >= 60) {
@@ -479,8 +482,8 @@ myApp.onPageInit('main', function (page) {
     //Get Selected Duration
     //----------------------
     function getDuration() {
-        parkDuration = $$('.park-duration').val();
-        tokenReq = +(parkDuration * 2 / 600000).toFixed(2);
+        parkDuration = +$$('.park-duration').val();
+        tokenReq = (parkDuration * 2 / 600000).toFixed(2);
         $$('.selected-duration').html(clockPass(parkDuration));
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
         $$('.required-token').html(tokenReq);
