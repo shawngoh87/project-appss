@@ -83,6 +83,8 @@ function initUserInfo() {
             $$('.index-preloader').hide();
             console.log(Db.user);
             carRead = Db.user.cars;
+            
+            refreshActiveHistory();
         },
         // Failed promise
         function (err) {
@@ -199,7 +201,7 @@ function loadSpecificTransaction(carPlate) {
 function refreshActiveHistory() {
     $$('.actively-parking-car').each(function () {
         var ownedCarPlate = $$(this).find('#car-icon').text().replace(/child_friendly/g, '');
-        var endTime = $$(this).find('#timestamp-active-end').val();
+        var endTime = carRead[ownedCarPlate].parking.timestamp + carRead[ownedCarPlate].parking.duration;
         var remainTime = endTime - Date.now();
         var timeVal;
         var timeUnit;
@@ -320,8 +322,7 @@ myApp.onPageInit('main', function (page) {
     //Get duration selection choices
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
-            $$('.select-duration').each(function () {
-                $$(this).append(
+            $$('.select-duration').append(
                     '<li>\
                 <label class="label-radio item-content">\
                     <input type="radio" name="duration" value="'+ snapshot.child(time).val() + '" />\
@@ -331,8 +332,7 @@ myApp.onPageInit('main', function (page) {
                     </div>\
                 </label>\
             </li>'
-                );
-            });
+            );
         }
     })
 
@@ -413,8 +413,6 @@ myApp.onPageInit('main', function (page) {
             $$('#ulist-active').append(str_active);
         }
     }
-
-
 
     //---------------------------------------
     // Get Car Select List from Vehicle Tab
@@ -541,7 +539,8 @@ myApp.onPageInit('main', function (page) {
                         active: true,
                         amount: tokenReq,
                         timestamp: timestamp,
-                        duration: parkDuration
+                        duration: parkDuration,
+                        location: { lat: user_pos.lat, lng: user_pos.lng }
                     })
 
                     //write data to UI
@@ -756,8 +755,7 @@ function extendParkingTime(theCar) {
     //Get duration selection choices
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
-            $$('.select-extend-duration').each(function () {
-                $$(this).append(
+            $$('.select-extend-duration').append(
                     '<li>\
                     <label class="label-radio item-content">\
                         <input type="radio" name="ex-duration" value="'+ snapshot.child(time).val() + '" />\
@@ -768,7 +766,6 @@ function extendParkingTime(theCar) {
                     </label>\
                 </li>'
                 );
-            });
         }
     })
 
@@ -878,20 +875,18 @@ function extendConfirmed(theCar) {
             })
 
             //Update to firebase
-            carRef.child(theCar).once('value').then(function (snapshot) {
-                var amount = snapshot.child('parking').child('amount').val();
-                var duration = snapshot.child('parking').child('duration').val();
-                var timestamp = snapshot.child('parking').child('timestamp').val();
+            var amount = carRead[theCar].parking.amount;
+            var duration = carRead[theCar].parking.duration;;
+            var timestamp = carRead[theCar].parking.timestamp;
 
-                var newAmount = amount + tokenReq;
-                var newDuration = duration + extendDuration;
+            var newAmount = amount + tokenReq;
+            var newDuration = duration + extendDuration;
 
-                carRef.child(theCar).child('parking').update({
-                    active: true,
-                    amount: newAmount,
-                    timestamp: timestamp,
-                    duration: newDuration
-                })
+            carRef.child(theCar).child('parking').update({
+                active: true,
+                amount: newAmount,
+                timestamp: timestamp,
+                duration: newDuration
             })
         })
         $$('#tab-history-button').click();
@@ -1025,13 +1020,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
 //---------------------------
 myApp.onPageInit("select-location", function (page) {
 
-    var default_pos = {
-        lat: 0,
-        lng: 0,
-        city: 'none',
-        full_addr: 'none'
-    };
-
+    var selfset = false;
     var selfset_pos = {
         lat: 0,
         lng: 0,
@@ -1039,25 +1028,54 @@ myApp.onPageInit("select-location", function (page) {
         full_addr: 'none'
     };
 
-    // User click use default location button function
-    $$('#use-default-loca').on('click', function () {
-        user_pos['lat'] = default_pos['lat'];
-        user_pos['lng'] = default_pos['lng'];
-        user_pos['city'] = default_pos['city'];
-        user_pos['full_addr'] = default_pos['full_addr'];
-        mainView.router.back();
-    })
-
     // User click use self-set location button function
     $$('#use-selfset-loca').on('click', function () {
-        user_pos['lat'] = selfset_pos['lat'];
-        user_pos['lng'] = selfset_pos['lng'];
-        user_pos['city'] = selfset_pos['city'];
-        user_pos['full_addr'] = selfset_pos['full_addr'];
+        if (selfset == true) {
+            user_pos['lat'] = selfset_pos['lat'];
+            user_pos['lng'] = selfset_pos['lng'];
+            user_pos['city'] = selfset_pos['city'];
+            user_pos['full_addr'] = selfset_pos['full_addr'];
+        }
         mainView.router.back();
+        $$('.selected-location').html(user_pos['city']);
+        $$('.selected-location-logo').css('color', 'red');
     })
 
     initMap();
+
+    //-------------------------------
+    // Search nearby POI
+    //-------------------------------
+    function nearbySearch(map, pos) {
+        var request = {
+            location: pos,
+            radius: '400',          // unit is in meters (value now is 400m)
+            type: ['restaurant']
+        };
+
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, displayNearby);
+    }
+
+    //-------------------------------
+    // Display nearby POI on apps
+    //-------------------------------
+    function displayNearby(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length - 2; i++) {
+                //var place = results[i].name;
+                var POI_content_html = '<li><div class="item-inner item-content">' +
+                    '<div class="item-title-row">' +
+                    '<div class="item-title" id="POI-name">' + results[i].name + '</div>' +
+                    '<div class="item-after">ICON</div>' +
+                    '</div>' +
+                    '<div class="item-text" id="POI-addr">' + '' + '</div>' +
+                    '</div></li>';
+
+                $$("#POI-content").append(POI_content_html);
+            }
+        }
+    }
 
     //------------------------------------------------------
     // Allow user to set their own location using search box
@@ -1114,10 +1132,11 @@ myApp.onPageInit("select-location", function (page) {
                 selfset_pos['lat'] = place.geometry.location.lat();
                 selfset_pos['lng'] = place.geometry.location.lng();
                 var pos = {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
+                    lat: selfset_pos['lat'],
+                    lng: selfset_pos['lng']
                 };
-                geocodeLatLng(pos, selfset_pos)
+                geocodeLatLng(pos, selfset_pos);
+                selfset = true;
 
                 if (place.geometry.viewport) {
                     // Only geocodes have viewport.
@@ -1148,7 +1167,6 @@ myApp.onPageInit("select-location", function (page) {
         geocoder.geocode({ 'location': latlng }, function (results, status) {
             if (status === 'OK') {
                 if (results[0]) {
-
                     results[0].address_components.forEach(function (element2) {
                         element2.types.forEach(function (element3) {
                             switch (element3) {
@@ -1160,7 +1178,7 @@ myApp.onPageInit("select-location", function (page) {
                     });
                     obj['city'] = city
                     obj['full_addr'] = results[0].formatted_address;
-                    $$('#default-address').html('Accuracy: ' + geo_accuracy + ' (High value = low accuracy)<br>' + default_pos['full_addr']);  // display full address 
+                    $$('#default-address').html('Accuracy: ' + geo_accuracy + ' (High value = low accuracy)<br>' + user_pos['full_addr']);  // display full address 
 
                 } else {
                     myApp.alert('No results found');
@@ -1216,12 +1234,12 @@ myApp.onPageInit("select-location", function (page) {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
-                default_pos['lat'] = position.coords.latitude;
-                default_pos['lng'] = position.coords.longitude;
+                user_pos['lat'] = position.coords.latitude;
+                user_pos['lng'] = position.coords.longitude;
                 geo_accuracy = position.coords.accuracy;
                 map.setCenter(pos);
                 addMarker(pos, map);
-                geocodeLatLng(pos, default_pos);
+                geocodeLatLng(pos, user_pos);
                 initAutocomplete(map);
             }, function () {
                 myApp.alert("Ops! Geolocation service failed.", "Message");
@@ -1233,7 +1251,6 @@ myApp.onPageInit("select-location", function (page) {
         }
     }
 });
-
 //Promocode
 myApp.onPageInit('profile-promocode', function (page) {
     //Display Promocode
