@@ -1433,6 +1433,7 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_remarks: cl_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
+                mainView.router.refreshPage();
             }).catch(function (error) {
 
             });
@@ -1475,6 +1476,7 @@ myApp.onPageInit('profile-report', function (page) {
                 ip_remarks: ip_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
+                mainView.router.refreshPage();
             }).catch(function (error) {
                 });
         }
