@@ -1416,7 +1416,7 @@ myApp.onPageInit('profile-report', function (page) {
             cl_owner_ic = $$('#cl-owner-ic').val();
             cl_owner_pass = $$('#cl-owner-pass').val();
             cl_phone = $$('#cl-phone').val();
-            cl_plate = $$('#cl-plate').val();
+            cl_plate = $$('#cl-plate').val().toUpperCase();
             cl_location = $$('#cl-location').val();
             cl_remarks = $$('#cl-remarks').val();
 
@@ -1460,7 +1460,7 @@ myApp.onPageInit('profile-report', function (page) {
             myApp.alert('Please enter the behavior of illegal parked car.', 'Error');
         }
         else {
-            ip_plate = $$('#ip-plate').val();
+            ip_plate = $$('#ip-plate').val().toUpperCase();
             ip_location = $$('#ip-location').val();
             ip_behavior = $$('#ip-behavior').val();
             ip_remarks = $$('#ip-remarks').val();
