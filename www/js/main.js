@@ -656,9 +656,9 @@ myApp.onPageInit('main', function (page) {
                         })
 
                         //write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
                         var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this)"><i class="material-icons override-icon-size item-link" style="">cancel</i></a></div></div> </a > </li></ul></div></div></div>';
+                        var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="">cancel</i></div></div></a></li></ul></div></div></div>';
                         //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
                         $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
                         $$('#close-popover-menu').click();
