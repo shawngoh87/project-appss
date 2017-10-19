@@ -209,6 +209,12 @@ function refreshActiveHistory() {
         var timeVal;
         var timeUnit;
 
+        //refresh for the progress bar
+        var duration = carRead[ownedCarPlate].parking.duration;
+        var progress = Math.ceil((((duration - remainTime) / duration) * 100));
+        var progressbar = $$('.progressbar');
+        myApp.setProgressbar(progressbar, progress);
+
         if (remainTime > 999) {
 
             if (timestamp2Time(remainTime).second >= 60) {
