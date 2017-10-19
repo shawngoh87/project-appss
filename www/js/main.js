@@ -740,13 +740,13 @@ myApp.onPageInit('main', function (page) {
                             '</div> ' +
                             '</div>' +
                             '</a>' +
-                            '<div class="accordion-item-content">' +
+                            '<div class="accordion-item-content" id="topup-accordion">' +
                             '<div class="content-block">' +
                             '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                             '<div id="history-info">' +
                             '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
                             '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
-                            '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration / 60 + ' hours</div>' +
+                            '<div><i class="material-icons">hourglass_empty</i> ' + Math.ceil(historyList[historyTempIndex].duration / 60) + ' hr</div>' +
                             '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
                             '</div>' +
                             '</div>' +
@@ -857,7 +857,7 @@ myApp.onPageInit('main', function (page) {
                             '</div > ' +
                             '</div>' +
                             '</a>' +
-                            '<div class="accordion-item-content">' +
+                            '<div class="accordion-item-content" id="topup-accordion">' +
                             '<div class="content-block">' +
                             '<div id="topup-info">' +
                             '<div><i class="material-icons">access_time</i>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
