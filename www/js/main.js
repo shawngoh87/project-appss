@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Loaded, user, userRef, carRef, carRead;
-var carRead, selectedCar = false, selectedLocation = false;
+var rate, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration, extendedDuration = false;
 
 // Global user position Var
@@ -91,6 +91,9 @@ function initUserInfo() {
             console.log(err);
         }
     );
+    firebase.database().ref('admin/token_per_minute').once('value', function(snapshot){
+        rate = snapshot.val()/60000;
+    })
 }
 
 //----------------------------------
@@ -483,7 +486,7 @@ myApp.onPageInit('main', function (page) {
     //----------------------
     function getDuration() {
         parkDuration = +$$('.park-duration').val();
-        tokenReq = (parkDuration * 2 / 600000);
+        tokenReq = (parkDuration * rate);
         $$('.selected-duration').html(clockPass(parkDuration));
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
         $$('.required-token').html(tokenReq);
