@@ -366,39 +366,40 @@ myApp.onPageInit('main', function (page) {
             }
 
             var str_active = '<li class="actively-parking-car">' +
-                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
-                '<div class="item-inner">' +
-                '<div class="item-title-row">' +
-                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
-                '<input id="timestamp-active-end" value="' + end_time + '" />' +
-                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
-                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                '</div>' +
-                '<div class="item-subtitle active-car-location"></div>' +
-                '</div>' +
-                '</a>' +
-                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
-                '<div class="popover-angle"></div>' +
-                '<div class="popover-inner">' +
-                '<div class="content-block">' +
-                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
-                '<div id="location"></div><br />' +
-                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                '<div id="lbl-time">Expected End Time:</div>' +
-                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                '<div id="btns">' +
-                '<button id="terminate-btn">Terminate</button>' +
-                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
-                '<span></span>' +
-                '</div>' +
-                '</li>';
-
+                                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                                    '<div class="item-inner">' +
+                                        '<div class="item-title-row">' +
+                                            '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                                            '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                            '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                                            '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                            '</div>' +
+                                            '<div class="item-subtitle active-car-location"><i class="material-icons">place</i></div>' +
+                                    '</div>' +
+                                '</a>' +
+                                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                                    '<div class="popover-angle"></div>' +
+                                    '<div class="popover-inner">' +
+                                        '<div class="content-block">' +
+                                            '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                                            '<div id="location"></div><br />' +
+                                            '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                            '<div id="lbl-time">Expected End Time:</div>' +
+                                            '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                                            '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                            '<div id="btns">' +
+                                                '<button id="terminate-btn" value="' + activeCarPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
+                                                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="progressbar" data-progress="' + (((activeDuration - remain_time) / activeDuration) * 100) + '">' +
+                                    '<span></span>' +
+                                '</div>' +
+                            '</li>';
+            console.log(activeDuration)
+            console.log(remain_time)
             $$('#ulist-active').append(str_active);
             getActiveAddress(activeLocation, activeCarPlate);
         }
@@ -584,7 +585,7 @@ myApp.onPageInit('main', function (page) {
                                                             '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                             '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                                             '</div>' +
-                                                            '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                                            '<div class="item-subtitle active-car-location"><i class="material-icons">place</i></div>' +
                                                     '</div>' +
                                                 '</a>' +
                                                 '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
@@ -592,7 +593,7 @@ myApp.onPageInit('main', function (page) {
                                                     '<div class="popover-inner">' +
                                                         '<div class="content-block">' +
                                                             '<div id="active-car-plate">' + carPlate + '</div>' +
-                                                            '<div id="location">' + location + '</div><br />' +
+                                                            '<div id="location"></div><br />' +
                                                             '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                             '<div id="lbl-time">Expected End Time:</div>' +
                                                             '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
@@ -882,8 +883,9 @@ function extendConfirmed(theCar) {
 //---------------------------------------
 function terminateParkingTime(theCar) {
     var timeVal, timeUnit;
-    var terminateDuration = Db.user.cars[theCar].parking.duration;
-    var terminateTimestamp = Db.user.cars[theCar].parking.timestamp;
+    var terminateDuration = carRead[theCar].parking.duration;
+    var terminateTimestamp = carRead[theCar].parking.timestamp;
+    var terminateLocation = carRead[theCar].parking.location;
 
     var terminateRemainTime = (terminateTimestamp + terminateDuration) - Date.now();
     var terminateTime = new Date(terminateTimestamp + terminateDuration);
@@ -925,7 +927,8 @@ function terminateParkingTime(theCar) {
             active: false,
             amount: 0,
             timestamp: 0,
-            duration: 0
+            duration: 0,
+            location: terminateLocation
         })
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
@@ -1317,7 +1320,7 @@ myApp.onPageInit("select-location", function (page) {
                             }
                         })
                     });
-                    obj['city'] = city
+                    obj['city'] = city;
                     obj['full_addr'] = results[0].formatted_address;
                     $$('#default-address').html(results[0].formatted_address);  // display full address 
                 } else {
