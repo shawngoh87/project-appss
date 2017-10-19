@@ -1479,6 +1479,7 @@ myApp.onPageInit("select-location", function (page) {
                 }
             });
             map.fitBounds(bounds);
+            map.setZoom(18);
         });
     }
 
