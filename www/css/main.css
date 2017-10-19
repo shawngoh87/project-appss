@@ -317,3 +317,15 @@ a.close-popover{
     margin-top:0px;
     margin-bottom:0px;
 }
+
+/*--------zachaary--------*/
+#histInfo, #topupHistInfo {
+    text-align: right;
+}
+
+#histItem, #topupHistItem {
+    background-color: aliceblue;
+    border-radius: 9px;
+    padding: 14px 35px 14px 5px;
+    margin-bottom: 5px;
+}

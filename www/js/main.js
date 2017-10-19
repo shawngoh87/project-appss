@@ -461,7 +461,7 @@ myApp.onPageInit('main', function (page) {
                         '<div class="item-title">' + ownedCarPlate + '</div>' +
                         '</div>' +
                         '</label></li>'
-                    );
+                );
                     availableCar++;
                 }
             }
@@ -670,60 +670,259 @@ myApp.onPageInit('main', function (page) {
     });
 
 
-    //-----------------------
-    // Get Topup History Function
-    //-----------------------
-    topupRef = firebase.database().ref('users/' + user.uid + '/topup_history').orderByKey();
-    topupRef.once('value').then(function (snapshot) {
-        var i = 0;
-        snapshot.forEach(function (childSnapshot) {
-            var topupKey = childSnapshot.key;
+    //-----------------------------
+    // History tab data retrieveing
+    //-----------------------------
 
-            var topupData = childSnapshot.val();
+    var historyRef = firebase.database().ref("users/" + user.uid + "/transaction");
+    var historyCurrentIndex = 0; //Database Index
 
-            var timeData = topupData.topup_time;
-            var topupTime = new Date(timeData);
+    //Start to retrieve data from database
 
-            var weekday = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-            var monthname = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-            var monthnameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
-            //var formattedDate = weekday[pubDate.getDay()]+ ' '
-            //        +monthname[pubDate.getMonth()]+ ' '
-            //        +pubDate.getDate() + ', ' +pubDate.getFullYear()
-            var time = weekday[topupTime.getDay()] + ' ' + topupTime.getDate();
+    function showHistory() {
+        var historyStackDate = null; //Stack Date for date checking
+        var historyStampIndex = 0; //Index stamping for date
+        var historyList = new Array(); //historyList
+        historyRef.limitToFirst(100).once('value', function (snapshot) {
+            console.log("0");
+            var historyCounter = snapshot.numChildren(); //Record number for last iteration checking
+            snapshot.forEach(function (historySnapshot) {
+                console.log("1");
+                var historyKey = historySnapshot.key;
+                var historyData = historySnapshot.val();
+                var historyDate = new Date(historyData.startTime);
 
-            //update to Topup UI
-            var str_topup = '<div class="timeline-item">' + 
-                                '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
-                                '<div class="timeline-item-divider"></div>' +
-                                '<div class="timeline-item-content list-block inset">' +
-                                    '<ul>' +
-                                        '<li class="accordion-item">' +
-                                            '<a href="#" class="item-link item-content">' +
-                                                '<div class="item-inner">' +
-                                                    '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
-                                                    '<div class="item-after">RM' + topupData.amount + '</div>' +
-                                                '</div>' +
-                                            '</a>' +
-                                            '<div class="accordion-item-content" id="topup-accordion">' +
-                                                '<div class="content-block">' +
-                                                    '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getFullYear() + '<br></b></div>' +
-                                                    '<div id="topup-info">' +
-                                                        '<p>Amount: RM ' + topupData.amount + '<br></p>' +
-                                                        '<p>Expired Date: ' + topupData.expired_date + '<br></p>' +
-                                                        '<p id="lbl-cc">Credit Card Number:</p>' +
-                                                        '<p id="desc-cc">xxxx-xxxx-xxxx-' + topupData.credit_card_no % 10000 + '</p>' +
-                                                    '</div>' +
-                                                '</div>' +
-                                            '</div>' +
-                                        '</li>' +
-                                    '</ul>' +
-                                '</div>' +
-                            '</div>';
+                //Grouping of same date
+                if (historyStackDate == null) {                                 //--------Starting
+                    historyStackDate = historyDate;
+                    historyList[historyCurrentIndex] = historyData;
+                    historyCurrentIndex++;
+                    //Check for last iteration
+                    if (historyCurrentIndex == historyCounter) {
+                        showMeHistory();
+                    }
+                }
+                else if (historyStackDate.getYear() == historyDate.getYear() &&
+                    historyStackDate.getMonth() == historyDate.getMonth() &&
+                    historyStackDate.getDate() == historyDate.getDate()) {      //--------Same date
+                    historyList[historyCurrentIndex] = historyData;
+                    historyCurrentIndex++;
+                    if (historyCurrentIndex == historyCounter) {
+                        showMeHistory();
+                    }
+                }
+                else {                                                          //--------Next date checked
+                    showMeHistory();
+                    historyStackDate = historyDate;                             //--------Stack the new date for date grouping
+                    historyList[historyCurrentIndex] = historyData;
+                    historyCurrentIndex++;
+                    if (historyCurrentIndex == historyCounter) {
+                        showMeHistory();
+                    }
+                }
 
-            $$('#timeline-topup').append(str_topup);
-            i++;
+                //History output
+
+                function showMeHistory() {
+                    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                    ];
+                    var historyTemplate = "";
+                    for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
+                        historyTime = new Date(historyList[historyTempIndex].startTime);
+                        var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
+                            '<a href="#" class="item-content item-link">' +
+                            '<div class="item-inner" id=histItem>' +
+                            '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
+                            '<div class="item-after"><div id=histInfo>' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].location + '</div>' +
+                            '</div> ' +
+                            '</div>' +
+                            '</a>' +
+                            '<div class="accordion-item-content">' +
+                            '<div class="content-block">' +
+                            '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
+                            '<div id="history-info">' +
+                            '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
+                            '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
+                            '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration / 60 + ' hours</div>' +
+                            '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+                        function addZeroHist(i) {
+                            if (i < 10) {
+                                i = "0" + i;
+                            }
+                            return i;
+                        }
+                        historyTemplate += historyTemp2;
+                    }
+                    historyStampIndex = historyCurrentIndex;
+                    var historyTemp1 = '<div class="timeline-item">' +
+                        '<div id="timeline-date" class="timeline-item-date">' + historyStackDate.getDate() + '<sub><sup>' + monthNames[historyStackDate.getMonth()] + '</sup></sub></div>' +
+                        '<div class="timeline-item-divider"></div >' +
+                        '<div class="timeline-item-content list-block inset">' +
+                        '<ul>' + historyTemplate;
+                    $$("#show-history").append(historyTemp1);
+
+                }
+
+            });
         });
+    }
+
+
+    $$("#historyRefresh").on('ptr:refresh', function (e) {
+        setTimeout(function () {
+            function clearBox(id) {
+                document.getElementById(id).innerHTML = "";
+            }
+            clearBox('show-history');
+            console.log("done");
+            showHistory();
+            console.log("lala");
+            myApp.pullToRefreshDone();
+            return;
+        }, 5000);
+        console.log("timesout");
+    });
+    showHistory();
+
+
+    //-----------------------------
+    // Topup history data retrieveing
+    //-----------------------------
+
+    var topupHistRef = firebase.database().ref("users/" + user.uid + "/topup_history");
+    var topupHistCurrentIndex = 0; //Database Index
+
+    //Start to retrieve data from database
+
+    function showTopupHist() {
+        var topupHistStackDate = null; //Stack Date for date checking
+        var topupHistStampIndex = 0; //Index stamping for date
+        var topupHistList = new Array(); //topuphistoryList
+        topupHistRef.limitToFirst(100).once('value', function (snapshot) {
+            console.log("0");
+            var topupHistCounter = snapshot.numChildren(); //Record number of child for last iteration checking
+            snapshot.forEach(function (topupHistSnapshot) {
+                console.log("1");
+                var topupHistKey = topupHistSnapshot.key;
+                var topupHistData = topupHistSnapshot.val();
+                var topupHistDate = new Date(topupHistData.topup_time);
+
+                //Grouping of same date
+                if (topupHistStackDate == null) {                                 //--------Starting
+                    topupHistStackDate = topupHistDate;
+                    topupHistList[topupHistCurrentIndex] = topupHistData;
+                    topupHistCurrentIndex++;
+                    //Check for last iteration
+                    if (topupHistCurrentIndex == topupHistCounter) {
+                        showMeTopupHist();
+                    }
+                }
+                else if (topupHistStackDate.getYear() == topupHistDate.getYear() &&
+                    topupHistStackDate.getMonth() == topupHistDate.getMonth() &&
+                    topupHistStackDate.getDate() == topupHistDate.getDate()) {      //--------Same date
+                    topupHistList[topupHistCurrentIndex] = topupHistData;
+                    topupHistCurrentIndex++;
+                    if (topupHistCurrentIndex == topupHistCounter) {
+                        showMeTopupHist();
+                    }
+                }
+                else {                                                          //--------Next date checked
+                    showMeTopupHist();
+                    topupHistStackDate = topupHistDate;                             //--------Stack the new date for date grouping
+                    topupHistList[topupHistCurrentIndex] = topupHistData;
+                    topupHistCurrentIndex++;
+                    if (topupHistCurrentIndex == topupHistCounter) {
+                        showMeTopupHist();
+                    }
+                }
+
+                //History output
+
+                function showMeTopupHist() {
+                    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                    ];
+                    var monthNameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
+                    var topupHistTemplate = "";
+                    for (topupHistTempIndex = topupHistStampIndex; topupHistTempIndex < topupHistCurrentIndex; topupHistTempIndex++) {
+                        topupHistTime = new Date(topupHistList[topupHistTempIndex].topup_time);
+                        var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
+                            '<a href="#"  class="item-content item-link" >' +
+                            '<div class="item-inner" id=topupHistItem>' +
+                            '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
+                            '<div class="item-after"><div>' + 'RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
+                            '</div > ' +
+                            '</div>' +
+                            '</a>' +
+                            '<div class="accordion-item-content">' +
+                            '<div class="content-block">' +
+                            '<div id="topup-info">' +
+                            '<div><i class="material-icons">access_time</i>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
+                            '<div><i class="material-icons">attach_money</i> RM ' + topupHistList[topupHistTempIndex].amount + '<br></div>' +
+                            '<div><i class="material-icons">credit_card</i>XXXX-XXXX-XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '<br> (exp: ' + topupHistList[topupHistTempIndex].expired_date + ')</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+
+                        function addZeroHist(i) {
+                            if (i < 10) {
+                                i = "0" + i;
+                            }
+                            return i;
+                        }
+                        topupHistTemplate += topupHistTemp2;
+                    }
+                    topupHistStampIndex = topupHistCurrentIndex;
+                    var topupHistTemp1 = '<div class="timeline-item">' +
+                        '<div id="timeline-date" class="timeline-item-date">' + topupHistStackDate.getDate() + '<sub><sup>' + monthNames[topupHistStackDate.getMonth()] + '</sup></sub></div>' +
+                        '<div class="timeline-item-divider"></div >' +
+                        '<div class="timeline-item-content list-block inset">' +
+                        '<ul>' + topupHistTemplate;
+                    $$("#show-topup-hist").append(topupHistTemp1);
+
+                }
+
+            });
+        });
+    }
+
+    $$("#topupHistRefresh").on('ptr:refresh', function (e) {
+        setTimeout(function () {
+            function clearBox(id) {
+                document.getElementById(id).innerHTML = "";
+            }
+            clearBox('show-topup-hist');
+            console.log("done");
+            showTopupHist();
+            console.log("lala");
+            myApp.pullToRefreshDone();
+            return;
+        }, 5000);
+        console.log("timesout");
+    });
+
+    showTopupHist();
+
+    $$('#show-topup-hist').on("accordion:open", function () {
+        for (j = 0; j < topupHistCurrentIndex; j++) {
+            var ID = document.getElementById('topupHistInfo' + j + '1');
+            myApp.accordionCheckClose(ID);
+        }
+        return;
+    });
+
+    $$('#show-history').on("accordion:open", function () {
+        for (j = 0; j < topupHistCurrentIndex; j++) {
+            var ID = document.getElementById('histInfo' + j + '1');
+            myApp.accordionCheckClose(ID);
+        }
+        return;
     });
 
     $$('.confirm-logout-ok').on('click', function () {

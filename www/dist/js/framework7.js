@@ -9776,6 +9776,12 @@ return t7;
             if (item.hasClass('accordion-item-expanded')) app.accordionClose(item);
             else app.accordionOpen(item);
         };
+        app.accordionCheckClose = function (item) {
+            item = $(item);
+            if (item.length === 0) return;
+            if (item.hasClass('accordion-item-expanded')) app.accordionClose(item);
+            else return;
+        }
         app.accordionOpen = function (item) {
             item = $(item);
             var list = item.parents('.accordion-list').eq(0);
