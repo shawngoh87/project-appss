@@ -1120,16 +1120,73 @@ myApp.onPageInit('profile-myprofile', function (page) {
 // Select Location function
 //---------------------------
 myApp.onPageInit("select-location", function (page) {
-
     var selfset = false;
+    var default_marker = [];
+    var default_pos = {
+        lat: 0,
+        lng: 0,
+        city: 'none',
+        full_addr: 'none'
+    };
     var selfset_pos = {
         lat: 0,
         lng: 0,
         city: 'none',
         full_addr: 'none'
     };
+    var default_user_addr;
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 18
+    });
 
-    // User click use self-set location button function
+    //--------------------------------
+    // default checkbox function
+    //--------------------------------
+    $$('input[name=default-loca]').change(function () {
+        if ($$(this).is(':checked')) {
+            // checked
+            default_marker.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            default_marker = [];
+            $$('#default-address').html(default_pos['full_addr']);
+            document.getElementById("pac-input").style.visibility = "hidden";
+            var pos = {
+                lat: default_pos['lat'],
+                lng: default_pos['lng']
+            }
+            map.setCenter(pos);
+            map.setZoom(18);
+            // Create a marker for each place.
+            default_marker.push(new google.maps.Marker({
+                map: map,
+                position: pos
+            }));
+        }
+        else {
+            // not checked
+            default_marker.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            default_marker = [];
+            $$('#default-address').html(selfset_pos['full_addr']);
+            document.getElementById("pac-input").style.visibility = "visible";
+            var pos = {
+                lat: selfset_pos['lat'],
+                lng: selfset_pos['lng']
+            }
+            map.setCenter(pos);
+            map.setZoom(18);
+            // Create a marker for each place.
+            default_marker.push(new google.maps.Marker({
+                map: map,
+                position: pos
+            }));
+        }
+    });
+
+    // User click confirm button function
     $$('#use-selfset-loca').on('click', function () {
         if (selfset == true) {
             user_pos['lat'] = selfset_pos['lat'];
@@ -1137,13 +1194,20 @@ myApp.onPageInit("select-location", function (page) {
             user_pos['city'] = selfset_pos['city'];
             user_pos['full_addr'] = selfset_pos['full_addr'];
         }
+        else {
+            user_pos['lat'] = default_pos['lat'];
+            user_pos['lng'] = default_pos['lng'];
+            user_pos['city'] = default_pos['city'];
+            user_pos['full_addr'] = default_pos['full_addr'];
+        }
+        console.log(user_pos);
         mainView.router.back();
         $$('.selected-location').html(user_pos['city']);
         $$('.selected-location-logo').css('color', 'red');
         selectedLocation = true;
     })
 
-    initMap();
+    initMap(map);
 
     //-------------------------------
     // Search nearby POI
@@ -1151,10 +1215,9 @@ myApp.onPageInit("select-location", function (page) {
     function nearbySearch(map, pos) {
         var request = {
             location: pos,
-            radius: '400',          // unit is in meters (value now is 400m)
+            radius: '250',          // unit is in meters (value now is 250m)
             type: ['restaurant']
         };
-
         var service = new google.maps.places.PlacesService(map);
         service.nearbySearch(request, displayNearby);
     }
@@ -1164,17 +1227,21 @@ myApp.onPageInit("select-location", function (page) {
     //-------------------------------
     function displayNearby(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length - 2; i++) {
-                //var place = results[i].name;
-                var POI_content_html = '<li><div class="item-inner item-content">' +
+            for (var i = 0; i < results.length; i++) {
+                var pos = {
+                    lat: results[i].geometry.location.lat(),
+                    lng: results[i].geometry.location.lng()
+                };
+                var POI_content_html =
+                    '<li><div class="item-inner item-content">' +
                     '<div class="item-title-row">' +
-                    '<div class="item-title" id="POI-name">' + results[i].name + '</div>' +
+                    '<div class="item-title">' + results[i].name + '</div>' +
                     '<div class="item-after">ICON</div>' +
                     '</div>' +
-                    '<div class="item-text" id="POI-addr">' + '' + '</div>' +
                     '</div></li>';
 
                 $$("#POI-content").append(POI_content_html);
+                //geocodeAddr(pos, results[i].name);                
             }
         }
     }
@@ -1192,7 +1259,6 @@ myApp.onPageInit("select-location", function (page) {
             searchBox.setBounds(map.getBounds());
         });
 
-        var markers = [];
         // Listen for the event fired when the user selects a prediction and retrieve
         // more details for that place.
         searchBox.addListener('places_changed', function () {
@@ -1202,11 +1268,11 @@ myApp.onPageInit("select-location", function (page) {
                 return;
             }
 
-            // Clear out the old markers.
-            markers.forEach(function (marker) {
+            // Clear out the old markers.  
+            default_marker.forEach(function (marker) {
                 marker.setMap(null);
             });
-            markers = [];
+            default_marker = [];
 
             // For each place, get the icon, name and location.
             var bounds = new google.maps.LatLngBounds();
@@ -1215,19 +1281,10 @@ myApp.onPageInit("select-location", function (page) {
                     myApp.alert("Returned place contains no geometry");
                     return;
                 }
-                var icon = {
-                    url: place.icon,
-                    size: new google.maps.Size(71, 71),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(25, 25)
-                };
 
                 // Create a marker for each place.
-                markers.push(new google.maps.Marker({
+                default_marker.push(new google.maps.Marker({
                     map: map,
-                    icon: icon,
-                    title: place.name,
                     position: place.geometry.location
                 }));
 
@@ -1251,20 +1308,10 @@ myApp.onPageInit("select-location", function (page) {
         });
     }
 
-    //-----------------------------
-    // Add marker to map
-    //-----------------------------
-    function addMarker(location, map) {
-        var marker = new google.maps.Marker({
-            position: location,
-            map: map
-        });
-    }
-
     //---------------------------------------
     // Full address and city name Geocoding
     //---------------------------------------
-    function geocodeLatLng(latlng,obj) {
+    function geocodeLatLng(latlng, obj) {
         var geocoder = new google.maps.Geocoder;
         geocoder.geocode({ 'location': latlng }, function (results, status) {
             if (status === 'OK') {
@@ -1280,8 +1327,34 @@ myApp.onPageInit("select-location", function (page) {
                     });
                     obj['city'] = city
                     obj['full_addr'] = results[0].formatted_address;
-                    $$('#default-address').html('Accuracy: ' + geo_accuracy + ' (High value = low accuracy)<br>' + user_pos['full_addr']);  // display full address 
+                    $$('#default-address').html(results[0].formatted_address);  // display full address 
+                } else {
+                    myApp.alert('No results found');
+                }
+            } else {
+                myApp.alert('Geocoder failed due to: ' + status);
+            }
+        });
+    }
 
+    //---------------------------------------
+    // Only Full address (Geocoding)
+    //---------------------------------------
+    function geocodeAddr(latlng, name) {
+        var geocoder = new google.maps.Geocoder;
+        geocoder.geocode({ 'location': latlng }, function (results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+                    var POI_content_html =
+                        '<li><div class="item-inner item-content">' +
+                        '<div class="item-title-row">' +
+                        '<div class="item-title">' + name + '</div>' +
+                        '<div class="item-after">ICON</div>' +
+                        '</div>' +
+                        '<div class="item-text">' + results[0].formatted_address + '</div>' +
+                        '</div></li>';
+
+                    $$("#POI-content").append(POI_content_html);
                 } else {
                     myApp.alert('No results found');
                 }
@@ -1323,12 +1396,7 @@ myApp.onPageInit("select-location", function (page) {
     //---------------------------------------
     // Create Map with default address
     //---------------------------------------
-    function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 18
-        });
-
+    function initMap(map) {
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -1336,12 +1404,18 @@ myApp.onPageInit("select-location", function (page) {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
-                user_pos['lat'] = position.coords.latitude;
-                user_pos['lng'] = position.coords.longitude;
-                geo_accuracy = position.coords.accuracy;
+                default_pos['lat'] = position.coords.latitude;
+                default_pos['lng'] = position.coords.longitude;
                 map.setCenter(pos);
-                addMarker(pos, map);
-                geocodeLatLng(pos, user_pos);
+                nearbySearch(map, pos);
+
+                // Create a marker 
+                default_marker.push(new google.maps.Marker({
+                    map: map,
+                    position: pos
+                }));
+
+                geocodeLatLng(pos, default_pos);
                 initAutocomplete(map);
             }, function () {
                 myApp.alert("Ops! Geolocation service failed.", "Message");
@@ -1353,6 +1427,7 @@ myApp.onPageInit("select-location", function (page) {
         }
     }
 });
+
 //Promocode
 myApp.onPageInit('profile-promocode', function (page) {
     //Display Promocode
