@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Loaded, user, userRef, carRef, carRead;
-var rate, selectedCar = false, selectedLocation = false;
+var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
 // Global user position Var
@@ -527,7 +527,7 @@ myApp.onPageInit('main', function (page) {
                     })
                     $$('.token').html(+tokenBal);
                     $$('.selected-car-plate').html('Select Car');
-                    $$('.selected-duration').html('Duration');
+                    $$('.selected-location').html('Location');
                     $$('.selected-car-logo').css('color', 'inherit');
                     $$('.selected-location-logo').css('color', 'inherit');
                     selectedCar = false;
@@ -585,7 +585,7 @@ myApp.onPageInit('main', function (page) {
                                                             '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                             '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                                             '</div>' +
-                                                            '<div class="item-subtitle active-car-location"><i class="material-icons">place</i></div>' +
+                                                            '<div class="item-subtitle active-car-location"><i class="material-icons">place</i>' + user_pos.city + '</div>' +
                                                     '</div>' +
                                                 '</a>' +
                                                 '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
@@ -593,7 +593,7 @@ myApp.onPageInit('main', function (page) {
                                                     '<div class="popover-inner">' +
                                                         '<div class="content-block">' +
                                                             '<div id="active-car-plate">' + carPlate + '</div>' +
-                                                            '<div id="location"></div><br />' +
+                                                            '<div id="location">' + user_pos.city + '</div><br />' +
                                                             '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                             '<div id="lbl-time">Expected End Time:</div>' +
                                                             '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
@@ -610,7 +610,8 @@ myApp.onPageInit('main', function (page) {
                                                 '</div>' +
                                             '</li>';
 
-                    $$('#ulist-active').append(str_active);
+                            $$('#ulist-active').append(str_active);
+                            selfset = false;
                 }
             });
 
@@ -1309,7 +1310,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
 // Select Location function
 //---------------------------
 myApp.onPageInit("select-location", function (page) {
-    var selfset = false;
     var default_marker = [];
     var default_pos = {
         lat: 0,
@@ -1334,6 +1334,7 @@ myApp.onPageInit("select-location", function (page) {
     //--------------------------------
     $$('input[name=default-loca]').change(function () {
         if ($$(this).is(':checked')) {
+            selfset = false;
             // checked
             default_marker.forEach(function (marker) {
                 marker.setMap(null);
@@ -1354,6 +1355,9 @@ myApp.onPageInit("select-location", function (page) {
             }));
         }
         else {
+            if ($$('#default-address').text() != 'none') {
+                selfset = true;
+            }
             // not checked
             default_marker.forEach(function (marker) {
                 marker.setMap(null);
@@ -1595,20 +1599,34 @@ myApp.onPageInit("select-location", function (page) {
                 };
                 default_pos['lat'] = position.coords.latitude;
                 default_pos['lng'] = position.coords.longitude;
+                geocodeLatLng(default_pos, default_pos);
+
+                if (selectedLocation && selfset) {
+                    $$('input[name=default-loca]').click();
+                    selfset_pos = user_pos;
+                    pos = {
+                        lat: selfset_pos.lat,
+                        lng: selfset_pos.lng
+                    }
+                    var intrv = setInterval(function () {
+                        if (default_pos.full_addr != 'none') {
+                            clearInterval(intrv);
+                            $$('#default-address').html(selfset_pos['full_addr']);
+                        }
+                    }, 100);
+                }
                 map.setCenter(pos);
                 nearbySearch(map, pos);
-
                 // Create a marker 
                 default_marker.push(new google.maps.Marker({
                     map: map,
                     position: pos
                 }));
 
-                geocodeLatLng(pos, default_pos);
                 initAutocomplete(map);
             }, function () {
-                myApp.alert("Ops! Geolocation service failed.", "Message");
-            });
+                    myApp.alert("Ops! Geolocation service failed.", "Message");
+                }, { enableHighAccuracy: true });
         }
         else {
             // Device doesn't support Geolocation
