@@ -241,12 +241,13 @@ function refreshActiveHistory() {
                 var parkingAmount = carRead[ownedCarPlate].parking.amount;
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
+                var parkingLocation = carRead[ownedCarPlate].parking.location;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
                             promocode: "ILOVEDOUBLEPARK",
-                            location: "",
+                            location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
                             start_time: parkingTimestamp
                         })
@@ -285,17 +286,17 @@ myApp.onPageInit('main', function (page) {
     //Get cars and update
 
     for (var ownedCarPlate in carRead) {
-
         var parkingActive = carRead[ownedCarPlate].parking.active;
         var parkingAmount = carRead[ownedCarPlate].parking.amount;
         var parkingDuration = carRead[ownedCarPlate].parking.duration;
         var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
+        var parkingLocation = carRead[ownedCarPlate].parking.location;
         if (parkingActive) {
             if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                 carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                     amount: parkingAmount,
                     promocode: "ILOVEDOUBLEPARK",
-                    location: "",
+                    location: parkingLocation,
                     duration: timestamp2Time(parkingDuration).name,
                     start_time: parkingTimestamp
                 })
@@ -318,7 +319,7 @@ myApp.onPageInit('main', function (page) {
 
     //Get tokens
     userRef.child('balance').on('value', function (snapshot) {
-        $$('.token').html(+snapshot.val().toFixed(2));
+        $$('.token').html(+snapshot.val());
     })
 
     //Get History of Active Car
@@ -328,18 +329,15 @@ myApp.onPageInit('main', function (page) {
         var activeAmount = activeCarRead[activeCarPlate].parking.amount;
         var activeDuration = activeCarRead[activeCarPlate].parking.duration;
         var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
+        var activeLocation = activeCarRead[activeCarPlate].parking.location;
         if (activeStatus) {
             //write data to UI
-            var location, promoCode = null;
+            var activeAddress, promoCode = null;
             var current_time = Date.now();
             var end_time = activeTimestamp + activeDuration;
             var end_time_dis = new Date(end_time);
             var remain_time = end_time - current_time;
             var time_unit, time_val;
-            console.log(end_time)
-            console.log(current_time)
-            console.log(remain_time)
-
             if (timestamp2Time(remain_time).second >= 60) {
                 if (timestamp2Time(remain_time).minute >= 60) {
                     time_val = timestamp2Time(remain_time).hour;
@@ -373,7 +371,7 @@ myApp.onPageInit('main', function (page) {
                 '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                 '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                 '</div>' +
-                '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                '<div class="item-subtitle active-car-location"></div>' +
                 '</div>' +
                 '</a>' +
                 '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
@@ -381,7 +379,7 @@ myApp.onPageInit('main', function (page) {
                 '<div class="popover-inner">' +
                 '<div class="content-block">' +
                 '<div id="active-car-plate">' + activeCarPlate + '</div>' +
-                '<div id="location">' + location + '</div><br />' +
+                '<div id="location"></div><br />' +
                 '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                 '<div id="lbl-time">Expected End Time:</div>' +
                 '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
@@ -399,6 +397,7 @@ myApp.onPageInit('main', function (page) {
                 '</li>';
 
             $$('#ulist-active').append(str_active);
+            getActiveAddress(activeLocation, activeCarPlate);
         }
     }
 
@@ -418,19 +417,19 @@ myApp.onPageInit('main', function (page) {
             myApp.alert('Please add your car', 'Notification');
         }
         else {
-
             var availableCar = 0;
             for (var ownedCarPlate in carRead) {
                 var parkingActive = carRead[ownedCarPlate].parking.active;
                 var parkingAmount = carRead[ownedCarPlate].parking.amount;
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
+                var parkingLocation = carRead[ownedCarPlate].parking.location;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
                             promocode: "ILOVEDOUBLEPARK",
-                            location: "",
+                            location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
                             start_time: parkingTimestamp
                         })
@@ -484,7 +483,7 @@ myApp.onPageInit('main', function (page) {
     //----------------------
     function getDuration() {
         parkDuration = +$$('.park-duration').val();
-        tokenReq = (parkDuration * 2 / 600000).toFixed(2);
+        tokenReq = (parkDuration * 2 / 600000);
         $$('.selected-duration').html(clockPass(parkDuration));
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
         $$('.required-token').html(tokenReq);
@@ -522,7 +521,7 @@ myApp.onPageInit('main', function (page) {
                     userRef.update({
                         balance: tokenBal
                     })
-                    $$('.token').html(+tokenBal.toFixed(2));
+                    $$('.token').html(+tokenBal);
                     $$('.selected-car-plate').html('Select Car');
                     $$('.selected-duration').html('Duration');
                     $$('.selected-car-logo').css('color', 'inherit');
@@ -541,7 +540,7 @@ myApp.onPageInit('main', function (page) {
                     })
 
                     //write data to UI
-                    var location, promoCode = null;
+                    var location = user_pos.city, promoCode = null;
                     var current_time = Date.now();
                     var end_time = timestamp + parkDuration;
                     var end_time_dis = new Date(end_time);
@@ -737,7 +736,7 @@ myApp.onPageInit('main', function (page) {
 
     //profile tab
     $$('.load-username').html(Db.user.username);
-    $$('.load-token').append(Db.user.balance.toFixed());
+    $$('.load-token').append(Db.user.balance.toString());
 });
 
 //---------------------------------------
@@ -858,7 +857,7 @@ function extendConfirmed(theCar) {
                     userRef.update({
                         balance: tokenBal
                     })
-                    $$('.token').html(+tokenBal.toFixed(2));
+                    $$('.token').html(+tokenBal);
                     $$('.selected-duration').html('Duration');
                     $$('.selected-duration-logo').css('color', 'inherit');
                     extendedDuration = false;
@@ -1265,7 +1264,7 @@ myApp.onPageInit("select-location", function (page) {
     //---------------------------------------
     // Full address and city name Geocoding
     //---------------------------------------
-    function geocodeLatLng(latlng, obj) {
+    function geocodeLatLng(latlng,obj) {
         var geocoder = new google.maps.Geocoder;
         geocoder.geocode({ 'location': latlng }, function (results, status) {
             if (status === 'OK') {
