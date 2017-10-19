@@ -498,8 +498,12 @@ myApp.onPageInit('main', function (page) {
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).shortName);
         $$('.required-token').html(tokenReq);
     }
-
-    getDuration();
+    intrvTemp = setInterval(function () {
+        if (rate) {
+            clearInterval(intrvTemp);
+            getDuration();
+        }
+    })
 
     setInterval(function () {
         getDuration();
@@ -516,8 +520,8 @@ myApp.onPageInit('main', function (page) {
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
-                'Park Until&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
-                'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+                'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;:' + $$('.selected-duration').text() + '<br>' +
+                'Token required is &ensp;&nbsp:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
 
@@ -527,7 +531,25 @@ myApp.onPageInit('main', function (page) {
                     myApp.alert('Insufficient balance.', 'Notification');
                 }
                 else {
-                    myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                    myApp.modal({
+                        title: 'Payment confirmed',
+                        text: 'Nearby shops are having promotions specially for YOU',
+                        verticalButtons: true,
+                        buttons: [
+                            {
+                                text: 'Check it out',
+                                onClick: function () {
+                                    mainView.router.loadPage("promotion.html");
+                                }
+                            },
+                            {
+                                text: 'Nevermind',
+                                onClick: function () {
+                                    //Do nothing
+                                }
+                            }
+                        ]
+                    })
                     userRef.update({
                         balance: tokenBal
                     })
@@ -1793,3 +1815,7 @@ myApp.onPageInit('profile-report', function (page) {
 
 
 });
+
+myApp.onPageInit('promotion', function (page) {
+
+})

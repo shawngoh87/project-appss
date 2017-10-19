@@ -159,17 +159,30 @@ a.close-popover{
     position:absolute;
     top:70%;
     width:100%;
+    margin: 0px;
+}
+
+.content-block.check-nearby {
+    position: absolute;
+    top: 80%;
+    width: 100%;
+    margin: 0px;
 }
 
 .confirm-payment-button{
     background-color:white;
 }
-/* JJL */
 
+.button.button-raised.confirm-payment-button-inner{
+    background-color: #2196F3;
+    color:white;
+}
+
+/* JJL */
 .mylogo {
-    display:block;
-    width:50%;
-    margin:8% auto;
+    display: block;
+    width: 50%;
+    margin: 8% auto;
 }
 
 .item-media img {
@@ -328,4 +341,8 @@ a.close-popover{
     border-radius: 9px;
     padding: 14px 35px 14px 5px;
     margin-bottom: 5px;
+}
+
+.modal-buttons.modal-buttons-vertical .modal-button{
+    text-align: center !important;
 }
