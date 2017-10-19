@@ -685,10 +685,8 @@ myApp.onPageInit('main', function (page) {
         historyCurrentIndex = 0;
         var historyList = new Array(); //historyList
         historyRef.limitToFirst(100).once('value', function (snapshot) {
-            console.log("0");
             var historyCounter = snapshot.numChildren(); //Record number for last iteration checking
             snapshot.forEach(function (historySnapshot) {
-                console.log("1");
                 var historyKey = historySnapshot.key;
                 var historyData = historySnapshot.val();
                 var historyDate = new Date(historyData.startTime);
@@ -780,13 +778,10 @@ myApp.onPageInit('main', function (page) {
                 document.getElementById(id).innerHTML = "";
             }
             clearBox('show-history');
-            console.log("done");
             showHistory();
-            console.log("lala");
             myApp.pullToRefreshDone();
             return;
         }, 5000);
-        console.log("timesout");
     });
     showHistory();
 
@@ -806,10 +801,8 @@ myApp.onPageInit('main', function (page) {
         topupHistCurrentIndex = 0;
         var topupHistList = new Array(); //topuphistoryList
         topupHistRef.limitToFirst(100).once('value', function (snapshot) {
-            console.log("0");
             var topupHistCounter = snapshot.numChildren(); //Record number of child for last iteration checking
             snapshot.forEach(function (topupHistSnapshot) {
-                console.log("1");
                 var topupHistKey = topupHistSnapshot.key;
                 var topupHistData = topupHistSnapshot.val();
                 var topupHistDate = new Date(topupHistData.topup_time);
@@ -900,13 +893,10 @@ myApp.onPageInit('main', function (page) {
                 document.getElementById(id).innerHTML = "";
             }
             clearBox('show-topup-hist');
-            console.log("done");
             showTopupHist();
-            console.log("lala");
             myApp.pullToRefreshDone();
             return;
         }, 5000);
-        console.log("timesout");
     });
 
     showTopupHist();
@@ -920,7 +910,7 @@ myApp.onPageInit('main', function (page) {
     });
 
     $$('#show-history').on("accordion:open", function () {
-        for (j = 0; j < topupHistCurrentIndex; j++) {
+        for (j = 0; j < historyCurrentIndex; j++) {
             var ID = document.getElementById('histInfo' + j + '1');
             myApp.accordionCheckClose(ID);
         }
