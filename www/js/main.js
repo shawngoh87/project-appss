@@ -1140,57 +1140,8 @@ myApp.onPageInit('signup', function (page) {
     var su_phone;
     var su_ic;
 
-
-    //console.log('Verifier callback');
-    //var appVerifier = window.recaptchaVerifier;
-    //firebase.auth().signInWithPhoneNumber($$('#su-phone-no').val(), appVerifier)
-    //    .then(function (confirmationResult) {
-    //        // Change to on('input') realtime verify
-    //        myApp.modal({
-    //            title: 'stuff',
-    //            afterText: '<div class="input-field"><input type="text" id="txt-otp-code" class="modal-text-input" placeholder="4-Digit Code"></div>',
-    //            buttons: [
-    //                {
-    //                    text: 'Cancel',
-    //                    onClick: function () {/* Do Nothing */ }
-    //                },
-    //                {
-    //                    text: 'Ok',
-    //                    onClick: function () {
-    //                        // Code keyed in by user sent to firebase auth
-    //                        window.confirmationResult = confirmationResult;
-    //                        var code = $$('#txt-otp-code').val();
-    //                        confirmationResult.confirm(code)
-    //                            .then(function (result) {
-    //                                var user = result.user;
-    //                                console.log('Phone sign in complete');
-    //                                console.log(user);
-    //                            })
-    //                            .catch(function (error) {
-    //                                console.log('OTP Code error');
-    //                            });
-    //                    }
-    //                },
-    //            ]
-    //        })
-    //        // SMS sent. Prompt user to type the code from the message, then sign the
-    //        // user in with confirmationResult.confirm(code).
-    //    }).catch(function (error) {
-    //        // Error; SMS not sent
-    //        // ...
-    //    });
-
-    //------------------------------
-    // OTP auth with SMS
-    //------------------------------
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('button-signup-submitt', {
-        'size': 'invisible',
-        'callback': function (response) {
-            console.log('asdfasdf');
-        }
-    });
-
-    $$("#button-signup-submitt").on('click', function () { console.log('stuff'); });
+    
+   
 
     //-----------------------------
     // back button function
@@ -1202,83 +1153,83 @@ myApp.onPageInit('signup', function (page) {
     //-----------------------------
     // submit button for signUp 
     //-----------------------------
-    //$$('#button-signup-submit').on('click', function () {
-    //    if ($$('#su-email').val() == "") {
-    //        //empty email input textbox case
-    //        myApp.alert('Please enter your email.', 'Error');
-    //    }
-    //    else if ($$('#su-password').val() == "") {
-    //        //empty password input textbox case
-    //        myApp.alert('Please enter your password.', 'Error');
-    //    }
-    //    else if ($$('#su-username').val() == "") {
-    //        //empty username input textbox case
-    //        myApp.alert('Please enter your username.', 'Error');
-    //    }
-    //    else if ($$('#su-phone-no').val() == "") {
-    //        //empty phone number input textbox case
-    //        myApp.alert('Please enter your phone number.', 'Error');
-    //    }
-    //    else if ($$('#su-password').val() !== $$('#su-confirm-password').val()) {
-    //        // password does not match confirm password
-    //        myApp.alert('Password and Confirm Password does not match. Please try again.', 'Error');
-    //    }
-    //    else {
-    //        su_email = $$('#su-email').val();
-    //        su_password = $$('#su-password').val();
-    //        su_username = $$('#su-username').val();
-    //        su_phone = $$('#su-phone-no').val();
-    //        su_ic = $$('#su-ic').val();
+    $$('#button-signup-submit').on('click', function () {
+        if ($$('#su-email').val() == "") {
+            //empty email input textbox case
+            myApp.alert('Please enter your email.', 'Error');
+        }
+        else if ($$('#su-password').val() == "") {
+            //empty password input textbox case
+            myApp.alert('Please enter your password.', 'Error');
+        }
+        else if ($$('#su-username').val() == "") {
+            //empty username input textbox case
+            myApp.alert('Please enter your username.', 'Error');
+        }
+        else if ($$('#su-phone-no').val() == "") {
+            //empty phone number input textbox case
+            myApp.alert('Please enter your phone number.', 'Error');
+        }
+        else if ($$('#su-password').val() !== $$('#su-confirm-password').val()) {
+            // password does not match confirm password
+            myApp.alert('Password and Confirm Password does not match. Please try again.', 'Error');
+        }
+        else {
+            su_email = $$('#su-email').val();
+            su_password = $$('#su-password').val();
+            su_username = $$('#su-username').val();
+            su_phone = $$('#su-phone-no').val();
+            su_ic = $$('#su-ic').val();
 
-    //        firebase.auth().createUserWithEmailAndPassword(su_email, su_password).then(function (data) {
-    //            var curr_user = firebase.auth().currentUser;
-    //            //--------------------------------
-    //            // Sent email verification
-    //            //--------------------------------
-    //            curr_user.sendEmailVerification().then(function () {
-    //                // Email sent.                    
-    //            }).catch(function (error) {
-    //                // An error happened.
-    //            });
+            firebase.auth().createUserWithEmailAndPassword(su_email, su_password).then(function (data) {
+                var curr_user = firebase.auth().currentUser;
+                //--------------------------------
+                // Sent email verification
+                //--------------------------------
+                curr_user.sendEmailVerification().then(function () {
+                    // Email sent.                    
+                }).catch(function (error) {
+                    // An error happened.
+                });
 
-    //            //--------------------------------
-    //            // Set user info to database
-    //            //--------------------------------               
-    //            firebase.database().ref('users/' + curr_user.uid).set({
-    //                email: su_email,
-    //                username: su_username,
-    //                phone_no: su_phone,
-    //                balance: 0,
-    //                IC: su_ic
-    //            });
+                //--------------------------------
+                // Set user info to database
+                //--------------------------------               
+                firebase.database().ref('users/' + curr_user.uid).set({
+                    email: su_email,
+                    username: su_username,
+                    phone_no: su_phone,
+                    balance: 0,
+                    IC: su_ic
+                });
 
-    //            //------------------------------
-    //            // force sign out after sign up
-    //            //------------------------------
-    //            firebase.auth().signOut().then(function () {
-    //                // Sign-out successful.                    
-    //                //mainView.router.back(); // Route later
-    //            }).catch(function (error) {
-    //                // An error happened.
-    //            });
+                //------------------------------
+                // force sign out after sign up
+                //------------------------------
+                firebase.auth().signOut().then(function () {
+                    // Sign-out successful.                    
+                    mainView.router.back(); // Route later
+                }).catch(function (error) {
+                    // An error happened.
+                });
 
 
-    //        }).catch(function (error) {
-    //            // Handle Sign Up Errors here.
-    //            var errorCode = error.code;
-    //            var errorMessage = error.message;
-    //            if (errorCode == "auth/email-already-in-use")
-    //                myApp.alert(errorMessage, 'Error');
-    //            else if (errorCode == "auth/invalid-email")
-    //                myApp.alert(errorMessage, 'Error');
-    //            else if (errorCode == "auth/operation-not-allowed")
-    //                myApp.alert(errorMessage, 'Error');
-    //            else if (errorCode == "auth/weak-password")
-    //                myApp.alert(errorMessage, 'Error');
-    //        });
+            }).catch(function (error) {
+                // Handle Sign Up Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                if (errorCode == "auth/email-already-in-use")
+                    myApp.alert(errorMessage, 'Error');
+                else if (errorCode == "auth/invalid-email")
+                    myApp.alert(errorMessage, 'Error');
+                else if (errorCode == "auth/operation-not-allowed")
+                    myApp.alert(errorMessage, 'Error');
+                else if (errorCode == "auth/weak-password")
+                    myApp.alert(errorMessage, 'Error');
+            });
 
-    //    }
-    //})
+        }
+    })
 });
 
 // ===== Color themes ===== 
@@ -1676,32 +1627,18 @@ myApp.onPageInit('profile-promocode', function (page) {
     loadPromocode();
 });
 
-// Change password
+//Change password
 myApp.onPageInit('settings-change-password', function (page) {
     var user = firebase.auth().currentUser;
 
-  //  var credentials = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
-
     $$('#update-password').on('click', function () {
-        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
-            user.updatePassword($$('#new-password').val()).then(function () {
-                // Update successful.
-                myApp.alert('Your password has been updated!');
-            }).catch(function (error) {
-                // An error happened.
-            });
-        } else
-            myApp.alert('Password and confirm password does not match', 'Error!');
-    })
-
-
-    /*
-    $$('#update-password').on('click', function () {
-        user.reauthenticateWithCredential(credentials).then(function () {
+        var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
+        user.reauthenticateWithCredential(credential).then(function () {
             if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
                 user.updatePassword($$('#new-password').val()).then(function () {
                     // Update successful.
                     myApp.alert('Your password has been updated!');
+                    mainView.router.loadPage("profile-settings.html");
                 }).catch(function (error) {
                     // An error happened.
                 });
@@ -1711,19 +1648,11 @@ myApp.onPageInit('settings-change-password', function (page) {
         }).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
-            if (errorCode == "auth/invalid-email")  //check
+            if (errorCode == "auth/wrong-password")
                 myApp.alert(errorMessage, 'Error');
-            else if (errorCode == "auth/invalid-credential")
-                myApp.alert(errorMessage, 'Error');
-            else if (errorCode == "auth/wrong-password")
-                myApp.alert(errorMessage, 'Error');
-
-        })
+            })
     });
-        */
-
-
-    });
+});
 
 //Change Address
 myApp.onPageInit('settings-change-address', function (page) {
@@ -1738,8 +1667,8 @@ myApp.onPageInit('settings-change-address', function (page) {
                 address: $$('#new-address').val()
             }).then(function () {
                 myApp.alert('Your address has been updated successfully!');
+                mainView.router.refreshPage();
             }).catch(function (error) {
-
             });
         }
         else {
