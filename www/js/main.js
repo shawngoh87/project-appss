@@ -1464,6 +1464,9 @@ myApp.onPageInit('profile-promocode', function (page) {
 // Change password
 myApp.onPageInit('settings-change-password', function (page) {
     var user = firebase.auth().currentUser;
+
+  //  var credentials = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
+
     $$('#update-password').on('click', function () {
         if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
             user.updatePassword($$('#new-password').val()).then(function () {
@@ -1475,7 +1478,37 @@ myApp.onPageInit('settings-change-password', function (page) {
         } else
             myApp.alert('Password and confirm password does not match', 'Error!');
     })
-});
+
+
+    /*
+    $$('#update-password').on('click', function () {
+        user.reauthenticateWithCredential(credentials).then(function () {
+            if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+                user.updatePassword($$('#new-password').val()).then(function () {
+                    // Update successful.
+                    myApp.alert('Your password has been updated!');
+                }).catch(function (error) {
+                    // An error happened.
+                });
+            } else {
+                myApp.alert('Password and confirm password does not match', 'Error!');
+            }
+        }).catch(function (error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            if (errorCode == "auth/invalid-email")  //check
+                myApp.alert(errorMessage, 'Error');
+            else if (errorCode == "auth/invalid-credential")
+                myApp.alert(errorMessage, 'Error');
+            else if (errorCode == "auth/wrong-password")
+                myApp.alert(errorMessage, 'Error');
+
+        })
+    });
+        */
+
+
+    });
 
 //Change Address
 myApp.onPageInit('settings-change-address', function (page) {
@@ -1542,7 +1575,7 @@ myApp.onPageInit('profile-report', function (page) {
             cl_owner_ic = $$('#cl-owner-ic').val();
             cl_owner_pass = $$('#cl-owner-pass').val();
             cl_phone = $$('#cl-phone').val();
-            cl_plate = $$('#cl-plate').val().toUpperCase();
+            cl_plate = $$('#cl-plate').val();
             cl_location = $$('#cl-location').val();
             cl_remarks = $$('#cl-remarks').val();
 
@@ -1587,7 +1620,7 @@ myApp.onPageInit('profile-report', function (page) {
             myApp.alert('Please enter the behavior of illegal parked car.', 'Error');
         }
         else {
-            ip_plate = $$('#ip-plate').val().toUpperCase();
+            ip_plate = $$('#ip-plate').val();
             ip_location = $$('#ip-location').val();
             ip_behavior = $$('#ip-behavior').val();
             ip_remarks = $$('#ip-remarks').val();
