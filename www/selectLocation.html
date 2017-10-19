@@ -4,38 +4,31 @@
         <div class="navbar-inner">
             <div class="left"><a href="profile.html" class="back link icon-only"><i class="icon icon-back"></i></a></div>
             <div class="center"><h1 id="profile-title">Location</h1></div>
-            <div class="right">
-                <a href="#" data-popup=".POI-popup" class="open-popup">P</a>
-            </div>
+            <div class="right"></div>
         </div>
     </div>
 
-    <div class="page-content">
-        <input id="pac-input" class="controls" type="text" placeholder="Set Your Own Location">
+    <div class="page-content">        
         <div id="map"></div>
 
-        <!------------------------------>
-        <!--This Part is beneath maps-->
-        <!------------------------------>
         <div id="bot-part">
-            <div id="default-addr-accord" class="list-block accordion-list">
-                <ul>
-                    <li class="accordion-item">
-                        <a href="#" class="item-link item-content">
-                            <div class="item-inner">
-                                <div class="item-title">Your Default Location</div>
-                            </div>
-                        </a>
-                        <div class="accordion-item-content">
-                            <div class="content-block">
-                                <p id="default-address"></p>
-                            </div>
+            <div class="ks-grid">
+                <div class="content-block bot-part">
+                    <div class="row no-gutter">
+                        <div class="col-75 loca-grid-75 grid-border">
+                            <input id="pac-input" name="addr" class="controls" type="text" placeholder="Your Location">
+                            <div class="item-text"><p id="default-address"></p></div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-            <span class="col-33"></span>
-            <input type="button" id="use-selfset-loca" class="round-blue-button" value="Submit" />
+                        <div class="col-25 loca-grid-25 grid-border">
+                            <h3>Default</h3>
+                            <input type="checkbox" name="default-loca" checked="checked">
+                        </div>
+                    </div>
+                    <span class="col-33"></span>
+                    <input type="button" id="use-selfset-loca" class="round-blue-button" value="Confirm" />
+                </div>                
+            </div>                        
+            <!-- <input type="button" data-popup=".POI-popup" class="bot-button round-blue-button open-popup" value="Nearby POI" /> -->
         </div>
     </div>
 
@@ -60,7 +53,8 @@
                             <!-- Content will be here -->
                             <!---------------------------->
                             <div class="list-block media-list">
-                                <ul id="POI-content"></ul>
+                                <ul id="POI-content">             
+                                </ul>
                             </div>
                         </div>
                     </div>

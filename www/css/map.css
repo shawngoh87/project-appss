@@ -1,11 +1,34 @@
-﻿#use-selfset-loca {
-    width: 33%;
-    margin-left:33%;
+﻿.bot-button {
+    margin-left:20%;
+    width:25%;
+}
+
+.grid-border {
+    border: 2px groove red;
+    height: 180px;
+}
+
+.loca-grid-75 {
+    padding: 3%;
+}
+
+.loca-grid-25 {
+    padding: 4%;
+}
+
+#default-address {
+    font-size: 130%;
+}
+
+#use-selfset-loca {
+    width: 24%;
+    margin-left: 38%;
+    margin-top: 1%;
 }
 
 #bot-part {
     position: absolute;
-    top: 56%;
+    top: 51%;
     width: 100%;
 }
 
@@ -13,7 +36,7 @@
     position: absolute;
     height: 45%;
     width: 90%;
-    top: 14%;
+    top: 10%;
     left: 5%;
 }
 
@@ -71,11 +94,11 @@
     font-family: Roboto;
     font-size: 15px;
     font-weight: 300;
-    margin-left: 3%;
-    margin-top: 2%;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
     width: 87%;
+    height: 16%;
+    visibility:hidden;
 }
 
     #pac-input:focus {
