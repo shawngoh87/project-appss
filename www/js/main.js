@@ -682,6 +682,7 @@ myApp.onPageInit('main', function (page) {
     function showHistory() {
         var historyStackDate = null; //Stack Date for date checking
         var historyStampIndex = 0; //Index stamping for date
+        historyCurrentIndex = 0;
         var historyList = new Array(); //historyList
         historyRef.limitToFirst(100).once('value', function (snapshot) {
             console.log("0");
@@ -802,6 +803,7 @@ myApp.onPageInit('main', function (page) {
     function showTopupHist() {
         var topupHistStackDate = null; //Stack Date for date checking
         var topupHistStampIndex = 0; //Index stamping for date
+        topupHistCurrentIndex = 0;
         var topupHistList = new Array(); //topuphistoryList
         topupHistRef.limitToFirst(100).once('value', function (snapshot) {
             console.log("0");
@@ -924,6 +926,9 @@ myApp.onPageInit('main', function (page) {
         }
         return;
     });
+
+
+    //------------------------------------------------------------------------
 
     $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
