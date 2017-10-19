@@ -16,7 +16,7 @@ var mainView = myApp.addView('.view-main', {
 var Db = {};
 var Loaded, user, userRef, carRef, carRead;
 var rate, selectedCar = false, selectedLocation = false;
-var expired = false, extendDuration, extendedDuration = false;
+var expired = false, extendDuration;
 
 // Global user position Var
 var user_pos = {
@@ -364,40 +364,41 @@ myApp.onPageInit('main', function (page) {
                     time_unit += 's';
                 }
             }
+            console.log(time_val);
 
             var str_active = '<li class="actively-parking-car">' +
-                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
-                '<div class="item-inner">' +
-                '<div class="item-title-row">' +
-                '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
-                '<input id="timestamp-active-end" value="' + end_time + '" />' +
-                '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
-                '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                '</div>' +
-                '<div class="item-subtitle active-car-location"></div>' +
-                '</div>' +
-                '</a>' +
-                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
-                '<div class="popover-angle"></div>' +
-                '<div class="popover-inner">' +
-                '<div class="content-block">' +
-                '<div id="active-car-plate">' + activeCarPlate + '</div>' +
-                '<div id="location"></div><br />' +
-                '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                '<div id="lbl-time">Expected End Time:</div>' +
-                '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                '<div id="btns">' +
-                '<button id="terminate-btn">Terminate</button>' +
-                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
-                '<span></span>' +
-                '</div>' +
-                '</li>';
+                                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                                    '<div class="item-inner">' +
+                                        '<div class="item-title-row">' +
+                                            '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                                            '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                            '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                                            '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                            '</div>' +
+                                            '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                    '</div>' +
+                                '</a>' +
+                                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                                    '<div class="popover-angle"></div>' +
+                                    '<div class="popover-inner">' +
+                                        '<div class="content-block">' +
+                                            '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                                            '<div id="location">' + location + '</div><br />' +
+                                            '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                            '<div id="lbl-time">Expected End Time:</div>' +
+                                            '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                                            '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                            '<div id="btns">' +
+                                                '<button id="terminate-btn" value="' + activeCarPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
+                                                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="progressbar" data-progress="' + (((parkDuration - remain_time) / parkDuration) * 100) + '">' +
+                                    '<span></span>' +
+                                '</div>' +
+                            '</li>';
 
             $$('#ulist-active').append(str_active);
             getActiveAddress(activeLocation, activeCarPlate);
@@ -509,7 +510,7 @@ myApp.onPageInit('main', function (page) {
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
-                'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
+                'Park Until&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
@@ -575,39 +576,39 @@ myApp.onPageInit('main', function (page) {
                         }
                     }
 
-                    var str_active = '<li class="actively-parking-car">' +
-                        '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
-                        '<div class="item-inner">' +
-                        '<div class="item-title-row">' +
-                        '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
-                        '<input id="timestamp-active-end" value="' + end_time + '" />' +
-                        '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
-                        '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                        '</div>' +
-                        '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
-                        '</div>' +
-                        '</a>' +
-                        '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
-                        '<div class="popover-angle"></div>' +
-                        '<div class="popover-inner">' +
-                        '<div class="content-block">' +
-                        '<div id="active-car-plate">' + carPlate + '</div>' +
-                        '<div id="location">' + location + '</div><br />' +
-                        '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                        '<div id="lbl-time">Expected End Time:</div>' +
-                        '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                        '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                        '<div id="btns">' +
-                        '<button id="terminate-btn">Terminate</button>' +
-                        '<button id="extend-btn" value="' + carPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '<div class="progressbar" data-progress="' + ((remain_time / parkDuration) * 100) + '">' +
-                        '<span></span>' +
-                        '</div>' +
-                        '</li>';
+                            var str_active = '<li class="actively-parking-car">' +
+                                                '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
+                                                    '<div class="item-inner">' +
+                                                        '<div class="item-title-row">' +
+                                                            '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
+                                                            '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                                                            '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                                                            '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                                                            '</div>' +
+                                                            '<div class="item-subtitle"><i class="material-icons">place</i>' + location + '</div>' +
+                                                    '</div>' +
+                                                '</a>' +
+                                                '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
+                                                    '<div class="popover-angle"></div>' +
+                                                    '<div class="popover-inner">' +
+                                                        '<div class="content-block">' +
+                                                            '<div id="active-car-plate">' + carPlate + '</div>' +
+                                                            '<div id="location">' + location + '</div><br />' +
+                                                            '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                                                            '<div id="lbl-time">Expected End Time:</div>' +
+                                                            '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                                                            '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                            '<div id="btns">' +
+                                                                '<button id="terminate-btn" value="' + carPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
+                                                                '<button id="extend-btn" value="' + carPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                                                            '</div>' +
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                                '<div class="progressbar" data-progress="' + (((parkDuration - remain_time) / parkDuration) * 100) + '">' +
+                                                    '<span></span>' +
+                                                '</div>' +
+                                            '</li>';
 
                     $$('#ulist-active').append(str_active);
                 }
@@ -692,33 +693,33 @@ myApp.onPageInit('main', function (page) {
             var time = weekday[topupTime.getDay()] + ' ' + topupTime.getDate();
 
             //update to Topup UI
-            var str_topup = '<div class="timeline-item">' +
-                '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
-                '<div class="timeline-item-divider"></div>' +
-                '<div class="timeline-item-content list-block inset">' +
-                '<ul>' +
-                '<li class="accordion-item">' +
-                '<a href="#" class="item-link item-content">' +
-                '<div class="item-inner">' +
-                '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
-                '<div class="item-after">RM' + topupData.amount + '</div>' +
-                '</div>' +
-                '</a>' +
-                '<div class="accordion-item-content" id="topup-accordion">' +
-                '<div class="content-block">' +
-                '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getYear() + '<br></b></div>' +
-                '<div id="topup-info">' +
-                '<p>Amount: RM ' + topupData.amount + '<br></p>' +
-                '<p>Expired Date: ' + topupData.expired_date + '<br></p>' +
-                '<p id="lbl-cc">Credit Card Number:</p>' +
-                '<p id="desc-cc">xxxx-xxxx-xxxx-' + topupData.credit_card_no % 10000 + '</p>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</li>' +
-                '</ul>' +
-                '</div>' +
-                '</div>';
+            var str_topup = '<div class="timeline-item">' + 
+                                '<div class="timeline-item-date" id="timeline-date">' + topupTime.getDate() + '<small>' + monthname[topupTime.getMonth()] + '</small></div>' +
+                                '<div class="timeline-item-divider"></div>' +
+                                '<div class="timeline-item-content list-block inset">' +
+                                    '<ul>' +
+                                        '<li class="accordion-item">' +
+                                            '<a href="#" class="item-link item-content">' +
+                                                '<div class="item-inner">' +
+                                                    '<div id="topup-icon" class="item-title">CardNo: ' + topupData.credit_card_no % 10000 + '</div>' +
+                                                    '<div class="item-after">RM' + topupData.amount + '</div>' +
+                                                '</div>' +
+                                            '</a>' +
+                                            '<div class="accordion-item-content" id="topup-accordion">' +
+                                                '<div class="content-block">' +
+                                                    '<div id="topup-date"><b>' + topupTime.getDate() + ' ' + monthnameFull[topupTime.getMonth()] + ' ' + topupTime.getFullYear() + '<br></b></div>' +
+                                                    '<div id="topup-info">' +
+                                                        '<p>Amount: RM ' + topupData.amount + '<br></p>' +
+                                                        '<p>Expired Date: ' + topupData.expired_date + '<br></p>' +
+                                                        '<p id="lbl-cc">Credit Card Number:</p>' +
+                                                        '<p id="desc-cc">xxxx-xxxx-xxxx-' + topupData.credit_card_no % 10000 + '</p>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</li>' +
+                                    '</ul>' +
+                                '</div>' +
+                            '</div>';
 
             $$('#timeline-topup').append(str_topup);
             i++;
@@ -746,31 +747,10 @@ myApp.onPageInit('main', function (page) {
 // Extend Button Function
 //---------------------------------------
 function extendParkingTime(theCar) {
-    //Get duration selection choices
-    firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
-        for (var time in snapshot.val()) {
-            $$('.select-extend-duration').append(
-                '<li>\
-                    <label class="label-radio item-content">\
-                        <input type="radio" name="ex-duration" value="'+ snapshot.child(time).val() + '" />\
-                        <div class="item-media"><i class="icon icon-form-radio"></i></div>\
-                        <div class="item-inner">\
-                            <div class="item-title">' + timestamp2Time(snapshot.child(time).val()).name + '</div>\
-                        </div>\
-                    </label>\
-                </li>'
-            );
-        }
-    })
-
-    //Initiate variables
-
-
-    $$('.actively-parking-car').each(function () {
-        if ($$(this).find('#car-icon').text().replace(/child_friendly/g, '') == theCar) {
-            if ($$(this).find('#timestamp-active-end').val() - Date.now() <= 0) {
-                expired = true;
-            }
+    var extendCarRead = carRead;
+    $$('.actively-parking-car').each(function(){
+        if((extendCarRead[theCar].parking.timestamp + extendCarRead[theCar].parking.duration) - Date.now() <= 0){
+            expired = true;
         }
     });
     if (expired) {
@@ -787,105 +767,115 @@ function extendParkingTime(theCar) {
 
         myApp.pickerModal(
             '<div class="picker-modal">' +
-            '<div class="toolbar">' +
-            '<div class="toolbar-inner">' +
-            '<div class="left" id="extendCarPlate">' + theCar + '</div>' +
-            '<div class="right"><a href="#" class="close-picker">Cancel</a></div>' +
-            '</div>' +
-            '</div>' +
-            '<div class="picker-modal-inner">' +
-            '<div class="content-block" id="extend-content">' +
-            '<div id="lbl-extend">Please select the duration to extend the parking time.</div>' +
-            '<div class="list-block"  id="duration-content">' +
-            '<a href="#" data-popover=".popover-menu-duration-extend" class="item-link close-panel open-popover">' +
-            '<div class="item-content">' +
-            '<div class="item-media"><i class="material-icons selected-duration-logo">schedule</i></div>' +
-            '<div class="item-inner">' +
-            '<div class="item-title selected-duration">Duration</div>' +
-            '</div>' +
-            '</div>' +
-            '</a>' +
-            '<div class="popover popover-menu-duration-extend">' +
-            '<div class="popover-inner">' +
-            '<div class="list-block">' +
-            '<ul class = "select-extend-duration">' +
-            '</ul>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div><br />' +
-            '<div><button id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button></div>' +
-            '</div>' +
-            '</div>' +
+                '<div class="toolbar">' +
+                    '<div class="toolbar-inner">' +
+                        '<div class="left" id="extendCarPlate">' + theCar + '</div>' +
+                        '<div class="right"><a href="#" class="close-picker">Cancel</a></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="picker-modal-inner">' +
+                    '<div class="content-block" id="extend-content">' +
+                        '<div id="lbl-extend">Please select the duration to extend the parking time.</div><br/>' +
+                        '<div class="item-title label">' +
+                            '<p class="slider-info row">' +
+                                '<span class="col-30">Park until:</span>' +
+                                '<span class="col-50">Duration:</span>' +
+                                '<span class="col-20">Token:</span>' +
+                            '</p>' +
+                        '</div>' +
+                        '<div>' +
+                            '<p class="slider-info row">' +
+                                '<span class="col-30 extended-duration"></span>' +
+                                '<span class="col-55 selected-extend-duration"></span>' +
+                                '<span class="col-15 extended-token"></span>' +
+                            '</p>' +
+                        '</div>' +
+                        '<div class="item-input">' +
+                            '<div class="range-slider">' +
+                                '<input type="range" class="extend-duration" min="600000" max="43200000" value="3600000" step="600000" />' +
+                            '</div>' +
+                        '</div><br />' +
+                        '<div><button id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button></div>' +
+                    '</div>' +
+                '</div>' +
             '</div>'
         )
     }
 
-    //----------------------------------
-    // Get Selected Duration Function
-    //----------------------------------
-    $$('.select-extend-duration').on('click', function () {
-        extendDuration = +$$('input[name=ex-duration]:checked').val();
-        $$('.selected-duration').html(timestamp2Time(extendDuration).name);
-        $$('.selected-duration-logo').css('color', 'blue');
-        extendedDuration = true;
-        $$('#close-popover-menu').click();
+    //----------------------
+    //Get Selected Duration
+    //----------------------
+    var extendEndTime = (extendCarRead[theCar].parking.timestamp + extendCarRead[theCar].parking.duration) - Date.now();
+    function getDuration() {
+        extendDuration = +$$('.extend-duration').val();
+        var tokenNeeded = (extendDuration * 2 / 600000);
+        $$('.extended-duration').html(clockPass(extendEndTime + extendDuration));
+        $$('.selected-extend-duration').html(timestamp2Time(extendDuration).name);
+        $$('.extended-token').html(tokenNeeded);
+    }
+
+    getDuration();
+
+    setInterval(function () {
+        getDuration();
+    }, 60000)
+
+    $$('.extend-duration').on('input', function () {
+        getDuration();
     })
 };
 //---------------------------------------
 // Extend Function
 //---------------------------------------
 function extendConfirmed(theCar) {
-    if (extendedDuration == false) {
-        myApp.alert('Please select your duration! Stupid!', 'Notification');
-    }
-    else {
-        var tokenNO, tokenReq, tokenBal
+    var tokenNO, tokenReq, tokenBal;
 
-        tokenReq = extendDuration * 2 / 3600000;
-        extendConfirmText =
-            'Selected Car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
-            'Duration extended is&emsp;:' + $$('.selected-duration').text() + '<br>' +
-            'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
-            'Confirm Transaction?';
-        myApp.confirm(extendConfirmText, 'Confirmation', function () {
-            userRef.child('balance').once('value').then(function (snapshot) {
-                tokenNo = snapshot.val();
-                tokenBal = tokenNo - tokenReq;
-                if (tokenBal < 0) {
-                    myApp.alert('Insufficient balance.', 'Notification');
-                }
-                else {
-                    myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
-                    userRef.update({
-                        balance: tokenBal
-                    })
-                    $$('.token').html(+tokenBal);
-                    $$('.selected-duration').html('Duration');
-                    $$('.selected-duration-logo').css('color', 'inherit');
-                    extendedDuration = false;
-                    $$('.close-picker').click();
-                }
-            })
-
-            //Update to firebase
-            var amount = carRead[theCar].parking.amount;
-            var duration = carRead[theCar].parking.duration;;
-            var timestamp = carRead[theCar].parking.timestamp;
-
-            var newAmount = amount + tokenReq;
-            var newDuration = duration + extendDuration;
-
-            carRef.child(theCar).child('parking').update({
-                active: true,
-                amount: newAmount,
-                timestamp: timestamp,
-                duration: newDuration
-            })
+    tokenReq = (extendDuration * 2 / 600000);
+    extendConfirmText =
+        'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
+        'Extended until&emsp;&emsp;:' + $$('.extended-duration').text() + '<br>' +
+        'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+        'Confirm Transaction?';
+    myApp.confirm(extendConfirmText, 'Confirmation', function () {
+        userRef.child('balance').once('value').then(function (snapshot) {
+            tokenNo = snapshot.val();
+            tokenBal = tokenNo - tokenReq;
+            if (tokenBal < 0) {
+                myApp.alert('Insufficient balance.', 'Notification');
+            }
+            else {
+                myApp.alert('Transaction is done successfully. Thank You!', 'Confirmation');
+                userRef.update({
+                    balance: tokenBal
+                })
+                $$('.token').html(+tokenBal.toFixed(2));
+                $$('.selected-duration').html('Duration');
+                $$('.selected-duration-logo').css('color', 'inherit');
+                extendedDuration = false;
+                $$('.close-picker').click();
+            }
         })
-        $$('#tab-history-button').click();
-        $$('#tab-active-button').click();
-    }
+
+        //Update to firebase
+        var amount = carRead[theCar].parking.amount;
+        var duration = carRead[theCar].parking.duration;
+        var timestamp = carRead[theCar].parking.timestamp;
+        var location = carRead[theCar].parking.location;
+        
+        var newAmount = amount + tokenReq;
+        var newDuration = duration + extendDuration;
+
+        console.log(location);
+        carRef.child(theCar).child('parking').update({
+            active: true,
+            amount: newAmount,
+            timestamp: timestamp,
+            duration: newDuration,
+            location: location
+        })
+    })
+    $$('#tab-history-button').click();
+    $$('#tab-active-button').click();
 }
 
 //---------------------------------------
