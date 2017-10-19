@@ -492,14 +492,15 @@ myApp.onPageInit('main', function (page) {
         $$('.required-token').html(tokenReq);
     }
 
-    getDuration();
-
     setInterval(function () {
-        getDuration();
+        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
+        parkDuration = $$('.park-duration').val();
     },60000)
 
     $$('.park-duration').on('input', function () {
-        getDuration();
+        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
+        parkDuration = $$('.park-duration').val();
+        console.log(clockPass($$('.park-duration').val()));
     })
 
     //-----------------------
@@ -507,6 +508,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     $$('.confirm-payment').on('click', function () {
         if (selectedCar && selectedLocation && parkDuration>0) {
+            tokenReq = parkDuration * 2 / 3600000;
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
@@ -1475,17 +1477,28 @@ myApp.onPageInit('profile-promocode', function (page) {
 // Change password
 myApp.onPageInit('settings-change-password', function (page) {
     var user = firebase.auth().currentUser;
+
+    var credentials = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
+
+
     $$('#update-password').on('click', function () {
-        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
-            user.updatePassword($$('#new-password').val()).then(function () {
+
+       // if (user.reauthenticateWithCredential(credentials), function() {
+         //   myApp.alert('Password does not match', 'Error!');
+       // }
+        //else if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+          //  user.updatePassword($$('#new-password').val()).then(function () {
                 // Update successful.
-                myApp.alert('Your password has been updated!');
-            }).catch(function (error) {
+         //       myApp.alert('Your password has been updated!');
+       //     }).catch(function (error) {
                 // An error happened.
-            });
-        } else
-            myApp.alert('Password and confirm password does not match', 'Error!');
-    })
+       //     });
+     //   } else
+       //     myApp.alert('Password and confirm password does not match', 'Error!');
+            
+       
+    });
+
 });
 
 //Change Address
@@ -1567,7 +1580,6 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_remarks: cl_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
-                mainView.router.refreshPage();
             }).catch(function (error) {
 
             });
@@ -1610,7 +1622,6 @@ myApp.onPageInit('profile-report', function (page) {
                 ip_remarks: ip_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
-                mainView.router.refreshPage();
             }).catch(function (error) {
                 });
         }
@@ -1618,4 +1629,4 @@ myApp.onPageInit('profile-report', function (page) {
     });
 
 
-});
+})
