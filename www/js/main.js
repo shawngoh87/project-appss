@@ -83,7 +83,7 @@ function initUserInfo() {
             $$('.index-preloader').hide();
             console.log(Db.user);
             carRead = Db.user.cars;
-            
+
             refreshActiveHistory();
         },
         // Failed promise
@@ -91,8 +91,8 @@ function initUserInfo() {
             console.log(err);
         }
     );
-    firebase.database().ref('admin/token_per_minute').once('value', function(snapshot){
-        rate = snapshot.val()/60000;
+    firebase.database().ref('admin/token_per_minute').once('value', function (snapshot) {
+        rate = snapshot.val() / 60000;
     })
 }
 
@@ -488,27 +488,25 @@ myApp.onPageInit('main', function (page) {
         parkDuration = +$$('.park-duration').val();
         tokenReq = (parkDuration * rate);
         $$('.selected-duration').html(clockPass(parkDuration));
-        $$('.selected-park-duration').html(timestamp2Time(parkDuration).name);
+        $$('.selected-park-duration').html(timestamp2Time(parkDuration).shortName);
         $$('.required-token').html(tokenReq);
     }
 
+    getDuration();
+
     setInterval(function () {
-        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
-        parkDuration = $$('.park-duration').val();
-    },60000)
+        getDuration();
+    }, 60000)
 
     $$('.park-duration').on('input', function () {
-        $$('.selected-duration').html(clockPass($$('.park-duration').val()))
-        parkDuration = $$('.park-duration').val();
-        console.log(clockPass($$('.park-duration').val()));
+        getDuration();
     })
 
     //-----------------------
     // Pay Button Function
     //-----------------------
     $$('.confirm-payment').on('click', function () {
-        if (selectedCar && selectedLocation && parkDuration>0) {
-            tokenReq = parkDuration * 2 / 3600000;
+        if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Duration is&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
@@ -752,7 +750,7 @@ function extendParkingTime(theCar) {
     firebase.database().ref('admin/duration').once('value').then(function (snapshot) {
         for (var time in snapshot.val()) {
             $$('.select-extend-duration').append(
-                    '<li>\
+                '<li>\
                     <label class="label-radio item-content">\
                         <input type="radio" name="ex-duration" value="'+ snapshot.child(time).val() + '" />\
                         <div class="item-media"><i class="icon icon-form-radio"></i></div>\
@@ -761,7 +759,7 @@ function extendParkingTime(theCar) {
                         </div>\
                     </label>\
                 </li>'
-                );
+            );
         }
     })
 
@@ -897,7 +895,7 @@ function terminateParkingTime(theCar) {
     var timeVal, timeUnit;
     var terminateDuration = Db.user.cars[theCar].parking.duration;
     var terminateTimestamp = Db.user.cars[theCar].parking.timestamp;
-    
+
     var terminateRemainTime = (terminateTimestamp + terminateDuration) - Date.now();
     var terminateTime = new Date(terminateTimestamp + terminateDuration);
 
@@ -926,11 +924,11 @@ function terminateParkingTime(theCar) {
     }
 
     terminateConfirmText =
-            'Are you sure that you want to terminate the follwing parking?<br>' +
-            'Car Plate Number&emsp;&nbsp:' + theCar.toString() + '<br>' +
-            'Time Remaining&emsp;:' + timeVal + ' ' + timeUnit + '<br>' +
-            'Expected End Time is :<br>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '<br><br>' +
-            'Confirm to Terminate?';
+        'Are you sure that you want to terminate the follwing parking?<br>' +
+        'Car Plate Number&emsp;&nbsp:' + theCar.toString() + '<br>' +
+        'Time Remaining&emsp;:' + timeVal + ' ' + timeUnit + '<br>' +
+        'Expected End Time is :<br>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '<br><br>' +
+        'Confirm to Terminate?';
 
     myApp.confirm(terminateConfirmText, 'Confirmation', function () {
         //Update to firebase
@@ -1144,6 +1142,12 @@ myApp.onPageInit("select-location", function (page) {
         center: { lat: -34.397, lng: 150.644 },
         zoom: 18
     });
+
+    //-------------
+    //Request Body
+    //-------------
+    var request = require()
+
 
     //--------------------------------
     // default checkbox function
@@ -1477,28 +1481,17 @@ myApp.onPageInit('profile-promocode', function (page) {
 // Change password
 myApp.onPageInit('settings-change-password', function (page) {
     var user = firebase.auth().currentUser;
-
-    var credentials = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
-
-
     $$('#update-password').on('click', function () {
-
-       // if (user.reauthenticateWithCredential(credentials), function() {
-         //   myApp.alert('Password does not match', 'Error!');
-       // }
-        //else if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
-          //  user.updatePassword($$('#new-password').val()).then(function () {
+        if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+            user.updatePassword($$('#new-password').val()).then(function () {
                 // Update successful.
-         //       myApp.alert('Your password has been updated!');
-       //     }).catch(function (error) {
+                myApp.alert('Your password has been updated!');
+            }).catch(function (error) {
                 // An error happened.
-       //     });
-     //   } else
-       //     myApp.alert('Password and confirm password does not match', 'Error!');
-            
-       
-    });
-
+            });
+        } else
+            myApp.alert('Password and confirm password does not match', 'Error!');
+    })
 });
 
 //Change Address
@@ -1513,12 +1506,12 @@ myApp.onPageInit('settings-change-address', function (page) {
             userRef.update({
                 address: $$('#new-address').val()
             }).then(function () {
-            myApp.alert('Your address has been updated successfully!');
+                myApp.alert('Your address has been updated successfully!');
             }).catch(function (error) {
 
             });
         }
-            else{
+        else {
             myApp.alert('Please enter your new address', 'Error!');
         }
     });
@@ -1580,6 +1573,7 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_remarks: cl_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
+                mainView.router.refreshPage();
             }).catch(function (error) {
 
             });
@@ -1622,11 +1616,12 @@ myApp.onPageInit('profile-report', function (page) {
                 ip_remarks: ip_remarks
             }).then(function () {
                 myApp.alert('Report Submitted!');
+                mainView.router.refreshPage();
             }).catch(function (error) {
-                });
+            });
         }
 
     });
 
 
-})
+});

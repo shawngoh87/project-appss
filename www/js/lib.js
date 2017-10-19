@@ -27,7 +27,7 @@ function MeterBetweenCoords(lat1, lon1, lat2, lon2) {
 //Function to get time of timestamp
 //------------------------------------
 function timestamp2Time(value) {
-    var time = { hour: 0, minute: 0, second: 0, name: '' };
+    var time = { hour: 0, minute: 0, second: 0, name: '', shortName: '' };
     var str1 = '', str2 = '', str3 = '';
     time.hour = Math.floor(value / 3600000);
     time.minute = Math.floor(value / 60000);
@@ -55,6 +55,7 @@ function timestamp2Time(value) {
     }
 
     time.name = str1 + str2 + str3;
+    time.shortName = time.name.replace('Hour', 'Hr').replace('Minute', 'Min').replace('Second', 'Sec');
 
     return time;
 }
@@ -93,9 +94,14 @@ function clockPass(value) {
     m = date.getMinutes();
     if (h >= 12) {
         if (m > 0) {
-            h -= 12;
             aORp = 'p';
         }
+    }
+    if (h == 0) {
+        h = 12;
+    }
+    if (h > 12) {
+        h -= 12;
     }
     if (m < 10) {
         m = '0' + m;
