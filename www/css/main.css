@@ -92,6 +92,12 @@
     background-color: white;
 }
 
+.promo-code{
+    position:absolute;
+    top: 33%;
+    width: 100%;
+}
+
 .wallet{
     position:absolute;
     top:15%;
@@ -162,7 +168,7 @@ a.close-popover{
     margin: 0px;
 }
 
-.content-block.check-nearby {
+.content-block.check-promotion {
     position: absolute;
     top: 80%;
     width: 100%;

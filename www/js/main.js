@@ -251,13 +251,14 @@ function refreshActiveHistory() {
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
+                var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
-                            promocode: "ILOVEDOUBLEPARK",
                             location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
+                            promocode: parkingPromocode,
                             start_time: parkingTimestamp
                         })
                         carRef.child(ownedCarPlate).child('parking').update({
@@ -300,13 +301,14 @@ myApp.onPageInit('main', function (page) {
         var parkingDuration = carRead[ownedCarPlate].parking.duration;
         var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
         var parkingLocation = carRead[ownedCarPlate].parking.location;
+        var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
         if (parkingActive) {
             if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                 carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                     amount: parkingAmount,
-                    promocode: "ILOVEDOUBLEPARK",
                     location: parkingLocation,
                     duration: timestamp2Time(parkingDuration).name,
+                    promocode: parkingPromocode,
                     start_time: parkingTimestamp
                 })
                 carRef.child(ownedCarPlate).child('parking').update({
@@ -434,13 +436,14 @@ myApp.onPageInit('main', function (page) {
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
+                var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
-                            promocode: "ILOVEDOUBLEPARK",
                             location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
+                            promocode: parkingPromocode,
                             start_time: parkingTimestamp
                         })
                         carRef.child(ownedCarPlate).child('parking').update({
@@ -568,6 +571,7 @@ myApp.onPageInit('main', function (page) {
                         amount: tokenReq,
                         timestamp: timestamp,
                         duration: parkDuration,
+                        promocode: $$('#used-promo-code').val(),
                         location: { lat: user_pos.lat, lng: user_pos.lng }
                     })
 
@@ -683,8 +687,8 @@ myApp.onPageInit('main', function (page) {
                             active: false,
                             duration: 0,
                             amount: 0,
-                            timestamp: ''
-
+                            timestamp: '',
+                            promocode:''
                         })
 
                         //write to UI
@@ -1150,11 +1154,8 @@ function terminateParkingTime(theCar) {
         //Update to firebase
         carRef.child(theCar).child('parking').update({
             active: false,
-            amount: 0,
-            timestamp: 0,
-            duration: 0,
-            location: terminateLocation
         })
+        terminateDuration -= terminateRemainTime;
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
