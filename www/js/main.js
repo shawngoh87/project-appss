@@ -1385,6 +1385,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
     $$('.load-ic-no').html(Db.user.IC);
+   
 
 });
 
@@ -1940,7 +1941,7 @@ myApp.onPageInit('settings-change-profile', function (page) {
     $$('#edit-address').val(address);
     $$('#edit-gender').val(gender);
 
-    $$('#update-profile').on('click', function () {
+    $$('#button-update-profile').on('click', function () {
         if ($$('#edit-name').val() !== ("") && $$('#edit-ic').val() !== ("") && $$('#edit-birthday').val() !== ("") && $$('#edit-address').val() !== ("")) {
 
             userRef.update({
