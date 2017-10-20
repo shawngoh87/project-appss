@@ -1296,11 +1296,10 @@ myApp.onPageInit('color-themes', function (page) {
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
-    user = firebase.auth().currentUser;
 
     $$('.load-username').html(Db.user.username);
     $$('.load-real-name').html(Db.user.real_name);
-    $$('.load-email').html(user.email);
+    $$('.load-email').html(Db.user.email);          //might need to change
     $$('.load-phone-no').html(Db.user.phone_no);
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
@@ -1639,6 +1638,7 @@ myApp.onPageInit("select-location", function (page) {
     }
 });
 
+//Need to change ordering way//////////////////////
 //Promocode
 myApp.onPageInit('profile-promocode', function (page) {
     //Display Promocode
@@ -1682,7 +1682,6 @@ myApp.onPageInit('profile-promocode', function (page) {
 
 //Change password
 myApp.onPageInit('settings-change-password', function (page) {
-    var user = firebase.auth().currentUser;
 
     $$('#update-password').on('click', function () {
         var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
@@ -1710,7 +1709,6 @@ myApp.onPageInit('settings-change-password', function (page) {
 
 //Make Report (CarLoss/IllegalPark)
 myApp.onPageInit('profile-report', function (page) {
-    userRef = firebase.database().ref('users/' + user.uid);
 
     var cl_owner_name;
     var cl_owner_ic;
@@ -1822,7 +1820,6 @@ myApp.onPageInit('promotion', function (page) {
 
 //Change Profile
 myApp.onPageInit('settings-change-profile', function (page) {
-    user = firebase.auth().currentUser;
     var name = Db.user.real_name;
     var ic = Db.user.IC;
     var birthday = Db.user.birthday;
