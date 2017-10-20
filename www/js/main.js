@@ -1387,6 +1387,29 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-ic-no').html(Db.user.IC);
    
 
+
+    $$('.button-profile-pic').on('click', function () {
+        var options = [
+            {
+                text: 'View Profile Picture',
+                bold: true
+            },
+            {
+                text: 'Edit Profile Picture',
+                bold: true
+            }
+        ];
+        var cancel = [
+            {
+                text: 'Cancel',
+                color: 'red',
+                bold: true
+            }
+        ];
+        var action_profile_pic = [options, cancel];
+        myApp.actions(action_profile_pic);
+    
+    });
 });
 
 //---------------------------
@@ -1764,7 +1787,7 @@ myApp.onPageInit('profile-promocode', function (page) {
 //Change password
 myApp.onPageInit('settings-change-password', function (page) {
 
-    $$('#update-password').on('click', function () {
+    $$('#button-update-password').on('click', function () {
         var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
         user.reauthenticateWithCredential(credential).then(function () {
             if ($$('#new-password').val() === $$('#confirm-new-password').val()) {
@@ -1963,3 +1986,27 @@ myApp.onPageInit('settings-change-profile', function (page) {
     });
 
 });
+
+//Change H/P No.
+myApp.onPageInit('settings-change-hp', function (page) {
+    $$('.load-phone-no').html(Db.user.phone_no);
+
+    $$('#button-update-hp').on('click', function () {
+        if ($$('#new-hp').val() != ("") ) {
+
+            userRef.update({
+                phone_no: $$('#new-hp').val(),
+            }).then(function () {
+                ;
+                myApp.alert('Your H/P number has been updated successfully!');
+                mainView.router.refreshPage();
+            }).catch(function (error) {
+            });
+        }
+        else {
+            myApp.alert('H/P Number cannot be empty.', 'Error!');
+        }
+    });
+
+});
+
