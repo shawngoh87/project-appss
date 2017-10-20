@@ -208,12 +208,19 @@ function refreshActiveHistory() {
         var remainTime = endTime - Date.now();
         var timeVal;
         var timeUnit;
+        var progress;
 
         //refresh for the progress bar
         var duration = carRead[ownedCarPlate].parking.duration;
-        var progress = Math.ceil((((duration - remainTime) / duration) * 100));
-        var progressbar = $$('.progressbar');
-        myApp.setProgressbar(progressbar, progress);
+
+        var dataProgress = Math.floor((((duration - remainTime) / duration) * 100));
+        var percentProgress = dataProgress - 100;
+
+        strDataProgress = ''+ dataProgress +''
+        document.getElementById('progressbar'+ownedCarPlate+'').setAttribute("data-progress", strDataProgress);
+
+        var strProgressbar = 'transform: translate3d(' + percentProgress + '%, 0px, 0px);'
+        document.getElementById('innerProgressbar' + ownedCarPlate + '').setAttribute("style", strProgressbar);
 
         if (remainTime > 999) {
 
@@ -373,7 +380,8 @@ myApp.onPageInit('main', function (page) {
                 }
             }
 
-            var dataProgress = Math.ceil((((activeDuration - remain_time) / activeDuration) * 100));
+            var dataProgress = Math.floor((((activeDuration - remain_time) / activeDuration) * 100));
+            var percentProgress = dataProgress - 100;
 
             var str_active = '<li class="actively-parking-car">' +
                                 '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
@@ -384,7 +392,7 @@ myApp.onPageInit('main', function (page) {
                                             '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                             '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                             '</div>' +
-                                            '<div class="item-subtitle active-car-location"></div>' +
+                                            '<div class="item-subtitle active-car-location">' + user_pos.city + '</div>' +
                                     '</div>' +
                                 '</a>' +
                                 '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
@@ -404,8 +412,8 @@ myApp.onPageInit('main', function (page) {
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
-                                '<span class="progressbar" data-progress="' + dataProgress + '">' +
-                                    '<span class="" style="transform: translate3d(' + (dataProgress - 100) +'%, 0px, 0px);"></span>' +
+                                '<span class="progressbar" id="progressbar' + activeCarPlate + '" data-progress="' + dataProgress + '">' +
+                                    '<span class="" id="innerProgressbar' + activeCarPlate + '" style="transform: translate3d(' + percentProgress + '%, 0px, 0px);"></span>' +
                                 '</span>'
                             '</li>';
             $$('#ulist-active').append(str_active);
@@ -583,6 +591,7 @@ myApp.onPageInit('main', function (page) {
                     var remain_time = end_time - current_time;
                     var time_val;
                     var time_unit;
+                    var dataProgress;
 
                     if (timestamp2Time(remain_time).second >= 60) {
                         if (timestamp2Time(remain_time).minute >= 60) {
@@ -607,8 +616,9 @@ myApp.onPageInit('main', function (page) {
                             time_unit += 's';
                         }
                     }
-
-                    var dataProgress = Math.ceil((((activeDuration - remain_time) / activeDuration) * 100));
+                    
+                    var dataProgress = Math.floor((((parkDuration - remain_time) / parkDuration) * 100));
+                    var percentProgress = dataProgress - 100;
 
                     var str_active = '<li class="actively-parking-car">' +
                                         '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
@@ -639,8 +649,8 @@ myApp.onPageInit('main', function (page) {
                                                 '</div>' +
                                             '</div>' +
                                         '</div>' +
-                                        '<span class="progressbar" data-progress="' + dataProgress + '">' +
-                                            '<span class="" style="transform: translate3d(' + (dataProgress - 100) + '%, 0px, 0px);"></span>' +
+                                        '<span class="progressbar" id="progressbar' + carPlate + '" data-progress="' + dataProgress + '">' +
+                                            '<span class="" id="innerProgressbar' + carPlate + '" style="transform: translate3d(' + percentProgress + '%, 0px, 0px);"></span>' +
                                         '</span>'
                                      '</li>';
 
@@ -1037,7 +1047,7 @@ function extendParkingTime(theCar) {
     var extendEndTime = (extendCarRead[theCar].parking.timestamp + extendCarRead[theCar].parking.duration) - Date.now();
     function getDuration() {
         extendDuration = +$$('.extend-duration').val();
-        var tokenNeeded = (extendDuration * 2 / 600000);
+        var tokenNeeded = (extendDuration * rate);
         $$('.extended-duration').html(clockPass(extendEndTime + extendDuration));
         $$('.selected-extend-duration').html(timestamp2Time(extendDuration).name);
         $$('.extended-token').html(tokenNeeded);
@@ -1059,15 +1069,15 @@ function extendParkingTime(theCar) {
 function extendConfirmed(theCar) {
     var tokenNO, tokenReq, tokenBal;
 
-    tokenReq = (extendDuration * 2 / 600000);
+    tokenReq = (extendDuration * rate);
     extendConfirmText =
         'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
         'Extended until&emsp;&emsp;:' + $$('.extended-duration').text() + '<br>' +
         'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
         'Confirm Transaction?';
     myApp.confirm(extendConfirmText, 'Confirmation', function () {
-        userRef.child('balance').once('value').then(function (snapshot) {
-            tokenNo = snapshot.val();
+
+            tokenNo = Db.user.balance;
             tokenBal = tokenNo - tokenReq;
             if (tokenBal < 0) {
                 myApp.alert('Insufficient balance.', 'Notification');
@@ -1083,7 +1093,6 @@ function extendConfirmed(theCar) {
                 extendedDuration = false;
                 $$('.close-picker').click();
             }
-        })
 
         //Update to firebase
         var amount = carRead[theCar].parking.amount;
@@ -1094,13 +1103,10 @@ function extendConfirmed(theCar) {
         var newAmount = amount + tokenReq;
         var newDuration = duration + extendDuration;
 
-        console.log(location);
         carRef.child(theCar).child('parking').update({
             active: true,
             amount: newAmount,
-            timestamp: timestamp,
-            duration: newDuration,
-            location: location
+            duration: newDuration
         })
     })
     $$('#tab-history-button').click();
@@ -1112,9 +1118,11 @@ function extendConfirmed(theCar) {
 //---------------------------------------
 function terminateParkingTime(theCar) {
     var timeVal, timeUnit;
+    var terminateAmount = carRead[theCar].parking.amount;
     var terminateDuration = carRead[theCar].parking.duration;
     var terminateTimestamp = carRead[theCar].parking.timestamp;
     var terminateLocation = carRead[theCar].parking.location;
+    var terminatePromoCode = carRead[theCar].parking.promocode;
 
     var terminateRemainTime = (terminateTimestamp + terminateDuration) - Date.now();
     var terminateTime = new Date(terminateTimestamp + terminateDuration);
@@ -1154,8 +1162,20 @@ function terminateParkingTime(theCar) {
         //Update to firebase
         carRef.child(theCar).child('parking').update({
             active: false,
+            duration: 0,
+            timestamp: 0
         })
+
         terminateDuration -= terminateRemainTime;
+        
+        carRef.child(theCar).child('history').child(theCar + terminateTimestamp).update({
+            amount: terminateAmount,
+            promocode: terminatePromoCode,
+            location: terminateLocation,
+            duration: timestamp2Time(terminateDuration).name,
+            start_time: terminateTimestamp
+        })
+
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
