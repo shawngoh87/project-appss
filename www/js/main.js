@@ -1285,6 +1285,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
+    $$('.load-ic-no').html(Db.user.IC);
 
 });
 
@@ -1687,24 +1688,37 @@ myApp.onPageInit('settings-change-password', function (page) {
 });
 
 //Change Address
-myApp.onPageInit('settings-change-address', function (page) {
+myApp.onPageInit('settings-change-profile', function (page) {
     user = firebase.auth().currentUser;
+    var name = Db.user.real_name;
+    var ic = Db.user.IC;
+    var birthday = Db.user.birthday;
+    var address = Db.user.address;
+    var gender = Db.user.gender;
 
-    $$('.load-address').html(Db.user.address);
+    $$('#edit-name').val(name);
+    $$('#edit-ic').val(ic);
+    $$('#edit-birthday').val(birthday);
+    $$('#edit-address').val(address);
+    $$('#edit-gender').val(gender);
 
-    $$('#update-address').on('click', function () {
-        if ($$('#new-address').val() != ("")) {
+    $$('#update-profile').on('click', function () {
+        if ($$('#edit-name').val() != ("") && $$('#edit-ic').val() != ("") && $$('#edit-birthday').val() != ("") && $$('#edit-address').val() != ("")) {
 
             userRef.update({
-                address: $$('#new-address').val()
-            }).then(function () {
-                myApp.alert('Your address has been updated successfully!');
+                real_name: $$('#edit-name').val(),
+                IC: $$('#edit-ic').val(),
+                birthday: $$('#edit-birthday').val(),
+                address: $$('#edit-address').val(),
+                gender: $$('#edit-gender').val(),
+            }).then(function () {;
+                myApp.alert('Your profile has been updated successfully!');
                 mainView.router.refreshPage();
             }).catch(function (error) {
             });
         }
         else {
-            myApp.alert('Please enter your new address', 'Error!');
+            myApp.alert('Please completed your profile.', 'Error!');
         }
     });
 
