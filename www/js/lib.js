@@ -97,7 +97,7 @@ function clockPass(value) {
             aORp = 'p';
         }
     }
-    if (h == 0) {
+    if (h === 0) {
         h = 12;
     }
     if (h > 12) {
@@ -140,7 +140,7 @@ function getActiveAddress(latlng,carPlate) {
         if (address.city) {
             clearInterval(intrv);
             $$('.actively-parking-car').each(function () {
-                if ($$(this).find('#active-car-plate').text() == carPlate) {
+                if ($$(this).find('#active-car-plate').text() === carPlate) {
                     $$(this).find('.active-car-location').html('<i class="material-icons">place</i>' + address.city);
                     $$(this).find('#location').html(address.city);
                 }

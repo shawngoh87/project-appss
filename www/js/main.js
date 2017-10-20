@@ -101,7 +101,7 @@ function initUserInfo() {
 //----------------------------------
 $$('#forget-password').on('click', function () {
     myApp.prompt('Enter your email address below and a password reset email will be sent to you.', 'Forget Password?', function (fp_email) {
-        if (fp_email == "") {
+        if (fp_email === "") {
             myApp.alert('Please try again to enter your email address.', 'Error');
         }
         else {
@@ -126,11 +126,11 @@ $$('.button-login').on('click', function () {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-        if (errorCode == "auth/user-disabled")
+        if (errorCode === "auth/user-disabled")
             myApp.alert(errorMessage, 'Error');
-        else if (errorCode == "auth/invalid-email")
+        else if (errorCode === "auth/invalid-email")
             myApp.alert(errorMessage, 'Error');
-        else if (errorCode == "auth/user-not-found")
+        else if (errorCode === "auth/user-not-found")
             myApp.alert(errorMessage, 'Error');
         else if (errorCode == "auth/wrong-password")
             myApp.alert(errorMessage, 'Error');
@@ -737,21 +737,21 @@ myApp.onPageInit('main', function (page) {
                 var historyDate = new Date(historyData.startTime);
 
                 //Grouping of same date
-                if (historyStackDate == null) {                                 //--------Starting
+                if (historyStackDate === null) {                                 //--------Starting
                     historyStackDate = historyDate;
                     historyList[historyCurrentIndex] = historyData;
                     historyCurrentIndex++;
                     //Check for last iteration
-                    if (historyCurrentIndex == historyCounter) {
+                    if (historyCurrentIndex === historyCounter) {
                         showMeHistory();
                     }
                 }
-                else if (historyStackDate.getYear() == historyDate.getYear() &&
-                    historyStackDate.getMonth() == historyDate.getMonth() &&
-                    historyStackDate.getDate() == historyDate.getDate()) {      //--------Same date
+                else if (historyStackDate.getYear() === historyDate.getYear() &&
+                    historyStackDate.getMonth() === historyDate.getMonth() &&
+                    historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
                     historyList[historyCurrentIndex] = historyData;
                     historyCurrentIndex++;
-                    if (historyCurrentIndex == historyCounter) {
+                    if (historyCurrentIndex === historyCounter) {
                         showMeHistory();
                     }
                 }
@@ -760,7 +760,7 @@ myApp.onPageInit('main', function (page) {
                     historyStackDate = historyDate;                             //--------Stack the new date for date grouping
                     historyList[historyCurrentIndex] = historyData;
                     historyCurrentIndex++;
-                    if (historyCurrentIndex == historyCounter) {
+                    if (historyCurrentIndex === historyCounter) {
                         showMeHistory();
                     }
                 }
@@ -853,21 +853,21 @@ myApp.onPageInit('main', function (page) {
                 var topupHistDate = new Date(topupHistData.topup_time);
 
                 //Grouping of same date
-                if (topupHistStackDate == null) {                                 //--------Starting
+                if (topupHistStackDate === null) {                                 //--------Starting
                     topupHistStackDate = topupHistDate;
                     topupHistList[topupHistCurrentIndex] = topupHistData;
                     topupHistCurrentIndex++;
                     //Check for last iteration
-                    if (topupHistCurrentIndex == topupHistCounter) {
+                    if (topupHistCurrentIndex === topupHistCounter) {
                         showMeTopupHist();
                     }
                 }
-                else if (topupHistStackDate.getYear() == topupHistDate.getYear() &&
-                    topupHistStackDate.getMonth() == topupHistDate.getMonth() &&
-                    topupHistStackDate.getDate() == topupHistDate.getDate()) {      //--------Same date
+                else if (topupHistStackDate.getYear() === topupHistDate.getYear() &&
+                    topupHistStackDate.getMonth() === topupHistDate.getMonth() &&
+                    topupHistStackDate.getDate() === topupHistDate.getDate()) {      //--------Same date
                     topupHistList[topupHistCurrentIndex] = topupHistData;
                     topupHistCurrentIndex++;
-                    if (topupHistCurrentIndex == topupHistCounter) {
+                    if (topupHistCurrentIndex === topupHistCounter) {
                         showMeTopupHist();
                     }
                 }
@@ -876,7 +876,7 @@ myApp.onPageInit('main', function (page) {
                     topupHistStackDate = topupHistDate;                             //--------Stack the new date for date grouping
                     topupHistList[topupHistCurrentIndex] = topupHistData;
                     topupHistCurrentIndex++;
-                    if (topupHistCurrentIndex == topupHistCounter) {
+                    if (topupHistCurrentIndex === topupHistCounter) {
                         showMeTopupHist();
                     }
                 }
@@ -1205,19 +1205,19 @@ myApp.onPageInit('signup', function (page) {
     // submit button for signUp 
     //-----------------------------
     $$('#button-signup-submit').on('click', function () {
-        if ($$('#su-email').val() == "") {
+        if ($$('#su-email').val() === "") {
             //empty email input textbox case
             myApp.alert('Please enter your email.', 'Error');
         }
-        else if ($$('#su-password').val() == "") {
+        else if ($$('#su-password').val() === "") {
             //empty password input textbox case
             myApp.alert('Please enter your password.', 'Error');
         }
-        else if ($$('#su-username').val() == "") {
+        else if ($$('#su-username').val() === "") {
             //empty username input textbox case
             myApp.alert('Please enter your username.', 'Error');
         }
-        else if ($$('#su-phone-no').val() == "") {
+        else if ($$('#su-phone-no').val() === "") {
             //empty phone number input textbox case
             myApp.alert('Please enter your phone number.', 'Error');
         }
@@ -1269,13 +1269,13 @@ myApp.onPageInit('signup', function (page) {
                 // Handle Sign Up Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
-                if (errorCode == "auth/email-already-in-use")
+                if (errorCode === "auth/email-already-in-use")
                     myApp.alert(errorMessage, 'Error');
-                else if (errorCode == "auth/invalid-email")
+                else if (errorCode === "auth/invalid-email")
                     myApp.alert(errorMessage, 'Error');
-                else if (errorCode == "auth/operation-not-allowed")
+                else if (errorCode === "auth/operation-not-allowed")
                     myApp.alert(errorMessage, 'Error');
-                else if (errorCode == "auth/weak-password")
+                else if (errorCode === "auth/weak-password")
                     myApp.alert(errorMessage, 'Error');
             });
 
@@ -1283,7 +1283,7 @@ myApp.onPageInit('signup', function (page) {
     })
 });
 
-// ===== Color themes ===== 
+// ======= Color themes ======= 
 myApp.onPageInit('color-themes', function (page) {
     $$(page.container).find('.color-theme').click(function () {
         var classList = $$('body')[0].classList;
@@ -1357,7 +1357,7 @@ myApp.onPageInit("select-location", function (page) {
             }));
         }
         else {
-            if ($$('#default-address').text() != 'none') {
+            if ($$('#default-address').text() !== 'none') {
                 selfset = true;
             }
             // not checked
@@ -1383,7 +1383,7 @@ myApp.onPageInit("select-location", function (page) {
 
     // User click confirm button function
     $$('#use-selfset-loca').on('click', function () {
-        if (selfset == true) {
+        if (selfset === true) {
             user_pos['lat'] = selfset_pos['lat'];
             user_pos['lng'] = selfset_pos['lng'];
             user_pos['city'] = selfset_pos['city'];
@@ -1421,7 +1421,7 @@ myApp.onPageInit("select-location", function (page) {
     // Display nearby POI on apps
     //-------------------------------
     function displayNearby(results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
             for (var i = 0; i < results.length; i++) {
                 var pos = {
                     lat: results[i].geometry.location.lat(),
@@ -1612,7 +1612,7 @@ myApp.onPageInit("select-location", function (page) {
                         lng: selfset_pos.lng
                     }
                     var intrv = setInterval(function () {
-                        if (default_pos.full_addr != 'none') {
+                        if (default_pos.full_addr !== 'none') {
                             clearInterval(intrv);
                             $$('#default-address').html(selfset_pos['full_addr']);
                         }
@@ -1657,12 +1657,12 @@ myApp.onPageInit('profile-promocode', function (page) {
                 var str2 = '</div>'
                 //only for all
                 var str_a = '<div class="item-after" style = "color: springgreen" > '
-                if (promocode.status.toLowerCase() == 'available') {
+                if (promocode.status.toLowerCase() === 'available') {
                     $$('.promo-list-available').append(str1 + eachPromotion + str2 + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text);
                     var str_all = '<div class="item-after" style = "color: springgreen" >Available</div>'
-                } else if (promocode.status.toLowerCase() == 'expired') {
+                } else if (promocode.status.toLowerCase() === 'expired') {
                     var str_all = '<div class="item-after" style = "color: red" >Expired</div>'
-                } else if (promocode.status.toLowerCase() == 'used') {
+                } else if (promocode.status.toLowerCase() === 'used') {
                     var str_all = '<div class="item-after">Used</div>'
                 }
 
@@ -1686,7 +1686,7 @@ myApp.onPageInit('settings-change-password', function (page) {
     $$('#update-password').on('click', function () {
         var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
         user.reauthenticateWithCredential(credential).then(function () {
-            if ($$('#new-password').val() == $$('#confirm-new-password').val()) {
+            if ($$('#new-password').val() === $$('#confirm-new-password').val()) {
                 user.updatePassword($$('#new-password').val()).then(function () {
                     // Update successful.
                     myApp.alert('Your password has been updated!');
@@ -1700,7 +1700,7 @@ myApp.onPageInit('settings-change-password', function (page) {
         }).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
-            if (errorCode == "auth/wrong-password")
+            if (errorCode === "auth/wrong-password")
                 myApp.alert(errorMessage, 'Error');
             })
     });
@@ -1721,23 +1721,23 @@ myApp.onPageInit('profile-report', function (page) {
     // submit button for Carloss Report 
     //-----------------------------
     $$('#cl-submit').on('click', function () {
-        if ($$('#cl-owner-name').val() == "") {
+        if ($$('#cl-owner-name').val() === "") {
             //empty email input textbox case
             myApp.alert("Please enter car owner's name.", 'Error');
         }
-        else if (($$('#cl-owner-ic').val() == "") && ($$('#cl-owner-pass').val() == "")) {
+        else if (($$('#cl-owner-ic').val() === "") && ($$('#cl-owner-pass').val() === "")) {
             //empty password input textbox case
             myApp.alert("Please enter car owner's IC No. or passport.", 'Error');
         }
-        else if ($$('#cl-phone').val() == "") {
+        else if ($$('#cl-phone').val() === "") {
             //empty phone number input textbox case
             myApp.alert('Please enter your phone number.', 'Error');
         }
-        else if ($$('#cl-plate').val() == "") {
+        else if ($$('#cl-plate').val() === "") {
             //empty phone number input textbox case
             myApp.alert('Please enter your car plate number.', 'Error');
         }
-        else if ($$('#cl-location').val() == "") {
+        else if ($$('#cl-location').val() === "") {
             //empty phone number input textbox case
             myApp.alert('Where did you lost your car?', 'Error');
         }
@@ -1778,15 +1778,15 @@ myApp.onPageInit('profile-report', function (page) {
     // submit button for illegal parking
     //-----------------------------
     $$('#ip-submit').on('click', function () {
-        if ($$('#ip-plate').val() == "") {
+        if ($$('#ip-plate').val() === "") {
             //empty email input textbox case
             myApp.alert('Please enter the car plate of illegal parked car.', 'Error');
         }
-        else if ($$('#ip-location').val() == "") {
+        else if ($$('#ip-location').val() === "") {
             //empty password input textbox case
             myApp.alert('Please enter the loaction.', 'Error');
         }
-        else if ($$('#ip-behavior').val() == "") {
+        else if ($$('#ip-behavior').val() === "") {
             //empty username input textbox case
             myApp.alert('Please enter the behavior of illegal parked car.', 'Error');
         }
@@ -1833,7 +1833,7 @@ myApp.onPageInit('settings-change-profile', function (page) {
     $$('#edit-gender').val(gender);
 
     $$('#update-profile').on('click', function () {
-        if ($$('#edit-name').val() != ("") && $$('#edit-ic').val() != ("") && $$('#edit-birthday').val() != ("") && $$('#edit-address').val() != ("")) {
+        if ($$('#edit-name').val() !== ("") && $$('#edit-ic').val() !== ("") && $$('#edit-birthday').val() !== ("") && $$('#edit-address').val() !== ("")) {
 
             userRef.update({
                 real_name: $$('#edit-name').val(),
