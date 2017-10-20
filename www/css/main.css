@@ -143,6 +143,11 @@
     width:80%;
 }
 
+.item-title.selected-car-plate,
+.item-title.selected-location{
+    margin-top:5px;
+}
+
 #add-car{
     position:absolute;
     right:16px;
