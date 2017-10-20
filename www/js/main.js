@@ -1795,6 +1795,11 @@ myApp.onPageInit('profile-report', function (page) {
 
 });
 
+
+myApp.onPageInit('promotion', function (page) {
+
+})
+
 //Change Profile
 myApp.onPageInit('settings-change-profile', function (page) {
     user = firebase.auth().currentUser;
@@ -1832,7 +1837,3 @@ myApp.onPageInit('settings-change-profile', function (page) {
     });
 
 });
-
-myApp.onPageInit('promotion', function (page) {
-
-})
