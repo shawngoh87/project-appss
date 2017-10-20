@@ -14,7 +14,7 @@ var mainView = myApp.addView('.view-main', {
 
 // Global Variables
 var Db = {};
-var Loaded, user, userRef, carRef, carRead;
+var Loaded, user, userRef, carRef, carRead,historyRef,topupHistRef;
 var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
@@ -73,6 +73,8 @@ function initUserInfo() {
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
     carRef = userRef.child('cars');
+    historyRef = userRef.child('history');
+    topupHistRef = userRef.child('topup_history');
     firebase.database().ref('users/' + user.uid).on('value',
         // Succeeded promise
         function (snapshot) {
@@ -268,6 +270,13 @@ function refreshActiveHistory() {
                             promocode: parkingPromocode,
                             start_time: parkingTimestamp
                         })
+                        historyRef.child(9999999999999 -parkingTimestamp).update({
+                            carPlate: ownedCarPlate,
+                            amount: parkingAmount,
+                            location: parkingLocation,
+                            duration: timestamp2Time(parkingDuration).name,
+                            startTime: parkingTimestamp
+                        })
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
                         })
@@ -317,6 +326,13 @@ myApp.onPageInit('main', function (page) {
                     duration: timestamp2Time(parkingDuration).name,
                     promocode: parkingPromocode,
                     start_time: parkingTimestamp
+                })
+                historyRef.child(9999999999999 -parkingTimestamp).update({
+                    carPlate: ownedCarPlate,
+                    amount: parkingAmount,
+                    location: parkingLocation,
+                    duration: timestamp2Time(parkingDuration).name,
+                    startTime: parkingTimestamp
                 })
                 carRef.child(ownedCarPlate).child('parking').update({
                     active: false,
@@ -453,6 +469,13 @@ myApp.onPageInit('main', function (page) {
                             duration: timestamp2Time(parkingDuration).name,
                             promocode: parkingPromocode,
                             start_time: parkingTimestamp
+                        })
+                        historyRef.child(9999999999999 -parkingTimestamp).update({
+                            carPlate: ownedCarPlate,
+                            amount: parkingAmount,
+                            location: parkingLocation,
+                            duration: timestamp2Time(parkingDuration).name,
+                            startTime: parkingTimestamp
                         })
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
@@ -715,11 +738,11 @@ myApp.onPageInit('main', function (page) {
     });
 
 
+    
     //-----------------------------
     // History tab data retrieveing
     //-----------------------------
-
-    var historyRef = firebase.database().ref("users/" + user.uid + "/transaction");
+    
     var historyCurrentIndex = 0; //Database Index
 
     //Start to retrieve data from database
@@ -786,9 +809,9 @@ myApp.onPageInit('main', function (page) {
                             '<div class="content-block">' +
                             '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                             '<div id="history-info">' +
-                            '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
+                            '<div><i class="material-icons">place</i> ' + getLocationCity(historyList[historyTempIndex].location) + '</div>' +
                             '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
-                            '<div><i class="material-icons">hourglass_empty</i> ' + Math.floor(historyList[historyTempIndex].duration / 60) + ' hr</div>' +
+                            '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
                             '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
                             '</div>' +
                             '</div>' +
@@ -799,6 +822,32 @@ myApp.onPageInit('main', function (page) {
                                 i = "0" + i;
                             }
                             return i;
+                        }
+
+                        function getLocationCity(latlng) {
+                            var city = null;
+                            var geocoder = new google.maps.Geocoder;
+                            geocoder.geocode({ 'location': latlng }, function (results, status) {
+                                if (status === 'OK') {
+                                    if (results[0]) {
+                                        results[0].address_components.forEach(function (element2) {
+                                            element2.types.forEach(function (element3) {
+                                                switch (element3) {
+                                                    case 'sublocality':
+                                                        city = element2.long_name;
+                                                        break;
+                                                }
+                                            })
+                                        });
+                                    } else {
+                                        city = 'LOCATION NOT FOUND';
+                                    }
+                                } else {
+                                    city = 'GEOCODER FAILED';
+                                }
+                            });
+                            console.log('1');
+                            return city;
                         }
                         historyTemplate += historyTemp2;
                     }
@@ -828,14 +877,22 @@ myApp.onPageInit('main', function (page) {
             return;
         }, 5000);
     });
+
+    $$("#tab-history-button").on('click', function (e) {
+        setTimeout(function () {
+            if (document.getElementById("show-history").innerHTML == "") {
+                showHistory();
+            }
+            return;
+        }, 5000);
+    });
     showHistory();
 
 
     //-----------------------------
     // Topup history data retrieveing
     //-----------------------------
-
-    var topupHistRef = firebase.database().ref("users/" + user.uid + "/topup_history");
+    
     var topupHistCurrentIndex = 0; //Database Index
 
     //Start to retrieve data from database
@@ -944,6 +1001,14 @@ myApp.onPageInit('main', function (page) {
         }, 5000);
     });
 
+    $$("#tab-history-button").on('click', function (e) {
+        setTimeout(function () {
+            if (document.getElementById("show-topup-hist").innerHTML == "") {
+                showHistory();
+            }
+            return;
+        }, 5000);
+    });
     showTopupHist();
 
     $$('#show-topup-hist').on("accordion:open", function () {
@@ -1175,7 +1240,13 @@ function terminateParkingTime(theCar) {
             duration: timestamp2Time(terminateDuration).name,
             start_time: terminateTimestamp
         })
-
+        historyRef.child(9999999999999-terminateTimestamp).update({
+            carPlate: theCar,
+            amount: terminateAmount,
+            location: terminateLocation,
+            duration: timestamp2Time(terminateDuration).name,
+            startTime: terminateTimestamp
+        })
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
