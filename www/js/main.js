@@ -778,7 +778,7 @@ myApp.onPageInit('main', function (page) {
                             '<div id="history-info">' +
                             '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
                             '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
-                            '<div><i class="material-icons">hourglass_empty</i> ' + Math.ceil(historyList[historyTempIndex].duration / 60) + ' hr</div>' +
+                            '<div><i class="material-icons">hourglass_empty</i> ' + Math.floor(historyList[historyTempIndex].duration / 60) + ' hr</div>' +
                             '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
                             '</div>' +
                             '</div>' +
@@ -885,7 +885,7 @@ myApp.onPageInit('main', function (page) {
                             '<a href="#"  class="item-content item-link" >' +
                             '<div class="item-inner" id=topupHistItem>' +
                             '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
-                            '<div class="item-after"><div>' + 'RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
+                            '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
                             '</div > ' +
                             '</div>' +
                             '</a>' +
