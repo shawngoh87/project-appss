@@ -14,7 +14,8 @@ var mainView = myApp.addView('.view-main', {
 
 // Global Variables
 var Db = {};
-var Loaded, user, userRef, carRef, carRead,historyRef,topupHistRef;
+var Strg = {};
+var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historRef;
 var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
@@ -72,10 +73,12 @@ firebase.auth().onAuthStateChanged(function (user) {
 function initUserInfo() {
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
+    adminRef = firebase.database().ref('admin');
     carRef = userRef.child('cars');
     historyRef = userRef.child('history');
     topupHistRef = userRef.child('topup_history');
-    firebase.database().ref('users/' + user.uid).on('value',
+    storageRef = firebase.storage().ref();
+    userRef.on('value',
         // Succeeded promise
         function (snapshot) {
             console.log('Promise succees from DB.');
@@ -93,9 +96,25 @@ function initUserInfo() {
             console.log(err);
         }
     );
-    firebase.database().ref('admin/token_per_minute').once('value', function (snapshot) {
-        rate = snapshot.val() / 60000;
+    adminRef.on('value', function (snapshot) {
+        Db.admin = snapshot.val();
+        rate = Db.admin.token_per_minute / 60000;
     })
+    //retrieve logo image url from firebase storage
+    var initIntrv = setInterval(function () {
+        if (Db.admin) {
+            clearInterval(initIntrv);
+            Strg.logo = {};
+            var i = 0;
+            for (var promoCompany in Db.admin.promotions) {
+                (function (promoC) {
+                    storageRef.child('logo/' + promoC + '.png').getDownloadURL().then(function (url) {
+                        Strg.logo[promoC] = url;
+                    })
+                })(promoCompany);
+            }
+        }
+    },100);
 }
 
 //----------------------------------
@@ -567,7 +586,7 @@ myApp.onPageInit('main', function (page) {
                 else {
                     myApp.modal({
                         title: 'Payment confirmed',
-                        text: 'Nearby shops are having promotions specially for YOU',
+                        text: 'Nearby shops are having some special promotions for YOU',
                         verticalButtons: true,
                         buttons: [
                             {
@@ -1886,8 +1905,36 @@ myApp.onPageInit('profile-report', function (page) {
 
 
 myApp.onPageInit('promotion', function (page) {
+    //-------------
+    //Initiate UI
+    //-------------
 
-})
+    //promotion info
+    for (var promoType in Db.admin.promotions) {
+        for (var promoNum in Db.admin.promotions[promoType]) {
+            $$('#nearbyPromo').append('\
+                <div class="card">\
+                    <div class="card-content">\
+                        <div class="card-content-inner">\
+                            <p class="row">\
+                                <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
+                                <span class="col-70">\
+                                    <b class="promo-card-title">'+ promoType + '</b><br />\
+                                    <i class="promo-card-content">'+ Db.admin.promotions[promoType][promoNum] + '</i>\
+                                </span>\
+                            </p>\
+                        </div>\
+                    </div >\
+                </div >\
+            ');
+            $$('.promo-card-title').each(function () {
+                if ($$(this).text() == promoType) {
+                    $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoType]);
+                }
+            })
+        }
+    }
+});
 
 //Change Profile
 myApp.onPageInit('settings-change-profile', function (page) {
