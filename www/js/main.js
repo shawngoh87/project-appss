@@ -296,6 +296,7 @@ function refreshActiveHistory() {
                             duration: timestamp2Time(parkingDuration).name,
                             startTime: parkingTimestamp
                         })
+                        showHistory();
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
                         })
@@ -353,6 +354,7 @@ myApp.onPageInit('main', function (page) {
                     duration: timestamp2Time(parkingDuration).name,
                     startTime: parkingTimestamp
                 })
+                showHistory();
                 carRef.child(ownedCarPlate).child('parking').update({
                     active: false,
                 })
@@ -496,6 +498,7 @@ myApp.onPageInit('main', function (page) {
                             duration: timestamp2Time(parkingDuration).name,
                             startTime: parkingTimestamp
                         })
+                        showHistory();
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
                         })
@@ -897,14 +900,7 @@ myApp.onPageInit('main', function (page) {
         }, 5000);
     });
 
-    $$("#tab-history-button").on('click', function (e) {
-        setTimeout(function () {
-            if (document.getElementById("show-history").innerHTML == "") {
-                showHistory();
-            }
-            return;
-        }, 5000);
-    });
+    
     showHistory();
 
 
@@ -1020,14 +1016,7 @@ myApp.onPageInit('main', function (page) {
         }, 5000);
     });
 
-    $$("#tab-history-button").on('click', function (e) {
-        setTimeout(function () {
-            if (document.getElementById("show-topup-hist").innerHTML == "") {
-                showHistory();
-            }
-            return;
-        }, 5000);
-    });
+    
     showTopupHist();
 
     $$('#show-topup-hist').on("accordion:open", function () {
@@ -1266,6 +1255,7 @@ function terminateParkingTime(theCar) {
             duration: timestamp2Time(terminateDuration).name,
             startTime: terminateTimestamp
         })
+        showHistory();
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
