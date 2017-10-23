@@ -785,11 +785,15 @@ myApp.onPageInit('main', function (page) {
     // Get Selected Car
     //--------------------
     $$('.select-car').on('click', function () {
-        carPlate = $$('input[name=car-plate]:checked').val();
-        $$('.selected-car-plate').html(carPlate);
-        $$('.selected-car-logo').css('color', 'blue');
-        selectedCar = true;
-        myApp.closeModal();
+        $$('input[name=car-plate]').each(function () {
+            if ($$(this).is(':checked')) {
+                carPlate = $$(this).val();
+                $$('.selected-car-plate').html(carPlate);
+                $$('.selected-car-logo').css('color', 'blue');
+                selectedCar = true;
+                myApp.closeModal();
+            }
+        })
     })
 
     //----------------------
@@ -2027,32 +2031,56 @@ myApp.onPageInit('promotion', function (page) {
     // init map
     //--------------
     function createMap(map) {
+        var pos;
         // Try HTML5 geolocation.
-        var pos = {
-            lat: user_pos.lat,
-            lng: user_pos.lng
-        };
-        map.setCenter(pos);
+        if (user_pos.full_addr == 'none') {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                }, function () {
+                    myApp.alert("Ops! Geolocation service failed.", "Message");
+                }, { enableHighAccuracy: true });
+            }
+            else {
+                // Device doesn't support Geolocation
+                myApp.alert("Device does not support geolocation.", "Message");
+            }
+        }
+        else {
+            pos = {
+                lat: user_pos.lat,
+                lng: user_pos.lng
+            };
+        }
+        var mapIntrv = setInterval(function () {
+            if (pos) {
+                clearInterval(mapIntrv);
+                map.setCenter(pos);
 
-        // Create a infowindow for each place.
-        var contentString = '<h4>Your location</h4>';
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-        nearbyInfo.push(infowindow);
+                // Create a infowindow for each place.
+                var contentString = '<h4>Your location</h4>';
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                nearbyInfo.push(infowindow);
 
-        // Create a marker for each place.
-        nearbyMarkers.push(new google.maps.Marker({
-            map: nearby_map,
-            position: pos,
-        }));
+                // Create a marker for each place.
+                nearbyMarkers.push(new google.maps.Marker({
+                    map: nearby_map,
+                    position: pos,
+                }));
 
-        google.maps.event.addListener(nearbyMarkers[0], 'click', function () {
-            nearbyInfo[0].open(nearby_map, nearbyMarkers[0]);
+                google.maps.event.addListener(nearbyMarkers[0], 'click', function () {
+                    nearbyInfo[0].open(nearby_map, nearbyMarkers[0]);
 
-        });
+                });
 
-        nearbySearch(map, pos);
+                nearbySearch(map, pos);
+            }
+        },100)
     }
 
     //-------------------------------
