@@ -116,3 +116,11 @@
 #target {
     width: 345px;
 }
+
+#nearby-map {
+    position: absolute;
+    height: 45%;
+    width: 90%;
+    top: 10%;
+    left: 5%;
+}

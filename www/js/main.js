@@ -789,7 +789,7 @@ myApp.onPageInit('main', function (page) {
         $$('.selected-car-plate').html(carPlate);
         $$('.selected-car-logo').css('color', 'blue');
         selectedCar = true;
-        $$('#close-popover-menu').click();
+        myApp.closeModal();
     })
 
     //----------------------
@@ -994,7 +994,7 @@ myApp.onPageInit('main', function (page) {
                         var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="">cancel</i></div></div></a></li></ul></div></div></div>';
                         //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
                         $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
-                        $$('#close-popover-menu').click();
+                        myApp.closeModal();
                     }
                 },
             ]
@@ -1077,13 +1077,12 @@ function extendParkingTime(theCar) {
         }
     });
     if (expired) {
-        $$('#close-popover-menu').click();
+        myApp.closeModal();
         myApp.alert('The parking session of this car was expired', 'Notification');
         refreshActiveHistory();
     }
     else {
-        $$('#close-popover-menu').click();
-
+        myApp.closeModal();
         if ($$('.picker-modal.modal-in').length > 0) {
             myApp.closeModal('.picker-modal.modal-in');
         }
@@ -1272,7 +1271,7 @@ function terminateParkingTime(theCar) {
         $$('.close-picker').click();
     })
     refreshActiveHistory();
-    $$('#close-popover-menu').click();
+    myApp.closeModal();
 }
 
 
@@ -1959,6 +1958,95 @@ myApp.onPageInit('promotion', function (page) {
                     $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoType]);
                 }
             })
+        }
+    }
+
+    var nearby_map = new google.maps.Map(document.getElementById('nearby-map'), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 18
+    });
+    var nearbyMarkers = [];
+    var nearbyInfo = [];
+
+    createMap(nearby_map);
+
+    //--------------
+    // init map
+    //--------------
+    function createMap(map) {
+        // Try HTML5 geolocation.
+        var pos = {
+            lat: user_pos.lat,
+            lng: user_pos.lng
+        };
+        map.setCenter(pos);
+
+        // Create a infowindow for each place.
+        var contentString = '<h4>Your location</h4>';
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+        nearbyInfo.push(infowindow);
+
+        // Create a marker for each place.
+        nearbyMarkers.push(new google.maps.Marker({
+            map: nearby_map,
+            position: pos,
+        }));
+
+        google.maps.event.addListener(nearbyMarkers[0], 'click', function () {
+            nearbyInfo[0].open(nearby_map, nearbyMarkers[0]);
+
+        });
+
+        nearbySearch(map, pos);
+    }
+
+    //-------------------------------
+    // Search nearby POI
+    //-------------------------------
+    function nearbySearch(map, pos) {
+        var request = {
+            location: pos,
+            radius: '250',          // unit is in meters (value now is 250m)
+            type: ['restaurant']
+        };
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, displayNearby);
+    }
+
+    //-------------------------------
+    // Display nearby POI on apps
+    //-------------------------------
+    function displayNearby(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length; i++) {
+                var pos = {
+                    lat: results[i].geometry.location.lat(),
+                    lng: results[i].geometry.location.lng()
+                };
+
+                // Create a infowindow for each place.
+                var contentString = '<h4>' + results[i].name + '</h4>';
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                nearbyInfo.push(infowindow);
+
+                // Create a marker for each place.    
+                var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+                nearbyMarkers.push(new google.maps.Marker({
+                    map: nearby_map,
+                    position: pos,
+                    icon: iconBase + 'placemark_circle_maps.png'
+                }));
+
+                google.maps.event.addListener(nearbyMarkers[i + 1], 'click', function (innerKey) {
+                    return function () {
+                        nearbyInfo[innerKey].open(nearby_map, nearbyMarkers[innerKey]);
+                    }
+                }(i + 1));
+            }
         }
     }
 });
