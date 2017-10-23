@@ -421,6 +421,15 @@ function showHistory() {
     historyList = [];
 }
 
+function refreshHistory() {
+    clearBox('show-history');
+    showHistory();
+    return;
+}
+
+function clearBox(id) {
+    document.getElementById(id).innerHTML = "";
+}
 //-------------------------------------
 //        Show Topup History
 //------------------------------------
@@ -518,6 +527,12 @@ function showTopupHist() {
     }
 }
 
+function refreshTopupHist() {
+    clearBox('show-topup-hist');
+    showTopupHist();
+    return;
+}
+
 myApp.onPageInit('profile-settings', function (page) {
 
 });
@@ -558,14 +573,14 @@ myApp.onPageInit('main', function (page) {
                     promocode: parkingPromocode,
                     start_time: parkingTimestamp
                 })
-                historyRef.child(9999999999999 -parkingTimestamp).update({
+                historyRef.child(9999999999999 - parkingTimestamp).update({
                     carPlate: ownedCarPlate,
                     amount: parkingAmount,
                     location: parkingLocation,
                     duration: timestamp2Time(parkingDuration).name,
                     startTime: parkingTimestamp
                 })
-                showHistory();
+                    .then(refreshHistory())
                 carRef.child(ownedCarPlate).child('parking').update({
                     active: false,
                 })
@@ -709,7 +724,7 @@ myApp.onPageInit('main', function (page) {
                             duration: timestamp2Time(parkingDuration).name,
                             startTime: parkingTimestamp
                         })
-                        showHistory();
+                            .then(refreshHistory())
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
                         })
@@ -979,11 +994,7 @@ myApp.onPageInit('main', function (page) {
 
     $$("#historyRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
-            function clearBox(id) {
-                document.getElementById(id).innerHTML = "";
-            }
-            clearBox('show-history');
-            showHistory();
+            refreshHistory();
             myApp.pullToRefreshDone();
             return;
         }, 5000);
@@ -1002,11 +1013,7 @@ myApp.onPageInit('main', function (page) {
 
     $$("#topupHistRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
-            function clearBox(id) {
-                document.getElementById(id).innerHTML = "";
-            }
-            clearBox('show-topup-hist');
-            showTopupHist();
+            refreshTopupHist();
             myApp.pullToRefreshDone();
             return;
         }, 5000);
@@ -1244,14 +1251,7 @@ function terminateParkingTime(theCar) {
             location: terminateLocation,
             duration: timestamp2Time(terminateDuration).name,
             startTime: terminateTimestamp
-        })
-        var termintrv = setInterval(function () {
-            if (historyRead[9999999999999 - terminateTimestamp]) {
-                clearInterval(termintrv);
-                console.log(Db.user.history);
-                showHistory();
-            }
-        },100)
+        }).then(refreshHistory())
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
