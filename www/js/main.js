@@ -89,6 +89,7 @@ function initUserInfo() {
             console.log(Db.user);
             carRead = Db.user.cars;
             historyRead = Db.user.history;
+            topupHistRead = Db.user.topup_history;
             refreshActiveHistory();
         },
         // Failed promise
@@ -315,12 +316,16 @@ function showHistory() {
     var historyStampIndex = 0; //Index stamping for date
     historyCurrentIndex = 0;
     var historyCounter;
+    console.log(historyStampIndex);
+    console.log(historyCurrentIndex);
     if (historyRead == null) {
         historyCounter = 0;
     }
     else {
-        historyCounter = Object.keys(historyRead).length
+        historyCounter = Object.keys(historyRead).length;
     }
+
+    console.log(historyCounter);
 
     var historyList = new Array(); //historyList
     for (var eleMent in historyRead) {
@@ -329,8 +334,10 @@ function showHistory() {
         //Grouping of same date
         if (historyStackDate === null) {                                 //--------Starting
             historyStackDate = historyDate;
+            console.log(historyCurrentIndex);
             historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
+            console.log(historyCurrentIndex);
             //Check for last iteration
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
@@ -341,6 +348,7 @@ function showHistory() {
             historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
             historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
+            console.log(historyCurrentIndex);
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
             }
@@ -363,6 +371,11 @@ function showHistory() {
             ];
             var historyTemplate = "";
             for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
+                console.log(historyStampIndex);
+                console.log(historyCurrentIndex);
+                console.log(historyTempIndex);
+                console.log(historyList);
+                console.log(Date(historyList[historyTempIndex].startTime));
                 historyTime = new Date(historyList[historyTempIndex].startTime);
                 var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
                     '<a href="#" class="item-content item-link">' +
@@ -376,7 +389,7 @@ function showHistory() {
                     '<div class="content-block">' +
                     '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                     '<div id="history-info">' +
-                    '<div><i class="material-icons">place</i> ' + getLocationCity(historyList[historyTempIndex].location) + '</div>' +
+                    '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
                     '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
                     '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
                     '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
@@ -391,31 +404,8 @@ function showHistory() {
                     return i;
                 }
 
-                function getLocationCity(latlng) {
-                    var city = null;
-                    var geocoder = new google.maps.Geocoder;
-                    geocoder.geocode({ 'location': latlng }, function (results, status) {
-                        if (status === 'OK') {
-                            if (results[0]) {
-                                results[0].address_components.forEach(function (element2) {
-                                    element2.types.forEach(function (element3) {
-                                        switch (element3) {
-                                            case 'sublocality':
-                                                city = element2.long_name;
-                                                break;
-                                        }
-                                    })
-                                });
-                            } else {
-                                city = 'LOCATION NOT FOUND';
-                            }
-                        } else {
-                            city = 'GEOCODER FAILED';
-                        }
-                    });
-                    console.log('1');
-                    return city;
-                }
+
+                
                 historyTemplate += historyTemp2;
             }
             historyStampIndex = historyCurrentIndex;
@@ -427,7 +417,104 @@ function showHistory() {
             $$("#show-history").append(historyTemp1);
 
         }
-        historyList = [];
+    }
+    historyList = [];
+}
+
+//-------------------------------------
+//        Show Topup History
+//------------------------------------
+
+function showTopupHist() {
+    var topupHistStackDate = null; //Stack Date for date checking
+    var topupHistStampIndex = 0; //Index stamping for date
+    topupHistCurrentIndex = 0;
+    var topupHistList = new Array(); //topuphistoryList
+    var topupHistCounter;
+    if (topupHistRead == null) {
+        topupHistCounter = 0;
+    }
+    else {
+        topupHistCounter = Object.keys(topupHistRead).length;
+    }
+    for (var topupElement in topupHistRead) {
+        var topupHistDate = new Date(topupHistRead[topupElement].topup_time);
+
+        //Grouping of same date
+        if (topupHistStackDate === null) {                                 //--------Starting
+            topupHistStackDate = topupHistDate;
+            topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
+            topupHistCurrentIndex++;
+            //Check for last iteration
+            if (topupHistCurrentIndex === topupHistCounter) {
+                showMeTopupHist();
+            }
+        }
+        else if (topupHistStackDate.getYear() === topupHistDate.getYear() &&
+            topupHistStackDate.getMonth() === topupHistDate.getMonth() &&
+            topupHistStackDate.getDate() === topupHistDate.getDate()) {      //--------Same date
+            topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
+            topupHistCurrentIndex++;
+            if (topupHistCurrentIndex === topupHistCounter) {
+                showMeTopupHist();
+            }
+        }
+        else {                                                          //--------Next date checked
+            showMeTopupHist();
+            topupHistStackDate = topupHistDate;                             //--------Stack the new date for date grouping
+            topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
+            topupHistCurrentIndex++;
+            if (topupHistCurrentIndex === topupHistCounter) {
+                showMeTopupHist();
+            }
+        }
+
+        //History output
+
+        function showMeTopupHist() {
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            var monthNameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
+            var topupHistTemplate = "";
+            for (topupHistTempIndex = topupHistStampIndex; topupHistTempIndex < topupHistCurrentIndex; topupHistTempIndex++) {
+                topupHistTime = new Date(topupHistList[topupHistTempIndex].topup_time);
+                var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
+                    '<a href="#"  class="item-content item-link" >' +
+                    '<div class="item-inner" id=topupHistItem>' +
+                    '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
+                    '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
+                    '</div > ' +
+                    '</div>' +
+                    '</a>' +
+                    '<div class="accordion-item-content" id="topup-accordion">' +
+                    '<div class="content-block">' +
+                    '<div id="topup-info">' +
+                    '<div><i class="material-icons">access_time</i>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
+                    '<div><i class="material-icons">attach_money</i> RM ' + topupHistList[topupHistTempIndex].amount + '<br></div>' +
+                    '<div><i class="material-icons">credit_card</i>XXXX-XXXX-XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '<br> (exp: ' + topupHistList[topupHistTempIndex].expired_date + ')</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</li>';
+
+                function addZeroHist(i) {
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    return i;
+                }
+                topupHistTemplate += topupHistTemp2;
+            }
+            topupHistStampIndex = topupHistCurrentIndex;
+            var topupHistTemp1 = '<div class="timeline-item">' +
+                '<div id="timeline-date" class="timeline-item-date">' + topupHistStackDate.getDate() + '<sub><sup>' + monthNames[topupHistStackDate.getMonth()] + '</sup></sub></div>' +
+                '<div class="timeline-item-divider"></div >' +
+                '<div class="timeline-item-content list-block inset">' +
+                '<ul>' + topupHistTemplate;
+            $$("#show-topup-hist").append(topupHistTemp1);
+
+        }
     }
 }
 
@@ -886,12 +973,9 @@ myApp.onPageInit('main', function (page) {
 
     
     //-----------------------------
-    // History tab data retrieveing
+    // History tab 
     //-----------------------------
     
-
-    
-
 
     $$("#historyRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
@@ -915,101 +999,6 @@ myApp.onPageInit('main', function (page) {
         }
         return;
     });
-
-    //-----------------------------
-    // Topup history data retrieveing
-    //-----------------------------
-    
-    var topupHistCurrentIndex = 0; //Database Index
-    var topupHistRead = Db.user.topup_history;
-    //Start to retrieve data from database
-
-    function showTopupHist() {
-        var topupHistStackDate = null; //Stack Date for date checking
-        var topupHistStampIndex = 0; //Index stamping for date
-        topupHistCurrentIndex = 0;
-        var topupHistList = new Array(); //topuphistoryList
-        var topupHistCounter = Object.keys(topupHistRead).length;
-        for (var topupElement in topupHistRead) {
-            var topupHistDate = new Date(topupHistRead[topupElement].topup_time);
-
-            //Grouping of same date
-            if (topupHistStackDate === null) {                                 //--------Starting
-                topupHistStackDate = topupHistDate;
-                topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-                topupHistCurrentIndex++;
-                //Check for last iteration
-                if (topupHistCurrentIndex === topupHistCounter) {
-                    showMeTopupHist();
-                }
-            }
-            else if (topupHistStackDate.getYear() === topupHistDate.getYear() &&
-                topupHistStackDate.getMonth() === topupHistDate.getMonth() &&
-                topupHistStackDate.getDate() === topupHistDate.getDate()) {      //--------Same date
-                topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-                topupHistCurrentIndex++;
-                if (topupHistCurrentIndex === topupHistCounter) {
-                    showMeTopupHist();
-                }
-            }
-            else {                                                          //--------Next date checked
-                showMeTopupHist();
-                topupHistStackDate = topupHistDate;                             //--------Stack the new date for date grouping
-                topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-                topupHistCurrentIndex++;
-                if (topupHistCurrentIndex === topupHistCounter) {
-                    showMeTopupHist();
-                }
-            }
-
-            //History output
-
-            function showMeTopupHist() {
-                var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ];
-                var monthNameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
-                var topupHistTemplate = "";
-                for (topupHistTempIndex = topupHistStampIndex; topupHistTempIndex < topupHistCurrentIndex; topupHistTempIndex++) {
-                    topupHistTime = new Date(topupHistList[topupHistTempIndex].topup_time);
-                    var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
-                        '<a href="#"  class="item-content item-link" >' +
-                        '<div class="item-inner" id=topupHistItem>' +
-                        '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
-                        '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
-                        '</div > ' +
-                        '</div>' +
-                        '</a>' +
-                        '<div class="accordion-item-content" id="topup-accordion">' +
-                        '<div class="content-block">' +
-                        '<div id="topup-info">' +
-                        '<div><i class="material-icons">access_time</i>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
-                        '<div><i class="material-icons">attach_money</i> RM ' + topupHistList[topupHistTempIndex].amount + '<br></div>' +
-                        '<div><i class="material-icons">credit_card</i>XXXX-XXXX-XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '<br> (exp: ' + topupHistList[topupHistTempIndex].expired_date + ')</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</li>';
-
-                    function addZeroHist(i) {
-                        if (i < 10) {
-                            i = "0" + i;
-                        }
-                        return i;
-                    }
-                    topupHistTemplate += topupHistTemp2;
-                }
-                topupHistStampIndex = topupHistCurrentIndex;
-                var topupHistTemp1 = '<div class="timeline-item">' +
-                    '<div id="timeline-date" class="timeline-item-date">' + topupHistStackDate.getDate() + '<sub><sup>' + monthNames[topupHistStackDate.getMonth()] + '</sup></sub></div>' +
-                    '<div class="timeline-item-divider"></div >' +
-                    '<div class="timeline-item-content list-block inset">' +
-                    '<ul>' + topupHistTemplate;
-                $$("#show-topup-hist").append(topupHistTemp1);
-
-            }
-        }
-    }
 
     $$("#topupHistRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
