@@ -342,6 +342,7 @@ function showHistory() {
         else {                                                          //--------Next date checked
             showMeHistory();
             historyStackDate = historyDate;                             //--------Stack the new date for date grouping
+            historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
