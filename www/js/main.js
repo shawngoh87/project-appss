@@ -863,8 +863,8 @@ myApp.onPageInit('main', function (page) {
                     $$('.selected-location-logo').css('color', 'inherit');
                     selectedCar = false;
                     selectedLocation = false;
-                    $$('#tab-history-button').click();
-                    $$('#tab-active-button').click();
+                    myApp.showTab('#tab-history');
+                    myApp.showTab('#active');
                     var timestamp = Math.floor(Date.now());
                     carRef.child(carPlate).child('parking').update({
                         active: true,
@@ -1687,6 +1687,7 @@ myApp.onPageInit("select-location", function (page) {
     function geocodeLatLng(latlng, obj) {
         var geocoder = new google.maps.Geocoder;
         geocoder.geocode({ 'location': latlng }, function (results, status) {
+            var city;
             if (status === 'OK') {
                 if (results[0]) {
                     results[0].address_components.forEach(function (element2) {
