@@ -412,12 +412,10 @@ function showHistory() {
                             switch (element3) {
                                 case 'sublocality':
                                     histCity = element2.long_name;
-                                    console.log(histCity);
                                     break;
                             }
                         })
                     });
-                    console.log(historyTempIndex);
                     $$('#histLocation' + i).append(histCity);
                     $$('#histLocation' + i + '1').append(histCity);  //demo: display city name
 
@@ -565,10 +563,14 @@ myApp.onPageInit('main', function (page) {
     //Initiate UI
     //-----------------------
     myApp.showIndicator();
+    var waitLoading = setTimeout(function () {
+        myApp.hideIndicator();
+        myApp.alert('Poor internet connection.', 'Notification');
+    }, 5000);
     if (Db.user && Db.admin) {
         console.log("Loading completed")
         myApp.hideIndicator();
-
+        clearTimeout(waitLoading);
         //Initiate duration selection bar info
         getDuration();
 
