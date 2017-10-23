@@ -359,7 +359,7 @@ a.close-popover{
 }
 
 #show-history,#show-topup-hist {
-    min-height: 480px;
+    min-height: 440px;
 }
 .modal-buttons.modal-buttons-vertical .modal-button{
     text-align: center !important;
