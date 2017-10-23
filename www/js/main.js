@@ -1135,8 +1135,8 @@ function extendConfirmed(theCar) {
     tokenReq = (extendDuration * rate);
     extendConfirmText =
         'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
-        'Extended until&emsp;&emsp;:' + $$('.extended-duration').text() + '<br>' +
-        'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+        'Extended until&emsp;&emsp; :' + $$('.extended-duration').text() + '<br>' +
+        'Token required is&emsp;:' + tokenReq.toString() + '<br><br>' +
         'Confirm Transaction?';
     myApp.confirm(extendConfirmText, 'Confirmation', function () {
 
