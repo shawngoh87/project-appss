@@ -1385,8 +1385,55 @@ myApp.onPageInit('color-themes', function (page) {
     });
 });
 
+function loadProfilePic(url) {
+
+    return new Promise(function (resolve, reject) {
+        try {
+            var pp = new XMLHttpRequest();
+            pp.open("GET", url);
+            pp.responseType = "blob";
+            pp.onerror = function () { reject("Network error.") };
+            pp.onload = function () {
+                if (pp.status === 200) { resolve(pp.response) }
+                else { reject("Loading error:" + pp.statusText) }
+            };
+            pp.send();
+        }
+        catch (err) { reject(err.message) }
+    });
+}
+
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
+
+    //user.updateProfile({
+    //    //photoURL: 'images/car-car.png'
+    //    photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
+
+    //}).then(function () {
+    //    myApp.alert('sejjejje');
+    //});
+
+    //var profile_pic = user.photoURL;
+  
+    loadProfilePic("images/car-car.png").then(function (blob) {
+        var xyz = blob;
+        user.updateProfile({
+            displayName:"wwji",
+            photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
+        });
+        console.log(blob);
+        console.log(xyz);
+        console.log(user.photoURL);
+    });
+
+    var browsepic = myApp.photoBrowser({
+        //photo: ['images/car-car.png']
+        photos: [user.photoURL]
+        // theme: 'dark'
+    });
+
+
 
     $$('.load-username').html(Db.user.username);
     $$('.load-real-name').html(Db.user.real_name);
@@ -1403,11 +1450,17 @@ myApp.onPageInit('profile-myprofile', function (page) {
         var options = [
             {
                 text: 'View Profile Picture',
-                bold: true
+                bold: true,
+                onClick: function () {
+                    browsepic.open();
+                }
             },
             {
                 text: 'Edit Profile Picture',
-                bold: true
+                bold: true,
+                onClick: function () {
+                    mainView.router.loadPage("change-profile-picture.html");
+                }
             }
         ];
         var cancel = [
@@ -2110,4 +2163,16 @@ myApp.onPageInit('settings-change-hp', function (page) {
     });
 
 });
+    /*
+myApp.onPageInit('change-profile-picture', function (page) {
+    var myPhotoBrowserDark = myApp.photoBrowser({
+        photos: [
+            'http://lorempixel.com/1024/1024/sports/1/',
+        ],
+        theme: 'dark'
+    });
+    $$('.pb-standalone-dark').on('click', function () {
+        myPhotoBrowserDark.open();
+    });
 
+})*/
