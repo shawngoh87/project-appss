@@ -1415,11 +1415,11 @@ myApp.onPageInit('profile-myprofile', function (page) {
     //});
 
     //var profile_pic = user.photoURL;
-  
+
     loadProfilePic("images/car-car.png").then(function (blob) {
         var xyz = blob;
         user.updateProfile({
-            displayName:"wwji",
+            displayName: "wwji",
             photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
         });
         console.log(blob);
@@ -1443,7 +1443,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
     $$('.load-ic-no').html(Db.user.IC);
-   
+
 
 
     $$('.button-profile-pic').on('click', function () {
@@ -1472,7 +1472,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
         ];
         var action_profile_pic = [options, cancel];
         myApp.actions(action_profile_pic);
-    
+
     });
 });
 
