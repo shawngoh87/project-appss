@@ -352,6 +352,7 @@ a.close-popover{
 /*--------zachaary--------*/
 #histInfo, #topupHistInfo {
     text-align: right;
+    overflow: hidden;
 }
 
 #histItem, #topupHistItem {

@@ -361,7 +361,7 @@ function showHistory() {
                     '<a href="#" class="item-content item-link">' +
                     '<div class="item-inner" id=histItem>' +
                     '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
-                    '<div class="item-after"><div id=histInfo>' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].location + '</div>' +
+                    '<div class="item-after"><div id=histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br><div id="histLocation'+historyTempIndex+'"></div></div>' +
                     '</div> ' +
                     '</div>' +
                     '</a>' +
@@ -369,7 +369,7 @@ function showHistory() {
                     '<div class="content-block">' +
                     '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                     '<div id="history-info">' +
-                    '<div><i class="material-icons">place</i> ' + historyList[historyTempIndex].location + '</div>' +
+                    '<div id="histLocation' + [historyTempIndex] + '1"><i class="material-icons">place</i></div></div>' +
                     '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
                     '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
                     '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
@@ -383,9 +383,6 @@ function showHistory() {
                     }
                     return i;
                 }
-
-
-                
                 historyTemplate += historyTemp2;
             }
             historyStampIndex = historyCurrentIndex;
@@ -397,6 +394,38 @@ function showHistory() {
             $$("#show-history").append(historyTemp1);
 
         }
+    }
+    for (i = 0; i < historyCounter; i++) {
+        getCity(historyList[i].location,i);
+    }
+    function getCity(latlng,i) {
+        var geocoder = new google.maps.Geocoder;
+        var histCity;
+        geocoder.geocode({ 'location': latlng }, function (results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+
+                    results[0].address_components.forEach(function (element2) {
+                        element2.types.forEach(function (element3) {
+                            switch (element3) {
+                                case 'sublocality':
+                                    histCity = element2.long_name;
+                                    console.log(histCity);
+                                    break;
+                            }
+                        })
+                    });
+                    console.log(historyTempIndex);
+                    $$('#histLocation' + i).append(histCity);
+                    $$('#histLocation' + i + '1').append(histCity);  //demo: display city name
+
+                } else {
+                    $$('#histLocation' + i + '1').html("result error");
+                }
+            } else {
+                $$('#histLocation' + i + '1').html("Geocode fail");
+            }
+        });
     }
     historyList = [];
 }
