@@ -362,7 +362,7 @@ function showHistory() {
                     '<a href="#" class="item-content item-link">' +
                     '<div class="item-inner" id=histItem>' +
                     '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
-                    '<div class="item-after"><div id=histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br><div id="histLocation'+historyTempIndex+'"></div></div>' +
+                    '<div class="item-after"><div id=histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br><div id="histLocation' + historyTempIndex + '"></div></div>' +
                     '</div> ' +
                     '</div>' +
                     '</a>' +
@@ -370,7 +370,7 @@ function showHistory() {
                     '<div class="content-block">' +
                     '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                     '<div id="history-info">' +
-                    '<div id="histLocation' + [historyTempIndex] + '1"><i class="material-icons">place</i></div></div>' +
+                    '<div id="histLocation' + [historyTempIndex] + '1"><i class="material-icons">place</i></div>' +
                     '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
                     '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
                     '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
@@ -385,6 +385,7 @@ function showHistory() {
                     return i;
                 }
                 historyTemplate += historyTemp2;
+
             }
             historyStampIndex = historyCurrentIndex;
             var historyTemp1 = '<div class="timeline-item">' +
