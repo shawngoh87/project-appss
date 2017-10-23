@@ -740,7 +740,7 @@ myApp.onPageInit('main', function (page) {
                             active: false,
                         })
                         $$(".select-car").append(
-                            '<li><label class="label-radio item-content car-choice">' +
+                            '<li class="car-choice"><label class="label-radio item-content">' +
                             '<input type="radio" name="car-plate" value="' + ownedCarPlate + '" />' +
                             '<div class="item-media"><i class="icon icon-form-radio"></i></div>' +
                             '<div class="item-inner">' +
@@ -753,7 +753,7 @@ myApp.onPageInit('main', function (page) {
                 }
                 else {
                     $$(".select-car").append(
-                        '<li><label class="label-radio item-content car-choice">' +
+                        '<li class="car-choice"><label class="label-radio item-content">' +
                         '<input type="radio" name="car-plate" value="' + ownedCarPlate + '" />' +
                         '<div class="item-media"><i class="icon icon-form-radio"></i></div>' +
                         '<div class="item-inner">' +
