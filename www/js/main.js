@@ -784,22 +784,18 @@ myApp.onPageInit('main', function (page) {
                 myApp.alert('All car is currently not available', 'Notification')
             }
         }
-    });
-
-    //--------------------
-    // Get Selected Car
-    //--------------------
-    $$('.select-car').on('click', function () {
-        $$('input[name=car-plate]').each(function () {
-            if ($$(this).is(':checked')) {
-                carPlate = $$(this).val();
-                $$('.selected-car-plate').html(carPlate);
-                $$('.selected-car-logo').css('color', 'blue');
-                selectedCar = true;
-                myApp.closeModal();
-            }
+        //--------------------
+        // Get Selected Car
+        //--------------------
+        $$('.car-choice').on('click', function () {
+            console.log('ok')
+            carPlate = $$(this).find('input[name=car-plate]').val();
+            $$('.selected-car-plate').html(carPlate);
+            $$('.selected-car-logo').css('color', 'blue');
+            selectedCar = true;
+            myApp.closeModal();
         })
-    })
+    });
 
     //----------------------
     //Get Selected Duration
