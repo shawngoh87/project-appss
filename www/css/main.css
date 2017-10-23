@@ -358,6 +358,9 @@ a.close-popover{
     margin-bottom: 5px;
 }
 
+#show-history,#show-topup-hist {
+    min-height: 480px;
+}
 .modal-buttons.modal-buttons-vertical .modal-button{
     text-align: center !important;
 }
