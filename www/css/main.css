@@ -346,10 +346,13 @@ a.close-popover{
 /*--------zachaary--------*/
 #histInfo, #topupHistInfo {
     text-align: right;
+    overflow: hidden;
+    max-width: 60px;
+    height: 48px;
 }
 
 #histItem, #topupHistItem {
-    background-color: aliceblue;
+    background-color: whitesmoke;
     border-radius: 9px;
     padding: 14px 35px 14px 5px;
     margin-bottom: 5px;

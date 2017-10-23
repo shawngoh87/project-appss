@@ -363,7 +363,7 @@ function showHistory() {
                     '<a href="#" class="item-content item-link">' +
                     '<div class="item-inner" id=histItem>' +
                     '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
-                    '<div class="item-after"><div id=histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br><div id="histLocation' + historyTempIndex + '"></div></div>' +
+                    '<div class="item-after"><div id="histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br><div id="histLocation' + historyTempIndex + '"></div></div>' +
                     '</div> ' +
                     '</div>' +
                     '</a>' +
