@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Strg = {};
-var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead;
+var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef;
 var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
@@ -78,6 +78,7 @@ function initUserInfo() {
     historyRef = userRef.child('history');
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
+    storageuserRef = firebase.storage().ref('users/' + user.uid);
     userRef.on('value',
         // Succeeded promise
         function (snapshot) {
