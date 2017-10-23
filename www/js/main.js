@@ -15,7 +15,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Strg = {};
-var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historRef;
+var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead;
 var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
@@ -88,7 +88,7 @@ function initUserInfo() {
             $$('.index-preloader').hide();
             console.log(Db.user);
             carRead = Db.user.cars;
-
+            historyRead = Db.user.history;
             refreshActiveHistory();
         },
         // Failed promise
@@ -305,6 +305,130 @@ function refreshActiveHistory() {
             }
         }
     });
+}
+
+//-------------------------------------
+//          Show History
+//-------------------------------------
+function showHistory() {
+    var historyStackDate = null; //Stack Date for date checking
+    var historyStampIndex = 0; //Index stamping for date
+    historyCurrentIndex = 0;
+    var historyCounter;
+    if (historyRead == null) {
+        historyCounter = 0;
+    }
+    else {
+        historyCounter = Object.keys(historyRead).length
+    }
+
+    var historyList = new Array(); //historyList
+    for (var eleMent in historyRead) {
+        var historyDate = new Date(historyRead[eleMent].startTime);
+
+        //Grouping of same date
+        if (historyStackDate === null) {                                 //--------Starting
+            historyStackDate = historyDate;
+            historyList[historyCurrentIndex] = historyRead[eleMent];
+            historyCurrentIndex++;
+            //Check for last iteration
+            if (historyCurrentIndex === historyCounter) {
+                showMeHistory();
+            }
+        }
+        else if (historyStackDate.getYear() === historyDate.getYear() &&
+            historyStackDate.getMonth() === historyDate.getMonth() &&
+            historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
+            historyList[historyCurrentIndex] = historyRead[eleMent];
+            historyCurrentIndex++;
+            if (historyCurrentIndex === historyCounter) {
+                showMeHistory();
+            }
+        }
+        else {                                                          //--------Next date checked
+            showMeHistory();
+            historyStackDate = historyDate;                             //--------Stack the new date for date grouping
+            historyList[historyCurrentIndex] = historyRead[eleMent];
+            historyCurrentIndex++;
+            if (historyCurrentIndex === historyCounter) {
+                showMeHistory();
+            }
+        }
+
+        //History output
+
+        function showMeHistory() {
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            var historyTemplate = "";
+            for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
+                historyTime = new Date(historyList[historyTempIndex].startTime);
+                var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
+                    '<a href="#" class="item-content item-link">' +
+                    '<div class="item-inner" id=histItem>' +
+                    '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
+                    '<div class="item-after"><div id=histInfo>' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].location + '</div>' +
+                    '</div> ' +
+                    '</div>' +
+                    '</a>' +
+                    '<div class="accordion-item-content" id="topup-accordion">' +
+                    '<div class="content-block">' +
+                    '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
+                    '<div id="history-info">' +
+                    '<div><i class="material-icons">place</i> ' + getLocationCity(historyList[historyTempIndex].location) + '</div>' +
+                    '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
+                    '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
+                    '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</li>';
+                function addZeroHist(i) {
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    return i;
+                }
+
+                function getLocationCity(latlng) {
+                    var city = null;
+                    var geocoder = new google.maps.Geocoder;
+                    geocoder.geocode({ 'location': latlng }, function (results, status) {
+                        if (status === 'OK') {
+                            if (results[0]) {
+                                results[0].address_components.forEach(function (element2) {
+                                    element2.types.forEach(function (element3) {
+                                        switch (element3) {
+                                            case 'sublocality':
+                                                city = element2.long_name;
+                                                break;
+                                        }
+                                    })
+                                });
+                            } else {
+                                city = 'LOCATION NOT FOUND';
+                            }
+                        } else {
+                            city = 'GEOCODER FAILED';
+                        }
+                    });
+                    console.log('1');
+                    return city;
+                }
+                historyTemplate += historyTemp2;
+            }
+            historyStampIndex = historyCurrentIndex;
+            var historyTemp1 = '<div class="timeline-item">' +
+                '<div id="timeline-date" class="timeline-item-date">' + historyStackDate.getDate() + '<sub><sup>' + monthNames[historyStackDate.getMonth()] + '</sup></sub></div>' +
+                '<div class="timeline-item-divider"></div >' +
+                '<div class="timeline-item-content list-block inset">' +
+                '<ul>' + historyTemplate;
+            $$("#show-history").append(historyTemp1);
+
+        }
+        historyList = [];
+    }
 }
 
 myApp.onPageInit('profile-settings', function (page) {
@@ -765,122 +889,8 @@ myApp.onPageInit('main', function (page) {
     // History tab data retrieveing
     //-----------------------------
     
-    var historyCurrentIndex = 0; //Index
-    var historyRead = Db.user.history;
 
-    function showHistory() {
-        var historyStackDate = null; //Stack Date for date checking
-        var historyStampIndex = 0; //Index stamping for date
-        historyCurrentIndex = 0;
-        var historyCounter = Object.keys(historyRead).length;
-        var historyList = new Array(); //historyList
-        for (var eleMent in historyRead) {
-            var historyDate = new Date(historyRead[eleMent].startTime);
-
-            //Grouping of same date
-            if (historyStackDate === null) {                                 //--------Starting
-                historyStackDate = historyDate;
-                historyList[historyCurrentIndex] = historyRead[eleMent];
-                historyCurrentIndex++;
-                //Check for last iteration
-                if (historyCurrentIndex === historyCounter) {
-                    showMeHistory();
-                }
-            }
-            else if (historyStackDate.getYear() === historyDate.getYear() &&
-                historyStackDate.getMonth() === historyDate.getMonth() &&
-                historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
-                historyList[historyCurrentIndex] = historyRead[eleMent];
-                historyCurrentIndex++;
-                if (historyCurrentIndex === historyCounter) {
-                    showMeHistory();
-                }
-            }
-            else {                                                          //--------Next date checked
-                showMeHistory();
-                historyStackDate = historyDate;                             //--------Stack the new date for date grouping
-                historyList[historyCurrentIndex] = historyRead[eleMent];
-                historyCurrentIndex++;
-                if (historyCurrentIndex === historyCounter) {
-                    showMeHistory();
-                }
-            }
-
-            //History output
-
-            function showMeHistory() {
-                var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ];
-                var historyTemplate = "";
-                for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
-                    historyTime = new Date(historyList[historyTempIndex].startTime);
-                    var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
-                        '<a href="#" class="item-content item-link">' +
-                        '<div class="item-inner" id=histItem>' +
-                        '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
-                        '<div class="item-after"><div id=histInfo>' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].location + '</div>' +
-                        '</div> ' +
-                        '</div>' +
-                        '</a>' +
-                        '<div class="accordion-item-content" id="topup-accordion">' +
-                        '<div class="content-block">' +
-                        '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
-                        '<div id="history-info">' +
-                        '<div><i class="material-icons">place</i> ' + getLocationCity(historyList[historyTempIndex].location) + '</div>' +
-                        '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
-                        '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
-                        '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</li>';
-                    function addZeroHist(i) {
-                        if (i < 10) {
-                            i = "0" + i;
-                        }
-                        return i;
-                    }
-
-                    function getLocationCity(latlng) {
-                        var city = null;
-                        var geocoder = new google.maps.Geocoder;
-                        geocoder.geocode({ 'location': latlng }, function (results, status) {
-                            if (status === 'OK') {
-                                if (results[0]) {
-                                    results[0].address_components.forEach(function (element2) {
-                                        element2.types.forEach(function (element3) {
-                                            switch (element3) {
-                                                case 'sublocality':
-                                                    city = element2.long_name;
-                                                    break;
-                                            }
-                                        })
-                                    });
-                                } else {
-                                    city = 'LOCATION NOT FOUND';
-                                }
-                            } else {
-                                city = 'GEOCODER FAILED';
-                            }
-                        });
-                        console.log('1');
-                        return city;
-                    }
-                    historyTemplate += historyTemp2;
-                }
-                historyStampIndex = historyCurrentIndex;
-                var historyTemp1 = '<div class="timeline-item">' +
-                    '<div id="timeline-date" class="timeline-item-date">' + historyStackDate.getDate() + '<sub><sup>' + monthNames[historyStackDate.getMonth()] + '</sup></sub></div>' +
-                    '<div class="timeline-item-divider"></div >' +
-                    '<div class="timeline-item-content list-block inset">' +
-                    '<ul>' + historyTemplate;
-                $$("#show-history").append(historyTemp1);
-
-            }
-            historyList = [];
-        }
-    }
+    
 
 
     $$("#historyRefresh").on('ptr:refresh', function (e) {
@@ -898,6 +908,13 @@ myApp.onPageInit('main', function (page) {
     
     showHistory();
 
+    $$('#show-history').on("accordion:open", function () {
+        for (j = 0; j < historyCurrentIndex; j++) {
+            var ID = document.getElementById('histInfo' + j + '1');
+            myApp.accordionCheckClose(ID);
+        }
+        return;
+    });
 
     //-----------------------------
     // Topup history data retrieveing
@@ -1017,13 +1034,7 @@ myApp.onPageInit('main', function (page) {
         return;
     });
 
-    $$('#show-history').on("accordion:open", function () {
-        for (j = 0; j < historyCurrentIndex; j++) {
-            var ID = document.getElementById('histInfo' + j + '1');
-            myApp.accordionCheckClose(ID);
-        }
-        return;
-    });
+    
 
 
     //------------------------------------------------------------------------
@@ -1245,7 +1256,13 @@ function terminateParkingTime(theCar) {
             duration: timestamp2Time(terminateDuration).name,
             startTime: terminateTimestamp
         })
-        showHistory();
+        var termintrv = setInterval(function () {
+            if (historyRead[9999999999999 - terminateTimestamp]) {
+                clearInterval(termintrv);
+                console.log(Db.user.history);
+                showHistory();
+            }
+        },100)
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
