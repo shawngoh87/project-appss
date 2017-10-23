@@ -1118,7 +1118,7 @@ function extendParkingTime(theCar) {
                                 '<input type="range" class="extend-duration" min="600000" max="43200000" value="3600000" step="600000" />' +
                             '</div>' +
                         '</div><br />' +
-                        '<div><button id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button></div>' +
+                        '<button class="actions-modal-button actions-modal-button-bold" id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button>' +
                     '</div>' +
                 '</div>' +
             '</div>'

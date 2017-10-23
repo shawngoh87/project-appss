@@ -234,6 +234,10 @@ a.close-popover{
     font-size:20px
 }
 
+#location, #lbl-time, #time-remain{
+    text-align:center
+}
+
 #lbl-time-left{
     font-size:50px; 
     position:absolute; 
@@ -254,6 +258,7 @@ a.close-popover{
 
 #active-car-plate{
     font-size:35px;
+    text-align:center
 }
 
 ::-webkit-input-placeholder{
@@ -277,14 +282,13 @@ a.close-popover{
 }
 
 #confirm-btn{
-    position:absolute;
-    width:60%;
-    margin:0 20%;
-    height:50px;
-    border-radius:12px
+    text-align:center;
+    background-color:cornflowerblue;
+    border:none;
+    border-radius:10px
 }
 
-#extend-btn, #confirm-btn{
+#extend-btn{
     background-color:blue;
     color: white
 }
@@ -297,7 +301,7 @@ a.close-popover{
 
 #popover-active{
     width:345px;
-    height:350px;
+    height:360px;
 }
 
 #lbl-btns, #lbl-extend{
@@ -306,7 +310,8 @@ a.close-popover{
 }
 
 #promo{
-    font-size:16px
+    font-size:16px;
+    text-align:center
 }
 
 #timeline-topup, #timeline-history{
