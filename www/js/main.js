@@ -100,22 +100,16 @@ function initUserInfo() {
     adminRef.on('value', function (snapshot) {
         Db.admin = snapshot.val();
         rate = Db.admin.token_per_minute / 60000;
-    })
-    //retrieve logo image url from firebase storage
-    var initIntrv = setInterval(function () {
-        if (Db.admin) {
-            clearInterval(initIntrv);
-            Strg.logo = {};
-            var i = 0;
-            for (var promoCompany in Db.admin.promotions) {
-                (function (promoC) {
-                    storageRef.child('logo/' + promoC + '.png').getDownloadURL().then(function (url) {
-                        Strg.logo[promoC] = url;
-                    })
-                })(promoCompany);
-            }
+        Strg.logo = {};
+        var i = 0;
+        for (var promoCompany in Db.admin.promotions) {
+            (function (promoC) {
+                storageRef.child('logo/' + promoC + '.png').getDownloadURL().then(function (url) {
+                    Strg.logo[promoC] = url;
+                })
+            })(promoCompany);
         }
-    },100);
+    })
 }
 
 //----------------------------------
@@ -316,8 +310,6 @@ function showHistory() {
     var historyStampIndex = 0; //Index stamping for date
     historyCurrentIndex = 0;
     var historyCounter;
-    console.log(historyStampIndex);
-    console.log(historyCurrentIndex);
     if (historyRead == null) {
         historyCounter = 0;
     }
@@ -325,19 +317,14 @@ function showHistory() {
         historyCounter = Object.keys(historyRead).length;
     }
 
-    console.log(historyCounter);
-
     var historyList = new Array(); //historyList
     for (var eleMent in historyRead) {
         var historyDate = new Date(historyRead[eleMent].startTime);
-
         //Grouping of same date
         if (historyStackDate === null) {                                 //--------Starting
             historyStackDate = historyDate;
-            console.log(historyCurrentIndex);
             historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
-            console.log(historyCurrentIndex);
             //Check for last iteration
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
@@ -348,7 +335,6 @@ function showHistory() {
             historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
             historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
-            console.log(historyCurrentIndex);
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
             }
@@ -356,7 +342,6 @@ function showHistory() {
         else {                                                          //--------Next date checked
             showMeHistory();
             historyStackDate = historyDate;                             //--------Stack the new date for date grouping
-            historyList[historyCurrentIndex] = historyRead[eleMent];
             historyCurrentIndex++;
             if (historyCurrentIndex === historyCounter) {
                 showMeHistory();
@@ -371,11 +356,6 @@ function showHistory() {
             ];
             var historyTemplate = "";
             for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
-                console.log(historyStampIndex);
-                console.log(historyCurrentIndex);
-                console.log(historyTempIndex);
-                console.log(historyList);
-                console.log(Date(historyList[historyTempIndex].startTime));
                 historyTime = new Date(historyList[historyTempIndex].startTime);
                 var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
                     '<a href="#" class="item-content item-link">' +
@@ -421,15 +401,6 @@ function showHistory() {
     historyList = [];
 }
 
-function refreshHistory() {
-    clearBox('show-history');
-    showHistory();
-    return;
-}
-
-function clearBox(id) {
-    document.getElementById(id).innerHTML = "";
-}
 //-------------------------------------
 //        Show Topup History
 //------------------------------------
@@ -527,12 +498,6 @@ function showTopupHist() {
     }
 }
 
-function refreshTopupHist() {
-    clearBox('show-topup-hist');
-    showTopupHist();
-    return;
-}
-
 myApp.onPageInit('profile-settings', function (page) {
 
 });
@@ -554,133 +519,145 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     //Initiate UI
     //-----------------------
+    myApp.showIndicator();
+    if (Db.user && Db.admin) {
+        console.log("Loading completed")
+        myApp.hideIndicator();
 
-    //Get cars and update
+        //Initiate duration selection bar info
+        getDuration();
 
-    for (var ownedCarPlate in carRead) {
-        var parkingActive = carRead[ownedCarPlate].parking.active;
-        var parkingAmount = carRead[ownedCarPlate].parking.amount;
-        var parkingDuration = carRead[ownedCarPlate].parking.duration;
-        var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
-        var parkingLocation = carRead[ownedCarPlate].parking.location;
-        var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
-        if (parkingActive) {
-            if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
-                    amount: parkingAmount,
-                    location: parkingLocation,
-                    duration: timestamp2Time(parkingDuration).name,
-                    promocode: parkingPromocode,
-                    start_time: parkingTimestamp
-                })
-                historyRef.child(9999999999999 - parkingTimestamp).update({
-                    carPlate: ownedCarPlate,
-                    amount: parkingAmount,
-                    location: parkingLocation,
-                    duration: timestamp2Time(parkingDuration).name,
-                    startTime: parkingTimestamp
-                })
-                    .then(refreshHistory())
-                carRef.child(ownedCarPlate).child('parking').update({
-                    active: false,
-                })
+        //Get cars and update
+
+        for (var ownedCarPlate in carRead) {
+            var parkingActive = carRead[ownedCarPlate].parking.active;
+            var parkingAmount = carRead[ownedCarPlate].parking.amount;
+            var parkingDuration = carRead[ownedCarPlate].parking.duration;
+            var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
+            var parkingLocation = carRead[ownedCarPlate].parking.location;
+            var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
+            if (parkingActive) {
+                if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                    carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                        amount: parkingAmount,
+                        location: parkingLocation,
+                        duration: timestamp2Time(parkingDuration).name,
+                        promocode: parkingPromocode,
+                        start_time: parkingTimestamp
+                    })
+                    historyRef.child(9999999999999 - parkingTimestamp).update({
+                        carPlate: ownedCarPlate,
+                        amount: parkingAmount,
+                        location: parkingLocation,
+                        duration: timestamp2Time(parkingDuration).name,
+                        startTime: parkingTimestamp
+                    })
+                    var hisIntrv = setInterval(function () {
+                        if (historyRead[9999999999999 - parkingTimestamp]) {
+                            showHistory();
+                        }
+                    })
+                    carRef.child(ownedCarPlate).child('parking').update({
+                        active: false,
+                    })
+                }
             }
         }
-    }
 
-    // Init vehicle tab
-    var cars = Db.user.cars;
-    for (var displayCarPlate in cars) {//write to UI
-        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-        var str2 = '</div><div class="cards-item-title">'
-        var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this)"><i class="material-icons override-icon-size item-link" style="">cancel</i></a></div></div> </a > </li></ul></div></div></div>';
-        //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-        $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-    }
+        // Init vehicle tab
+        var cars = Db.user.cars;
+        for (var displayCarPlate in cars) {//write to UI
+            var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+            var str2 = '</div><div class="cards-item-title">'
+            var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this)"><i class="material-icons override-icon-size item-link" style="">cancel</i></a></div></div> </a > </li></ul></div></div></div>';
+            //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
+            $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+        }
 
-    //Get tokens
-    userRef.child('balance').on('value', function (snapshot) {
-        $$('.token').html(+snapshot.val());
-    })
+        //Get tokens
+        userRef.child('balance').on('value', function (snapshot) {
+            $$('.token').html(+snapshot.val());
+        })
 
-    //Get History of Active Car
-    var activeCarRead = carRead;
-    for (var activeCarPlate in activeCarRead) {
-        var activeStatus = activeCarRead[activeCarPlate].parking.active;
-        var activeAmount = activeCarRead[activeCarPlate].parking.amount;
-        var activeDuration = activeCarRead[activeCarPlate].parking.duration;
-        var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
-        var activeLocation = activeCarRead[activeCarPlate].parking.location;
-        if (activeStatus) {
-            //write data to UI
-            var activeAddress, promoCode = null;
-            var current_time = Date.now();
-            var end_time = activeTimestamp + activeDuration;
-            var end_time_dis = new Date(end_time);
-            var remain_time = end_time - current_time;
-            var time_unit, time_val;
-            if (timestamp2Time(remain_time).second >= 60) {
-                if (timestamp2Time(remain_time).minute >= 60) {
-                    time_val = timestamp2Time(remain_time).hour;
-                    time_unit = 'hour';
-                    if (timestamp2Time(remain_time).hour > 1) {
-                        time_unit += 's';
+        //Get History of Active Car
+        var activeCarRead = carRead;
+        for (var activeCarPlate in activeCarRead) {
+            var activeStatus = activeCarRead[activeCarPlate].parking.active;
+            var activeAmount = activeCarRead[activeCarPlate].parking.amount;
+            var activeDuration = activeCarRead[activeCarPlate].parking.duration;
+            var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
+            var activeLocation = activeCarRead[activeCarPlate].parking.location;
+            if (activeStatus) {
+                //write data to UI
+                var activeAddress, promoCode = null;
+                var current_time = Date.now();
+                var end_time = activeTimestamp + activeDuration;
+                var end_time_dis = new Date(end_time);
+                var remain_time = end_time - current_time;
+                var time_unit, time_val;
+                if (timestamp2Time(remain_time).second >= 60) {
+                    if (timestamp2Time(remain_time).minute >= 60) {
+                        time_val = timestamp2Time(remain_time).hour;
+                        time_unit = 'hour';
+                        if (timestamp2Time(remain_time).hour > 1) {
+                            time_unit += 's';
+                        }
+                    }
+                    else {
+                        time_val = timestamp2Time(remain_time).minute;
+                        time_unit = 'minute';
+                        if (timestamp2Time(remain_time).minute > 1) {
+                            time_unit += 's';
+                        }
                     }
                 }
                 else {
-                    time_val = timestamp2Time(remain_time).minute;
-                    time_unit = 'minute';
-                    if (timestamp2Time(remain_time).minute > 1) {
+                    time_val = timestamp2Time(remain_time).second;
+                    time_unit = 'second';
+                    if (timestamp2Time(remain_time).second > 1) {
                         time_unit += 's';
                     }
                 }
-            }
-            else {
-                time_val = timestamp2Time(remain_time).second;
-                time_unit = 'second';
-                if (timestamp2Time(remain_time).second > 1) {
-                    time_unit += 's';
-                }
-            }
 
-            var dataProgress = Math.floor((((activeDuration - remain_time) / activeDuration) * 100));
-            var percentProgress = dataProgress - 100;
+                var dataProgress = Math.floor((((activeDuration - remain_time) / activeDuration) * 100));
+                var percentProgress = dataProgress - 100;
 
-            var str_active = '<li class="actively-parking-car">' +
-                                '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
-                                    '<div class="item-inner">' +
-                                        '<div class="item-title-row">' +
-                                            '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
-                                            '<input id="timestamp-active-end" value="' + end_time + '" />' +
-                                            '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
-                                            '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
-                                            '</div>' +
-                                            '<div class="item-subtitle active-car-location">' + user_pos.city + '</div>' +
-                                    '</div>' +
-                                '</a>' +
-                                '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
-                                    '<div class="popover-angle"></div>' +
-                                    '<div class="popover-inner">' +
-                                        '<div class="content-block">' +
-                                            '<div id="active-car-plate">' + activeCarPlate + '</div>' +
-                                            '<div id="location"></div><br />' +
-                                            '<div id="promo">Promotion used: ' + promoCode + '</div>' +
-                                            '<div id="lbl-time">Expected End Time:</div>' +
-                                            '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                                            '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
-                                            '<div id="btns">' +
-                                                '<button id="terminate-btn" value="' + activeCarPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
-                                                '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<span class="progressbar" id="progressbar' + activeCarPlate + '" data-progress="' + dataProgress + '">' +
-                                    '<span class="" id="innerProgressbar' + activeCarPlate + '" style="transform: translate3d(' + percentProgress + '%, 0px, 0px);"></span>' +
-                                '</span>'
-                            '</li>';
-            $$('#ulist-active').append(str_active);
-            getActiveAddress(activeLocation, activeCarPlate);
+                var str_active = '<li class="actively-parking-car">' +
+                    '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
+                    '<div class="item-inner">' +
+                    '<div class="item-title-row">' +
+                    '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                    '<input id="timestamp-active-end" value="' + end_time + '" />' +
+                    '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
+                    '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
+                    '</div>' +
+                    '<div class="item-subtitle active-car-location">' + user_pos.city + '</div>' +
+                    '</div>' +
+                    '</a>' +
+                    '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
+                    '<div class="popover-angle"></div>' +
+                    '<div class="popover-inner">' +
+                    '<div class="content-block">' +
+                    '<div id="active-car-plate">' + activeCarPlate + '</div>' +
+                    '<div id="location"></div><br />' +
+                    '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                    '<div id="lbl-time">Expected End Time:</div>' +
+                    '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
+                    '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                    '<div id="btns">' +
+                    '<button id="terminate-btn" value="' + activeCarPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
+                    '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<span class="progressbar" id="progressbar' + activeCarPlate + '" data-progress="' + dataProgress + '">' +
+                    '<span class="" id="innerProgressbar' + activeCarPlate + '" style="transform: translate3d(' + percentProgress + '%, 0px, 0px);"></span>' +
+                    '</span>'
+                '</li>';
+                $$('#ulist-active').append(str_active);
+                getActiveAddress(activeLocation, activeCarPlate);
+            }
         }
     }
 
@@ -724,7 +701,11 @@ myApp.onPageInit('main', function (page) {
                             duration: timestamp2Time(parkingDuration).name,
                             startTime: parkingTimestamp
                         })
-                            .then(refreshHistory())
+                        var hisIntrv = setInterval(function () {
+                            if (historyRead[9999999999999 - parkingTimestamp]) {
+                                showHistory();
+                            }
+                        })
                         carRef.child(ownedCarPlate).child('parking').update({
                             active: false,
                         })
@@ -780,12 +761,6 @@ myApp.onPageInit('main', function (page) {
         $$('.selected-park-duration').html(timestamp2Time(parkDuration).shortName);
         $$('.required-token').html(tokenReq);
     }
-    intrvTemp = setInterval(function () {
-        if (rate) {
-            clearInterval(intrvTemp);
-            getDuration();
-        }
-    })
 
     setInterval(function () {
         getDuration();
@@ -994,13 +969,16 @@ myApp.onPageInit('main', function (page) {
 
     $$("#historyRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
-            refreshHistory();
+            function clearBox(id) {
+                document.getElementById(id).innerHTML = "";
+            }
+            clearBox('show-history');
+            showHistory();
             myApp.pullToRefreshDone();
             return;
         }, 5000);
     });
 
-    
     showHistory();
 
     $$('#show-history').on("accordion:open", function () {
@@ -1013,7 +991,11 @@ myApp.onPageInit('main', function (page) {
 
     $$("#topupHistRefresh").on('ptr:refresh', function (e) {
         setTimeout(function () {
-            refreshTopupHist();
+            function clearBox(id) {
+                document.getElementById(id).innerHTML = "";
+            }
+            clearBox('show-topup-hist');
+            showTopupHist();
             myApp.pullToRefreshDone();
             return;
         }, 5000);
@@ -1142,8 +1124,8 @@ function extendConfirmed(theCar) {
     tokenReq = (extendDuration * rate);
     extendConfirmText =
         'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
-        'Extended until&emsp;&emsp; :' + $$('.extended-duration').text() + '<br>' +
-        'Token required is&emsp;:' + tokenReq.toString() + '<br><br>' +
+        'Extended until&emsp;&emsp;:' + $$('.extended-duration').text() + '<br>' +
+        'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
         'Confirm Transaction?';
     myApp.confirm(extendConfirmText, 'Confirmation', function () {
 
@@ -1251,7 +1233,14 @@ function terminateParkingTime(theCar) {
             location: terminateLocation,
             duration: timestamp2Time(terminateDuration).name,
             startTime: terminateTimestamp
-        }).then(refreshHistory())
+        })
+        var termintrv = setInterval(function () {
+            if (historyRead[9999999999999 - terminateTimestamp]) {
+                clearInterval(termintrv);
+                console.log(Db.user.history);
+                showHistory();
+            }
+        },100)
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
@@ -1457,9 +1446,7 @@ myApp.onPageInit("select-location", function (page) {
             }));
         }
         else {
-            if ($$('#default-address').text() !== 'none') {
-                selfset = true;
-            }
+            selfset = true;
             // not checked
             default_marker.forEach(function (marker) {
                 marker.setMap(null);
@@ -1703,6 +1690,9 @@ myApp.onPageInit("select-location", function (page) {
                 default_pos['lat'] = position.coords.latitude;
                 default_pos['lng'] = position.coords.longitude;
                 geocodeLatLng(default_pos, default_pos);
+                selfset_pos['lat'] = position.coords.latitude;
+                selfset_pos['lng'] = position.coords.longitude;
+                geocodeLatLng(selfset_pos, selfset_pos);
 
                 if (selectedLocation && selfset) {
                     $$('input[name=default-loca]').click();
