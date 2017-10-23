@@ -218,7 +218,7 @@ a.close-popover{
 
 /* Sen Kit */
 #history-tabbar {
-    
+    top:0px
 }
 
 .list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline, #extend-content, #duration-content{
@@ -275,29 +275,18 @@ a.close-popover{
 
 #extend-btn, #terminate-btn{
     float: left;
-    border-radius: 12px; 
+    border-radius: 10px; 
     width:45%; 
-    height:50px; 
+    height:40px; 
     margin:0 2.5%;
+    border:none
 }
 
 #confirm-btn{
     text-align:center;
-    background-color:cornflowerblue;
     border:none;
     border-radius:10px
 }
-
-#extend-btn{
-    background-color:blue;
-    color: white
-}
-
-#terminate-btn{
-    background-color:red;
-    color: white
-}
-
 
 #popover-active{
     width:345px;
@@ -324,7 +313,7 @@ a.close-popover{
     border-radius:9px;
 }
 
-.close-picker{
+#extendCancel{
     color:white;
     font-size:15px
 }

@@ -632,6 +632,7 @@ myApp.onPageInit('main', function (page) {
             var activeDuration = activeCarRead[activeCarPlate].parking.duration;
             var activeTimestamp = activeCarRead[activeCarPlate].parking.timestamp;
             var activeLocation = activeCarRead[activeCarPlate].parking.location;
+            var activePromo = activeCarRead[activeCarPlate].parking.promocode;
             if (activeStatus) {
                 //write data to UI
                 var activeAddress, promoCode = null;
@@ -664,6 +665,9 @@ myApp.onPageInit('main', function (page) {
                     }
                 }
 
+                if (activePromo == "")
+                    activePromo = "Nothing is used!"
+
                 var dataProgress = Math.floor((((activeDuration - remain_time) / activeDuration) * 100));
                 var percentProgress = dataProgress - 100;
 
@@ -685,13 +689,13 @@ myApp.onPageInit('main', function (page) {
                     '<div class="content-block">' +
                     '<div id="active-car-plate">' + activeCarPlate + '</div>' +
                     '<div id="location"></div><br />' +
-                    '<div id="promo">Promotion used: ' + promoCode + '</div>' +
+                    '<div id="promo">Promotion used: ' + activePromo + '</div>' +
                     '<div id="lbl-time">Expected End Time:</div>' +
                     '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                    '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                    '<div id="lbl-btns">Press button to extend or terminate the parking time.</div><br/>' +
                     '<div id="btns">' +
-                    '<button id="terminate-btn" value="' + activeCarPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
-                    '<button id="extend-btn" value="' + activeCarPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                    '<a class="button button-fill button-raised" id="terminate-btn" onclick="terminateParkingTime(\''+ activeCarPlate +'\',this)">Terminate</a>' +
+                    '<a class="button button-fill button-raised" id="extend-btn" onclick="extendParkingTime(\'' + activeCarPlate + '\',this)">Extend</a>' +
                     '</div>' +
                     '</div>' +
                     '</div>' +
@@ -876,7 +880,7 @@ myApp.onPageInit('main', function (page) {
                     })
 
                     //write data to UI
-                    var location = user_pos.city, promoCode = null;
+                    var location = user_pos.city, promoCode = $$('#used-promo-code').val();
                     var current_time = Date.now();
                     var end_time = timestamp + parkDuration;
                     var end_time_dis = new Date(end_time);
@@ -884,6 +888,9 @@ myApp.onPageInit('main', function (page) {
                     var time_val;
                     var time_unit;
                     var dataProgress;
+
+                    if (promoCode == "")
+                        promoCode = "Nothing is used!"
 
                     if (timestamp2Time(remain_time).second >= 60) {
                         if (timestamp2Time(remain_time).minute >= 60) {
@@ -933,10 +940,10 @@ myApp.onPageInit('main', function (page) {
                                                     '<div id="promo">Promotion used: ' + promoCode + '</div>' +
                                                     '<div id="lbl-time">Expected End Time:</div>' +
                                                     '<div id="time-remain">' + end_time_dis.getHours() + ' : ' + end_time_dis.getMinutes() + ' : ' + end_time_dis.getSeconds() + '</div><br />' +
-                                                    '<div id="lbl-btns">Press button to extend or terminate the parking time.</div>' +
+                                                    '<div id="lbl-btns">Press button to extend or terminate the parking time.</div><br/>' +
                                                     '<div id="btns">' +
-                                                        '<button id="terminate-btn" value="' + carPlate + '" onclick="terminateParkingTime(this.value)">Terminate</button>' +
-                                                        '<button id="extend-btn" value="' + carPlate + '" onclick="extendParkingTime(this.value)">Extend</button>' +
+                                                        '<a class="button button-fill button-raised" id="terminate-btn" onclick="terminateParkingTime(\''+ carPlate +'\',this)">Terminate</a>' +
+                                                        '<a class="button button-fill button-raised" id="extend-btn" onclick="extendParkingTime(\''+ carPlate +'\',this)">Extend</a>' +
                                                     '</div>' +
                                                 '</div>' +
                                             '</div>' +
@@ -1075,6 +1082,7 @@ myApp.onPageInit('main', function (page) {
 // Extend Button Function
 //---------------------------------------
 function extendParkingTime(theCar) {
+    theCarPlate = theCar;
     var extendCarRead = carRead;
     $$('.actively-parking-car').each(function(){
         if((extendCarRead[theCar].parking.timestamp + extendCarRead[theCar].parking.duration) - Date.now() <= 0){
@@ -1097,7 +1105,7 @@ function extendParkingTime(theCar) {
                 '<div class="toolbar">' +
                     '<div class="toolbar-inner">' +
                         '<div class="left" id="extendCarPlate">&emsp;' + theCar + '</div>' +
-                        '<div class="right"><a href="#" class="close-picker">Cancel&emsp;</a></div>' +
+                        '<div class="right"><a href="#" class="close-picker" id="extendCancel">Cancel&emsp;</a></div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="picker-modal-inner">' +
@@ -1122,11 +1130,12 @@ function extendParkingTime(theCar) {
                                 '<input type="range" class="extend-duration" min="600000" max="43200000" value="3600000" step="600000" />' +
                             '</div>' +
                         '</div><br />' +
-                        '<button class="actions-modal-button actions-modal-button-bold" id="confirm-btn" value="' + theCar + '" onclick="extendConfirmed(this.value)">Confirm</button>' +
+                        '<a class="button button-fill button-raised" id="confirm-btn" onclick="extendConfirmed(\''+ theCarPlate +'\',this)">Confirm</a>' +
                     '</div>' +
                 '</div>' +
             '</div>'
         )
+        console.log(theCar)
     }
 
     //----------------------
@@ -1155,13 +1164,14 @@ function extendParkingTime(theCar) {
 // Extend Function
 //---------------------------------------
 function extendConfirmed(theCar) {
+    console.log(theCar)
     var tokenNO, tokenReq, tokenBal;
 
     tokenReq = (extendDuration * rate);
     extendConfirmText =
         'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
-        'Extended until&emsp;&emsp;:' + $$('.extended-duration').text() + '<br>' +
-        'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+        'Extended until&emsp;&emsp; :' + $$('.extended-duration').text() + '<br>' +
+        'Token required is&emsp;:' + tokenReq.toString() + '<br><br>' +
         'Confirm Transaction?';
     myApp.confirm(extendConfirmText, 'Confirmation', function () {
 
