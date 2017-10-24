@@ -1479,6 +1479,21 @@ function setOptions(srcType) {
     return options;
 }
 
+function createNewFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
+
+        // JPEG file
+        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
+            // Do something with it, like write to it, upload it, etc.
+            // writeFile(fileEntry, imgUri);
+            console.log("got file: " + fileEntry.fullPath);
+            // displayFileData(fileEntry.fullPath, "File copied to");
+
+        }, onErrorCreateFile);
+
+    }, onErrorResolveUrl);
+}
+
 //FilePicker//
 function openFilePicker(selection) {
 
@@ -1495,7 +1510,9 @@ function openFilePicker(selection) {
 
     navigator.camera.getPicture(function cameraSuccess(imageUri) {
 
-        // Do something with image
+        var blob = to_blob(imageUri);
+        return blob;
+        console.log("return blob liao");
 
     }, function cameraError(error) {
         console.debug("Unable to obtain picture: " + error, "app");
@@ -1503,36 +1520,19 @@ function openFilePicker(selection) {
     }, options);
 }
 
-function createNewFileEntry(imgUri) {
-    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
-
-        // JPEG file
-        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
-
-
-            // Do something with it, like write to it, upload it, etc.
-            // writeFile(fileEntry, imgUri);
-            console.log("got file: " + fileEntry.fullPath);
-            // displayFileData(fileEntry.fullPath, "File copied to");
-
-        }, onErrorCreateFile);
-
-    }, onErrorResolveUrl);
-}
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
+    /*
+    user.updateProfile({
+        photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
+    }).then(function () {
+        myApp.alert('sejjejje');
+    });
 
-    //user.updateProfile({
-    //    //photoURL: 'images/car-car.png'
-    //    photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
-
-    //}).then(function () {
-    //    myApp.alert('sejjejje');
-    //});
-
-    //var profile_pic = user.photoURL;
-
+    var profile_pic = user.photoURL;
+    */
+     /*
     to_blob("images/car-car.png").then(function (blob) {
         user.updateProfile({
             displayName: "wwji",
@@ -1542,7 +1542,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
         console.log(user.photoURL);
     });
 
-
+    */
 
 
     $$('.load-username').html(Db.user.username);
@@ -1553,8 +1553,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
-
-
 
     $$('.button-profile-pic').on('click', function () {
         var options = [
@@ -1569,7 +1567,45 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 text: 'Edit Profile Picture',
                 bold: true,
                 onClick: function () {
-                    openFilePicker();
+                    var img_blob = openFilePicker();
+                    var metadata = {
+                        name: 'profile_pic'
+                        //content type(?)
+                    };
+                    var uploadTask = storageuserRef.child(file.name).put(img_blob, metadata);
+                    // Listen for state changes, errors, and completion of the upload.
+                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log('Upload is ' + progress + '% done');
+                            switch (snapshot.state) {
+                                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                    console.log('Upload is paused');
+                                    break;
+                                case firebase.storage.TaskState.RUNNING: // or 'running'
+                                    console.log('Upload is running');
+                                    break;
+                            }
+                        }, function (error) {
+
+                            // A full list of error codes is available at
+                            // https://firebase.google.com/docs/storage/web/handle-errors
+                            switch (error.code) {
+                                case 'storage/unauthorized':
+                                    // User doesn't have permission to access the object
+                                    break;
+
+                                case 'storage/canceled':
+                                    // User canceled the upload
+                                    break;
+                                case 'storage/unknown':
+                                    // Unknown error occurred, inspect error.serverResponse
+                                    break;
+                            }
+                        }, function () {
+                            // Upload completed successfully, now we can get the download URL
+                            var downloadURL = uploadTask.snapshot.downloadURL;
+                        });
                 }
             }
         ];
