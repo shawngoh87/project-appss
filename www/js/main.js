@@ -177,7 +177,7 @@ function removeVehicle(item) {
                 text: 'Ok',
                 onClick: function () {
                     $$('.actively-parking-car').each(function () {
-                        if ($$(this).find('#car-icon').text().replace(/child_friendly/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
+                        if ($$(this).find('#car-icon').text().replace(/shopping_cart/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
                             $$(this).remove();
                         }
                     })
@@ -220,7 +220,7 @@ function loadSpecificTransaction(carPlate) {
 //--------------------------------
 function refreshActiveHistory() {
     $$('.actively-parking-car').each(function () {
-        var ownedCarPlate = $$(this).find('#car-icon').text().replace(/child_friendly/g, '');
+        var ownedCarPlate = $$(this).find('#car-icon').text().replace(/shopping_cart/g, '');
         var endTime = carRead[ownedCarPlate].parking.timestamp + carRead[ownedCarPlate].parking.duration;
         var remainTime = endTime - Date.now();
         var timeVal;
@@ -712,12 +712,11 @@ myApp.onPageInit('main', function (page) {
 
                 var dataProgress = Math.floor((((activeDuration - remain_time) / activeDuration) * 100));
                 var percentProgress = dataProgress - 100;
-
                 var str_active = '<li class="actively-parking-car">' +
                     '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
                     '<div class="item-inner">' +
                     '<div class="item-title-row">' +
-                    '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + activeCarPlate + '</div>' +
+                    '<div id="car-icon" class="item-title"><i class="material-icons">shopping_cart</i>' + activeCarPlate + '</div>' +
                     '<input id="timestamp-active-end" value="' + end_time + '" />' +
                     '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                     '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
@@ -918,7 +917,7 @@ myApp.onPageInit('main', function (page) {
                     })
 
                     //write data to UI
-                    var location = user_pos.city, promoCode = $$('#used-promo-code').val();
+                    var promoCode = $$('#used-promo-code').val();
                     var current_time = Date.now();
                     var end_time = timestamp + parkDuration;
                     var end_time_dis = new Date(end_time);
@@ -961,7 +960,7 @@ myApp.onPageInit('main', function (page) {
                                         '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
                                             '<div class="item-inner">' +
                                                 '<div class="item-title-row">' +
-                                                    '<div id="car-icon" class="item-title"><i class="material-icons">child_friendly</i>' + carPlate + '</div>' +
+                                                    '<div id="car-icon" class="item-title"><i class="material-icons">shopping_cart</i>' + carPlate + '</div>' +
                                                     '<input id="timestamp-active-end" value="' + end_time + '" />' +
                                                     '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                     '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
@@ -1131,6 +1130,7 @@ function extendParkingTime(theCar) {
         myApp.closeModal();
         myApp.alert('The parking session of this car was expired', 'Notification');
         refreshActiveHistory();
+        expired = false;
     }
     else {
         myApp.closeModal();
@@ -1173,7 +1173,6 @@ function extendParkingTime(theCar) {
                 '</div>' +
             '</div>'
         )
-        console.log(theCar)
     }
 
     //----------------------
@@ -1202,7 +1201,6 @@ function extendParkingTime(theCar) {
 // Extend Function
 //---------------------------------------
 function extendConfirmed(theCar) {
-    console.log(theCar)
     var tokenNO, tokenReq, tokenBal;
 
     tokenReq = (extendDuration * rate);
@@ -1377,11 +1375,12 @@ function terminateParkingTime(theCar) {
 
     terminateConfirmText =
         'Are you sure that you want to terminate the follwing parking?<br/>' +
-        'Car Plate Number&emsp;&nbsp:' + theCar.toString() + '<br/>' +
-        'Time Remaining&emsp;:' + timeVal + ' ' + timeUnit + '<br/>' +
+        'Car Plate Number&emsp;&nbsp  :' + theCar.toString() + '<br/>' +
+        'Time Remaining&emsp;&emsp; :' + timeVal + ' ' + timeUnit + '<br/>' +
         'Expected End Time is :<br/>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '<br/><br/>' +
         'Confirm to Terminate?';
 
+    myApp.closeModal();
     myApp.confirm(terminateConfirmText, 'Confirmation', function () {
         //Update to firebase
         carRef.child(theCar).child('parking').update({
@@ -1391,7 +1390,7 @@ function terminateParkingTime(theCar) {
         })
 
         terminateDuration -= terminateRemainTime;
-        
+
         carRef.child(theCar).child('history').child(theCar + terminateTimestamp).update({
             amount: terminateAmount,
             promocode: terminatePromoCode,
@@ -1399,7 +1398,8 @@ function terminateParkingTime(theCar) {
             duration: timestamp2Time(terminateDuration).name,
             start_time: terminateTimestamp
         })
-        historyRef.child(9999999999999-terminateTimestamp).update({
+
+        historyRef.child(9999999999999 - terminateTimestamp).update({
             carPlate: theCar,
             amount: terminateAmount,
             location: terminateLocation,
@@ -1408,11 +1408,11 @@ function terminateParkingTime(theCar) {
         }).then(function () {
             refreshHistory();
         })
+
         myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
         $$('.close-picker').click();
     })
     refreshActiveHistory();
-    myApp.closeModal();
 }
 
 
