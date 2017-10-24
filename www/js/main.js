@@ -565,7 +565,7 @@ myApp.onPageInit('main', function (page) {
     var waitLoading = setTimeout(function () {
         myApp.hideIndicator();
         myApp.alert('Poor internet connection.', 'Notification');
-    }, 5000);
+    }, 10000);
     if (Db.user && Db.admin) {
         console.log("Loading completed")
         myApp.hideIndicator();
