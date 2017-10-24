@@ -275,14 +275,13 @@ function refreshActiveHistory() {
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
-                var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
+                            promocode: "ILOVEDOUBLEPARK",
                             location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
-                            promocode: parkingPromocode,
                             start_time: parkingTimestamp
                         })
                         historyRef.child(9999999999999 -parkingTimestamp).update({
@@ -614,10 +613,53 @@ myApp.onPageInit('main', function (page) {
         for (var displayCarPlate in cars) {//write to UI
             var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
             var str2 = '</div><div class="cards-item-title">'
-            var str3 = '</div></div><div class="item-after"><a class="override-icon-color" href="#" onclick="removeVehicle(this)"><i class="material-icons override-icon-size item-link" style="">cancel</i></a></div></div> </a > </li></ul></div></div></div>';
+            var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="display: none">cancel</i></div></div> </a > </li></ul></div></div></div>';
             //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-            $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
         }
+
+        // flip delete 
+        $$('.flip-cancel').on('click', function () {
+
+            var something = $$(this).attr('state');
+            console.log(something);
+
+
+            if ($$(this).attr('state') == 'open') {
+                $$('#sub-tab-vehicle').empty();
+                var cars = Db.user.cars;
+                for (var displayCarPlate in cars) {//write to UI
+                    var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><div class="item-content item-link"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+                    var str2 = '</div><div class="cards-item-title">'
+                    var str3 = '</div></div><div class="item-after"><a href="#" onclick="removeVehicle(this);" class="override-icon-color"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></a></div></div></div></li></ul></div></div></div>';
+
+                    $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                }
+                $$('.vehicle-cancel').show();
+
+                $$(this).attr('state', 'close');
+
+
+            }
+
+            else if ($$(this).attr('state') == 'close') {
+                $$('#sub-tab-vehicle').empty();
+                var cars = Db.user.cars;
+                for (var displayCarPlate in cars) {//write to UI
+                    var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+                    var str2 = '</div><div class="cards-item-title">'
+                    var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
+
+                    $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                }
+
+                $$(this).attr('state', 'open');
+            }
+
+
+        });
+
+        
 
         //Get tokens
         userRef.child('balance').on('value', function (snapshot) {
@@ -733,14 +775,13 @@ myApp.onPageInit('main', function (page) {
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
                 var parkingTimestamp = carRead[ownedCarPlate].parking.timestamp;
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
-                var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 if (parkingActive) {
                     if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
                         carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
                             amount: parkingAmount,
+                            promocode: "ILOVEDOUBLEPARK",
                             location: parkingLocation,
                             duration: timestamp2Time(parkingDuration).name,
-                            promocode: parkingPromocode,
                             start_time: parkingTimestamp
                         })
                         historyRef.child(9999999999999 -parkingTimestamp).update({
@@ -808,6 +849,8 @@ myApp.onPageInit('main', function (page) {
         $$('.required-token').html(tokenReq);
     }
 
+    getDuration();
+
     setInterval(function () {
         getDuration();
     }, 60000)
@@ -823,8 +866,8 @@ myApp.onPageInit('main', function (page) {
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
-                'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;:' + $$('.selected-duration').text() + '<br>' +
-                'Token required is &ensp;&nbsp:' + tokenReq.toString() + '<br><br>' +
+                'Park Until&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
+                'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
 
@@ -871,7 +914,6 @@ myApp.onPageInit('main', function (page) {
                         amount: tokenReq,
                         timestamp: timestamp,
                         duration: parkDuration,
-                        promocode: $$('#used-promo-code').val(),
                         location: { lat: user_pos.lat, lng: user_pos.lng }
                     })
 
@@ -992,16 +1034,16 @@ myApp.onPageInit('main', function (page) {
                             active: false,
                             duration: 0,
                             amount: 0,
-                            timestamp: '',
-                            promocode:''
+                            timestamp: ''
+
                         })
 
                         //write to UI
                         var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
                         var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="">cancel</i></div></div></a></li></ul></div></div></div>';
+                        var str3 = '</div></div><div class="item-after"><i onclick="alert("a")" class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
                         //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-                        $$('#tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
                         myApp.closeModal();
                     }
                 },
@@ -1188,7 +1230,95 @@ function extendConfirmed(theCar) {
                 $$('.close-picker').click();
             }
 
-        //Update to firebase
+        //Update to 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         var amount = carRead[theCar].parking.amount;
         var duration = carRead[theCar].parking.duration;
         var timestamp = carRead[theCar].parking.timestamp;
@@ -1453,7 +1583,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
-    $$('.load-ic-no').html(Db.user.IC);
 
 
 
@@ -1677,7 +1806,6 @@ myApp.onPageInit("select-location", function (page) {
                 }
             });
             map.fitBounds(bounds);
-            map.setZoom(18);
         });
     }
 
