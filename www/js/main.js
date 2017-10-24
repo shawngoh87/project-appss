@@ -1549,6 +1549,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-real-name').html(Db.user.real_name);
     $$('.load-email').html(Db.user.email);          //might need to change
     $$('.load-phone-no').html(Db.user.phone_no);
+    $$('.load-ic-no').html(Db.user.IC);
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
