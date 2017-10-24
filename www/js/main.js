@@ -78,7 +78,7 @@ function initUserInfo() {
     historyRef = userRef.child('history');
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
-    storageuserRef = firebase.storage().ref('users/' + user.uid);
+    //storageuserRef = firebase.storage().ref('users/' + user.uid);
     userRef.on('value',
         // Succeeded promise
         function (snapshot) {
@@ -102,7 +102,6 @@ function initUserInfo() {
         Db.admin = snapshot.val();
         rate = Db.admin.token_per_minute / 60000;
         Strg.logo = {};
-        var i = 0;
         for (var promoCompany in Db.admin.promotions) {
             (function (promoC) {
                 storageRef.child('logo/' + promoC + '.png').getDownloadURL().then(function (url) {
@@ -1526,23 +1525,23 @@ myApp.onPageInit('color-themes', function (page) {
     });
 });
 
-function loadProfilePic(url) {
+//function loadProfilePic(url) {
 
-    return new Promise(function (resolve, reject) {
-        try {
-            var pp = new XMLHttpRequest();
-            pp.open("GET", url);
-            pp.responseType = "blob";
-            pp.onerror = function () { reject("Network error.") };
-            pp.onload = function () {
-                if (pp.status === 200) { resolve(pp.response) }
-                else { reject("Loading error:" + pp.statusText) }
-            };
-            pp.send();
-        }
-        catch (err) { reject(err.message) }
-    });
-}
+//    return new Promise(function (resolve, reject) {
+//        try {
+//            var pp = new XMLHttpRequest();
+//            pp.open("GET", url);
+//            pp.responseType = "blob";
+//            pp.onerror = function () { reject("Network error.") };
+//            pp.onload = function () {
+//                if (pp.status === 200) { resolve(pp.response) }
+//                else { reject("Loading error:" + pp.statusText) }
+//            };
+//            pp.send();
+//        }
+//        catch (err) { reject(err.message) }
+//    });
+//}
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
@@ -1557,22 +1556,22 @@ myApp.onPageInit('profile-myprofile', function (page) {
 
     //var profile_pic = user.photoURL;
 
-    loadProfilePic("images/car-car.png").then(function (blob) {
-        var xyz = blob;
-        user.updateProfile({
-            displayName: "wwji",
-            photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
-        });
-        console.log(blob);
-        console.log(xyz);
-        console.log(user.photoURL);
-    });
+    //loadProfilePic("images/car-car.png").then(function (blob) {
+    //    var xyz = blob;
+    //    user.updateProfile({
+    //        displayName: "wwji",
+    //        photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
+    //    });
+    //    console.log(blob);
+    //    console.log(xyz);
+    //    console.log(user.photoURL);
+    //});
 
-    var browsepic = myApp.photoBrowser({
-        //photo: ['images/car-car.png']
-        photos: [user.photoURL]
-        // theme: 'dark'
-    });
+    //var browsepic = myApp.photoBrowser({
+    //    //photo: ['images/car-car.png']
+    //    photos: [user.photoURL]
+    //    // theme: 'dark'
+    //});
 
 
 
