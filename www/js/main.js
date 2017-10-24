@@ -1000,6 +1000,15 @@ myApp.onPageInit('main', function (page) {
         }
     });
 
+    $$('.check-promotion').on('click', function () {
+        user_pos = {
+            lat: 0,
+            lng: 0,
+            city: 'none',
+            full_addr: 'none'
+        };
+    })
+
     $$('#tab-history-button').on('click', function () {
         refreshActiveHistory();
     })
@@ -1805,6 +1814,7 @@ myApp.onPageInit("select-location", function (page) {
                 }
             });
             map.fitBounds(bounds);
+            map.setZoom(18);
         });
     }
 
