@@ -1631,43 +1631,6 @@ myApp.onPageInit("select-location", function (page) {
 
     initMap(map);
 
-    //-------------------------------
-    // Search nearby POI
-    //-------------------------------
-    function nearbySearch(map, pos) {
-        var request = {
-            location: pos,
-            radius: '250',          // unit is in meters (value now is 250m)
-            type: ['restaurant']
-        };
-        var service = new google.maps.places.PlacesService(map);
-        service.nearbySearch(request, displayNearby);
-    }
-
-    //-------------------------------
-    // Display nearby POI on apps
-    //-------------------------------
-    function displayNearby(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length; i++) {
-                var pos = {
-                    lat: results[i].geometry.location.lat(),
-                    lng: results[i].geometry.location.lng()
-                };
-                var POI_content_html =
-                    '<li><div class="item-inner item-content">' +
-                    '<div class="item-title-row">' +
-                    '<div class="item-title">' + results[i].name + '</div>' +
-                    '<div class="item-after">ICON</div>' +
-                    '</div>' +
-                    '</div></li>';
-
-                $$("#POI-content").append(POI_content_html);
-                //geocodeAddr(pos, results[i].name);                
-            }
-        }
-    }
-
     //------------------------------------------------------
     // Allow user to set their own location using search box
     //------------------------------------------------------
