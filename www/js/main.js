@@ -2260,16 +2260,3 @@ myApp.onPageInit('settings-change-hp', function (page) {
     });
 
 });
-    /*
-myApp.onPageInit('change-profile-picture', function (page) {
-    var myPhotoBrowserDark = myApp.photoBrowser({
-        photos: [
-            'http://lorempixel.com/1024/1024/sports/1/',
-        ],
-        theme: 'dark'
-    });
-    $$('.pb-standalone-dark').on('click', function () {
-        myPhotoBrowserDark.open();
-    });
-
-})*/
