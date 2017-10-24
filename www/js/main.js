@@ -441,7 +441,6 @@ function clearBox(id) {
 //-------------------------------------
 //        Show Topup History
 //------------------------------------
-
 function showTopupHist() {
     var topupHistStackDate = null; //Stack Date for date checking
     var topupHistStampIndex = 0; //Index stamping for date
@@ -540,6 +539,11 @@ function refreshTopupHist() {
     showTopupHist();
 }
 
+function myactive() {
+    $$("#tab-profile").addClass("active")
+    $$("#tab-park").removeClass("active")
+}
+
 myApp.onPageInit('profile-settings', function (page) {
 
 });
@@ -547,11 +551,6 @@ myApp.onPageInit('profile-settings', function (page) {
 myApp.onPageInit('profile-help', function (page) {
 
 });
-
-function myactive() {
-    $$("#tab-profile").addClass("active")
-    $$("#tab-park").removeClass("active")
-}
 
 myApp.onPageInit('main', function (page) {
     console.log(Db);
@@ -1479,6 +1478,7 @@ function setOptions(srcType) {
     }
     return options;
 }
+
 //FilePicker//
 function openFilePicker(selection) {
 
@@ -1947,7 +1947,6 @@ myApp.onPageInit('settings-change-password', function (page) {
             })
     });
 });
-
 
 //Make Report (CarLoss/IllegalPark)
 myApp.onPageInit('profile-report', function (page) {
