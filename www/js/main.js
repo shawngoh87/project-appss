@@ -16,6 +16,7 @@ var mainView = myApp.addView('.view-main', {
 var Db = {};
 var Strg = {};
 var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef;
+var colorTheme = "aliceblue";
 var rate, selfset = false, selectedCar = false, selectedLocation = false;
 var expired = false, extendDuration;
 
@@ -370,7 +371,7 @@ function showHistory() {
                 historyTime = new Date(historyList[historyTempIndex].startTime);
                 var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
                     '<a href="#" class="item-content item-link">' +
-                    '<div class="item-inner" id=histItem>' +
+                    '<div class="item-inner" style="background-color:'+colorTheme+'" id="histItem">' +
                     '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
                     '<div class="item-after"><div id="histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].city +'</div>' +
                     '</div> ' +
@@ -479,7 +480,7 @@ function showTopupHist() {
                 topupHistTime = new Date(topupHistList[topupHistTempIndex].topup_time);
                 var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
                     '<a href="#"  class="item-content item-link" >' +
-                    '<div class="item-inner" id=topupHistItem>' +
+                    '<div class="item-inner" style="background-color:' + colorTheme +'" id="topupHistItem">' +
                     '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
                     '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
                     '</div > ' +
@@ -1458,6 +1459,69 @@ myApp.onPageInit('color-themes', function (page) {
             if (classList[i].indexOf('theme') === 0) classList.remove(classList[i]);
         }
         classList.add('theme-' + $$(this).attr('data-theme'));
+        switch ($$(this).attr('data-theme')) {
+            case 'red':
+                colorTheme = "lightpink";
+                break;
+            case 'pink':
+                colorTheme = "lightpink";
+                break;
+            case 'purple':
+                colorTheme = "plum";
+                break;
+            case 'deeppurple':
+                colorTheme = "plum";
+                break;
+            case 'indigo':
+                colorTheme = "aliceblue";
+                break;
+            case 'blue':
+                colorTheme = "aliceblue";
+                break;
+            case 'lightblue':
+                colorTheme = "aliceblue";
+            case 'cyan':
+                colorTheme = "aliceblue";
+                break;
+            case 'teal':
+                colorTheme = "palegreen";
+                break;
+            case 'green':
+                colorTheme = "palegreen";
+                break;
+            case 'lightgreen':
+                colorTheme = "palegreen";
+                break;
+            case 'lime':
+                colorTheme = "lightgoldenrodyellow";
+                break;
+            case 'yellow':
+                colorTheme = "lightgoldenrodyellow";
+                break;
+            case 'amber':
+                colorTheme = "lightgoldenrodyellow";
+                break;
+            case 'orange':
+                colorTheme = "lightyellow";
+                break;
+            case 'deeporange':
+                colorTheme = "lightsalmon";
+                break;
+            case 'brown':
+                colorTheme = "lightgoldenrodyellow";
+                break;
+            case 'gray':
+                colorTheme = "whitesmoke";
+                break;
+            case 'bluegray':
+                colorTheme = "whitesmoke";
+                break;
+            case 'black':
+                colorTheme = "whitesmoke";
+                break;
+                break;
+        }
+        //colorTheme = $$(this).attr('data-theme');
     });
 });
 
