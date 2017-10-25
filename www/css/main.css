@@ -349,7 +349,7 @@ a.close-popover{
 #histInfo, #topupHistInfo {
     text-align: right;
     overflow: hidden;
-    max-width: 60px;
+    max-width: 45px;
     height: 48px;
 }
 
