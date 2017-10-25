@@ -78,7 +78,7 @@ function initUserInfo() {
     historyRef = userRef.child('history');
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
-    //storageuserRef = firebase.storage().ref('users/' + user.uid);
+    storageuserRef = storageRef.child('users/' + user.uid);
     userRef.on('value',
         // Succeeded promise
         function (snapshot) {
@@ -523,11 +523,9 @@ function refreshTopupHist() {
 myApp.onPageInit('profile-settings', function (page) {
 
 });
-
 myApp.onPageInit('profile-help', function (page) {
 
 });
-
 function myactive() {
     $$("#tab-profile").addClass("active")
     $$("#tab-park").removeClass("active")
@@ -1446,94 +1444,214 @@ myApp.onPageInit('color-themes', function (page) {
     });
 });
 
-//function loadProfilePic(url) {
+function to_blob(url) {
 
-//    return new Promise(function (resolve, reject) {
-//        try {
-//            var pp = new XMLHttpRequest();
-//            pp.open("GET", url);
-//            pp.responseType = "blob";
-//            pp.onerror = function () { reject("Network error.") };
-//            pp.onload = function () {
-//                if (pp.status === 200) { resolve(pp.response) }
-//                else { reject("Loading error:" + pp.statusText) }
-//            };
-//            pp.send();
-//        }
-//        catch (err) { reject(err.message) }
-//    });
-//}
+    return new Promise(function (resolve, reject) {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.responseType = "blob";
+            xhr.onerror = function () { reject("Network error.") };
+            xhr.onload = function () {
+                if (xhr.status === 200) { resolve(xhr.response) }
+                else { reject("Loading error:" + xhr.statusText) }
+            };
+            xhr.send();
+        }
+        catch (err) { reject(err.message) }
+    });
+}
+
+function setOptions(srcType) {
+    var options = {
+        // Some common settings are 20, 50, and 100
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI,
+        // In this app, dynamically set the picture source, Camera or photo gallery
+        sourceType: srcType,
+        encodingType: Camera.EncodingType.JPEG,
+        mediaType: Camera.MediaType.PICTURE,
+        allowEdit: true,
+        correctOrientation: true  //Corrects Android orientation quirks
+    }
+    return options;
+}
+
+function createNewFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
+
+        // JPEG file
+        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
+            // Do something with it, like write to it, upload it, etc.
+            // writeFile(fileEntry, imgUri);
+            console.log("got file: " + fileEntry.fullPath);
+            // displayFileData(fileEntry.fullPath, "File copied to");
+
+        }, onErrorCreateFile);
+
+    }, onErrorResolveUrl);
+}
+
+//FilePicker//
+function openFilePicker(selection) {
+
+    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
+    var options = setOptions(srcType);
+    var func = createNewFileEntry;
+
+    if (selection == "picker-thmb") {
+        // To downscale a selected image,
+        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
+        options.targetHeight = 100;
+        options.targetWidth = 100;
+    }
+
+    navigator.camera.getPicture(function cameraSuccess(imageUri) {
+
+        var blob = to_blob(imageUri);
+        return blob;
+        console.log("return blob liao");
+
+    }, function cameraError(error) {
+        console.debug("Unable to obtain picture: " + error, "app");
+
+    }, options);
+}
+
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
+    /*
+    user.updateProfile({
+        photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
+    }).then(function () {
+        myApp.alert('sejjejje');
+    });
 
-    //user.updateProfile({
-    //    //photoURL: 'images/car-car.png'
-    //    photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
+    var profile_pic = user.photoURL;
+    */
+    /*
+   to_blob("images/car-car.png").then(function (blob) {
+       user.updateProfile({
+           displayName: "wwji",
+           photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
+       });
+       console.log(blob);
+       console.log(user.photoURL);
+   });
 
-    //}).then(function () {
-    //    myApp.alert('sejjejje');
-    //});
+   */
+    // Create a reference to the file we want to download
+    var profilepicRef = storageuserRef.child('profile_pic.jpg');
 
-    //var profile_pic = user.photoURL;
+    // Get the download URL
+    profilepicRef.getDownloadURL().then(function (url) {
+        // Insert url into an <img> tag to "download"
+        user.updateProfile({
+            photoURL: url
+        }).then(function () {
+            console.log(user.photoURL);
+            console.log("url into photoURL dy");
+            myApp.alert('hhdhdhdh');
+            $$('.profile-pic').html(user.photoURL);
 
-    //loadProfilePic("images/car-car.png").then(function (blob) {
-    //    var xyz = blob;
-    //    user.updateProfile({
-    //        displayName: "wwji",
-    //        photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
-    //    });
-    //    console.log(blob);
-    //    console.log(xyz);
-    //    console.log(user.photoURL);
-    //});
+        });
+    }).catch(function (error) {
 
-    //var browsepic = myApp.photoBrowser({
-    //    //photo: ['images/car-car.png']
-    //    photos: [user.photoURL]
-    //    // theme: 'dark'
-    //});
+        switch (error.code) {
+            case 'storage/object_not_found':
+                // File doesn't exist
+                break;
 
+            case 'storage/unauthorized':
+                // User doesn't have permission to access the object
+                break;
 
+            case 'storage/canceled':
+                // User canceled the upload
+                break;
+
+            case 'storage/unknown':
+                // Unknown error occurred, inspect the server response
+                break;
+        }
+    });
 
     $$('.load-username').html(Db.user.username);
     $$('.load-real-name').html(Db.user.real_name);
     $$('.load-email').html(Db.user.email);          //might need to change
     $$('.load-phone-no').html(Db.user.phone_no);
+    $$('.load-ic-no').html(Db.user.IC);
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
 
-
-
-    $$('.button-profile-pic').on('click', function () {
-        var options = [
-            {
-                text: 'View Profile Picture',
-                bold: true,
-                onClick: function () {
-                    browsepic.open();
-                }
-            },
-            {
-                text: 'Edit Profile Picture',
-                bold: true,
-                onClick: function () {
-                    mainView.router.loadPage("change-profile-picture.html");
-                }
-            }
-        ];
-        var cancel = [
-            {
-                text: 'Cancel',
-                color: 'red',
-                bold: true
-            }
-        ];
-        var action_profile_pic = [options, cancel];
-        myApp.actions(action_profile_pic);
-
-    });
+    /* $$('.button-profile-pic').on('click', function () {
+         var options = [
+             {
+                 text: 'View Profile Picture',
+                 bold: true,
+                 onClick: function () {
+                     mainView.router.loadPage("view-profile-picture.html");
+                 }
+             },
+             {
+                 text: 'Edit Profile Picture',
+                 bold: true,
+                 /*onClick: function () {
+                     var img_blob = openFilePicker();
+                     var metadata = {
+                         name: 'profile_pic',
+                         contentType: 'image/jpg'
+                     };
+                     var uploadTask = storageuserRef.child(profile_pic.jpg).put(img_blob, metadata);
+                     // Listen for state changes, errors, and completion of the upload.
+                     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                             var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                             console.log('Upload is ' + progress + '% done');
+                             switch (snapshot.state) {
+                                 case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                     console.log('Upload is paused');
+                                     break;
+                                 case firebase.storage.TaskState.RUNNING: // or 'running'
+                                     console.log('Upload is running');
+                                     break;
+                             }
+                         }, function (error) {
+ 
+                             // A full list of error codes is available at
+                             // https://firebase.google.com/docs/storage/web/handle-errors
+                             switch (error.code) {
+                                 case 'storage/unauthorized':
+                                     // User doesn't have permission to access the object
+                                     break;
+ 
+                                 case 'storage/canceled':
+                                     // User canceled the upload
+                                     break;
+                                 case 'storage/unknown':
+                                     // Unknown error occurred, inspect error.serverResponse
+                                     break;
+                             }
+                         }, function () {
+                             // Upload completed successfully, now we can get the download URL
+                             var downloadURL = uploadTask.snapshot.downloadURL;
+                         });
+                 }
+             }
+         ];
+         var cancel = [
+             {
+                 text: 'Cancel',
+                 color: 'red',
+                 bold: true
+             }
+         ];
+         var action_profile_pic = [options, cancel];
+         myApp.actions(action_profile_pic);
+ 
+     });*/
 });
 
 //---------------------------
@@ -2224,16 +2342,3 @@ myApp.onPageInit('settings-change-hp', function (page) {
     });
 
 });
-    /*
-myApp.onPageInit('change-profile-picture', function (page) {
-    var myPhotoBrowserDark = myApp.photoBrowser({
-        photos: [
-            'http://lorempixel.com/1024/1024/sports/1/',
-        ],
-        theme: 'dark'
-    });
-    $$('.pb-standalone-dark').on('click', function () {
-        myPhotoBrowserDark.open();
-    });
-
-})*/
