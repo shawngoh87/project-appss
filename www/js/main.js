@@ -1602,16 +1602,17 @@ function openFilePicker(selection) {
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
-    /*
-    user.updateProfile({
-        photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
-    }).then(function () {
-        myApp.alert('sejjejje');
-    });
+    var str1 = '<img class="profile-pic" src="';
+    var str2 = '" width="100">';
 
-    var profile_pic = user.photoURL;
-    */
+    if (user.photo_URL != "") {
+        $$('.button-profile-pic').append(str1 + user.photoURL + str2);
+    } else {
+        $$('.button-profile-pic').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
+    }
+
     /*
+
    to_blob("images/car-car.png").then(function (blob) {
        user.updateProfile({
            displayName: "wwji",
@@ -1631,14 +1632,12 @@ myApp.onPageInit('profile-myprofile', function (page) {
         user.updateProfile({
             photoURL: url
         }).then(function () {
-            console.log(user.photoURL);
             console.log("url into photoURL dy");
+            console.log(user.photoURL);
+            console.log(url);
             myApp.alert('hhdhdhdh');
-            $$('.profile-pic').html(user.photoURL);
-
         });
     }).catch(function (error) {
-
         switch (error.code) {
             case 'storage/object_not_found':
                 // File doesn't exist
@@ -1666,7 +1665,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
-  //  $$('.profile-pic').html(ppurl);
 
      $$('.button-profile-pic').on('click', function () {
          var options = [
