@@ -1585,8 +1585,9 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-gender').html(Db.user.gender);
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
+  //  $$('.profile-pic').html(ppurl);
 
-    /* $$('.button-profile-pic').on('click', function () {
+     $$('.button-profile-pic').on('click', function () {
          var options = [
              {
                  text: 'View Profile Picture',
@@ -1598,12 +1599,13 @@ myApp.onPageInit('profile-myprofile', function (page) {
              {
                  text: 'Edit Profile Picture',
                  bold: true,
-                 /*onClick: function () {
+                 onClick: function () {
                      var img_blob = openFilePicker();
                      var metadata = {
                          name: 'profile_pic',
                          contentType: 'image/jpg'
                      };
+                     /*
                      var uploadTask = storageuserRef.child(profile_pic.jpg).put(img_blob, metadata);
                      // Listen for state changes, errors, and completion of the upload.
                      uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
@@ -1637,7 +1639,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
                          }, function () {
                              // Upload completed successfully, now we can get the download URL
                              var downloadURL = uploadTask.snapshot.downloadURL;
-                         });
+                         });*/
                  }
              }
          ];
@@ -1650,8 +1652,8 @@ myApp.onPageInit('profile-myprofile', function (page) {
          ];
          var action_profile_pic = [options, cancel];
          myApp.actions(action_profile_pic);
- 
-     });*/
+
+     });
 });
 
 //---------------------------
