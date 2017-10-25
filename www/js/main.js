@@ -171,6 +171,7 @@ $$('.button-signup').on('click', function () {
 //---------------------------
 // Vehicle Tab - Remove vehicle via cancel icon
 function removeVehicle(item) {
+    
     myApp.modal({
         title: 'Delete?',
         buttons: [
@@ -611,16 +612,14 @@ myApp.onPageInit('main', function (page) {
                     $$('#sub-tab-vehicle').empty();
                     var cars = Db.user.cars;
                     for (var displayCarPlate in cars) {//write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><div class="item-content item-link"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+                        var str1 = '<div class="card"><div class="card-content"><div class="list-block" style="background-color: LightGray"><ul><li><div class="item-content item-link"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
                         var str2 = '</div><div class="cards-item-title">'
                         var str3 = '</div></div><div class="item-after"><a href="#" onclick="removeVehicle(this);" class="override-icon-color"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></a></div></div></div></li></ul></div></div></div>';
 
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
                     }
                     $$('.vehicle-cancel').show();
-
                     $$(this).attr('state', 'close');
-
 
                 }
 
@@ -632,10 +631,11 @@ myApp.onPageInit('main', function (page) {
                         var str2 = '</div><div class="cards-item-title">'
                         var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
 
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
                     }
 
                     $$(this).attr('state', 'open');
+                    $$('.floating-button').click();
                 }
 
 
@@ -1013,6 +1013,19 @@ myApp.onPageInit('main', function (page) {
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
+        $$('#sub-tab-vehicle').empty();
+        var cars = Db.user.cars;
+        for (var displayCarPlate in cars) {//write to UI
+            var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+            var str2 = '</div><div class="cards-item-title">'
+            var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
+
+            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+        }
+
+        $$('.flip-cancel').attr('state', 'open');
+        $$('.floating-button').click();
+
         myApp.modal({
             title: 'Add vehicle',
             afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-description" class="modal-text-input" placeholder="Description"></div>',
