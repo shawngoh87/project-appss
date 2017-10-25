@@ -1620,17 +1620,24 @@ function openFilePicker(selection) {
 
 //Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
+    //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100">';
-
     if (user.photo_URL != "") {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
     } else {
         $$('.button-profile-pic').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
     }
+    $$('.load-username').html(Db.user.username);
+    $$('.load-real-name').html(Db.user.real_name);
+    $$('.load-email').html(Db.user.email);          //might need to change
+    $$('.load-phone-no').html(Db.user.phone_no);
+    $$('.load-ic-no').html(Db.user.IC);
+    $$('.load-gender').html(Db.user.gender);
+    $$('.load-birthday').html(Db.user.birthday);
+    $$('.load-address').html(Db.user.address);
 
     /*
-
    to_blob("images/car-car.png").then(function (blob) {
        user.updateProfile({
            displayName: "wwji",
@@ -1675,14 +1682,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
         }
     });
 
-    $$('.load-username').html(Db.user.username);
-    $$('.load-real-name').html(Db.user.real_name);
-    $$('.load-email').html(Db.user.email);          //might need to change
-    $$('.load-phone-no').html(Db.user.phone_no);
-    $$('.load-ic-no').html(Db.user.IC);
-    $$('.load-gender').html(Db.user.gender);
-    $$('.load-birthday').html(Db.user.birthday);
-    $$('.load-address').html(Db.user.address);
 
      $$('.button-profile-pic').on('click', function () {
          var options = [
