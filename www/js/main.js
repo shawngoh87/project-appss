@@ -1272,7 +1272,7 @@ function extendConfirmed(theCar) {
 //---------------------------------------
 function terminateParkingTime(theCar) {
     var timeVal, timeUnit;
-    var terminateAmount = carRead[theCar].parking.amount;
+    var terminateTotalAmount = carRead[theCar].parking.amount;
     var terminateDuration = carRead[theCar].parking.duration;
     var terminateTimestamp = carRead[theCar].parking.timestamp;
     var terminateLocation = carRead[theCar].parking.location;
@@ -1281,6 +1281,10 @@ function terminateParkingTime(theCar) {
 
     var terminateRemainTime = (terminateTimestamp + terminateDuration) - Date.now();
     var terminateTime = new Date(terminateTimestamp + terminateDuration);
+    var terminateRemainToken = 2 * Math.floor(terminateRemainTime / 600000);
+    var tokenBalance = Db.user.balance;
+    tokenBalance += terminateRemainToken;
+    var terminateAmount = terminateTotalAmount - terminateRemainToken;
 
     if (timestamp2Time(terminateRemainTime).second >= 60) {
         if (timestamp2Time(terminateRemainTime).minute >= 60) {
@@ -1332,6 +1336,10 @@ function terminateParkingTime(theCar) {
             start_time: terminateTimestamp,
             city: terminateCity
         })
+        
+        userRef.update({
+            balance: tokenBalance
+        })
 
         historyRef.child(9999999999999 - terminateTimestamp).update({
             carPlate: theCar,
@@ -1342,9 +1350,9 @@ function terminateParkingTime(theCar) {
             city: terminateCity
         }).then(function () {
             refreshHistory();
-        })
+            })
 
-        myApp.alert('The parking for car plate number ' + theCar + ' is terminated.', 'Confirmation');
+        myApp.alert('The parking for car plate number ' + theCar + ' is terminated.<br>Token refunded: ' + terminateRemainToken + ' tokens', 'Confirmation');
         $$('.close-picker').click();
     })
     refreshActiveHistory();
