@@ -1115,7 +1115,7 @@ myApp.onPageInit('main', function (page) {
     
 
 
-    //------------------------------------------------------------------------
+    //--Profile Tab-------------------------------------------------
 
     $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
@@ -1132,6 +1132,16 @@ myApp.onPageInit('main', function (page) {
     //profile tab
     $$('.load-username').html(Db.user.username);
     $$('.load-token').append(Db.user.balance.toString());
+
+    var ministr1 = '<img src="';
+    var ministr2 = '" width="80">';
+    
+    if (user.photo_URL != "") {
+        $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
+    } else {
+        $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
+    }
+
 });
 
 //---------------------------------------
