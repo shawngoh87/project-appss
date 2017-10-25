@@ -43,9 +43,9 @@ body {
 .usertext{
     border: none;
     margin: 4px 0px;
-    width:92%;
+    width:80%;
     border-radius: 5px; 
-    padding:2% 4%;  
+    padding:2% 5%;  
 }
 
 .button-login-page{
@@ -55,7 +55,7 @@ body {
     font-size: 16px;
     padding: 2% 0px;
     text-decoration: none;
-    width:80%;
+    width:90%;
 }
 
 .button-login-page.button-login{    

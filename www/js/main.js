@@ -17,7 +17,7 @@ var Db = {};
 var Strg = {};
 var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef;
 var colorTheme = "aliceblue";
-var rate, selfset = false, selectedCar = false, selectedLocation = false;
+var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false;
 var expired = false, extendDuration;
 
 // Global user position Var
@@ -43,6 +43,9 @@ firebase.auth().onAuthStateChanged(function (user) {
             setTimeout(function () {
                 console.log('Timedout');
                 if (!Loaded) {
+                    Db.admin = JSON.parse(localStorage.getItem('admin'));
+                    Strg.logo = JSON.parse(localStorage.getItem('logo'));
+                    Strg.icon = JSON.parse(localStorage.getItem('icon'));
                     Db.user = JSON.parse(localStorage.getItem('user'));
                     if (Db.user) { // local storage available
                         console.log('Unable to load from firebase. Local storage used instead.');
@@ -57,7 +60,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 
                 }
                 else console.log('Global DB initialized correctly. Local storage is not used.');
-            }, 5000);
+            }, 10000);
         }
         else {
             // not yet verifiy email
@@ -101,6 +104,7 @@ function initUserInfo() {
     );
     adminRef.on('value', function (snapshot) {
         Db.admin = snapshot.val();
+        localStorage.setItem('admin', JSON.stringify(Db.admin));
         rate = Db.admin.token_per_minute / 60000;
         Strg.logo = {};
         Strg.icon = {};
@@ -116,6 +120,20 @@ function initUserInfo() {
                 })
             })(promoCompany);
         }
+        var strgIntrv = setInterval(function () {
+            var finishLogo = false, finishIcon = false;
+            if (Strg.logo.length == Db.admin.promotions.length) {
+                localStorage.setItem('logo', JSON.stringify(Strg.logo));
+                finishLogo = true;
+            }
+            if (Strg.icon.length == Db.admin.promotions.length) {
+                localStorage.setItem('icon', JSON.stringify(Strg.icon));
+                finishIcon = true;
+            }
+            if (finishLogo && finishIcon) {
+                clearInterval(strgIntrv);
+            }
+        })
     })
 }
 
@@ -533,6 +551,11 @@ function myactive() {
     $$("#tab-park").removeClass("active")
 }
 
+function myactive() {
+    $$("#tab-profile").addClass("active")
+    $$("#tab-park").removeClass("active")
+}
+
 myApp.onPageInit('main', function (page) {
     console.log(Db);
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
@@ -871,7 +894,7 @@ myApp.onPageInit('main', function (page) {
                 else {
                     myApp.modal({
                         title: 'Payment confirmed',
-                        text: 'Nearby shops are having some special promotions for YOU',
+                        text: 'Nearbyshop might have some special promotions for YOU! Get FREE tokens by watching their promotion videos',
                         verticalButtons: true,
                         buttons: [
                             {
@@ -1002,6 +1025,7 @@ myApp.onPageInit('main', function (page) {
             city: 'none',
             full_addr: 'none'
         };
+        checkPromo = true;
     })
 
     $$('#tab-history-button').on('click', function () {
@@ -1014,19 +1038,6 @@ myApp.onPageInit('main', function (page) {
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
-        $$('#sub-tab-vehicle').empty();
-        var cars = Db.user.cars;
-        for (var displayCarPlate in cars) {//write to UI
-            var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-            var str2 = '</div><div class="cards-item-title">'
-            var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
-
-            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-        }
-
-        $$('.flip-cancel').attr('state', 'open');
-        $$('.floating-button').click();
-
         myApp.modal({
             title: 'Add vehicle',
             afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-description" class="modal-text-input" placeholder="Description"></div>',
@@ -1543,67 +1554,55 @@ myApp.onPageInit('color-themes', function (page) {
     });
 });
 
-function to_blob(url) {
+//function loadProfilePic(url) {
 
-    return new Promise(function (resolve, reject) {
-        try {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url);
-            xhr.responseType = "blob";
-            xhr.onerror = function () { reject("Network error.") };
-            xhr.onload = function () {
-                if (xhr.status === 200) { resolve(xhr.response) }
-                else { reject("Loading error:" + xhr.statusText) }
-            };
-            xhr.send();
-        }
-        catch (err) { reject(err.message) }
-    });
-}
+//    return new Promise(function (resolve, reject) {
+//        try {
+//            var pp = new XMLHttpRequest();
+//            pp.open("GET", url);
+//            pp.responseType = "blob";
+//            pp.onerror = function () { reject("Network error.") };
+//            pp.onload = function () {
+//                if (pp.status === 200) { resolve(pp.response) }
+//                else { reject("Loading error:" + pp.statusText) }
+//            };
+//            pp.send();
+//        }
+//        catch (err) { reject(err.message) }
+//    });
+//}
 
-function setOptions(srcType) {
-    var options = {
-        // Some common settings are 20, 50, and 100
-        quality: 50,
-        destinationType: Camera.DestinationType.FILE_URI,
-        // In this app, dynamically set the picture source, Camera or photo gallery
-        sourceType: srcType,
-        encodingType: Camera.EncodingType.JPEG,
-        mediaType: Camera.MediaType.PICTURE,
-        allowEdit: true,
-        correctOrientation: true  //Corrects Android orientation quirks
-    }
-    return options;
-}
+//Display User My Profile
+myApp.onPageInit('profile-myprofile', function (page) {
 
-function createNewFileEntry(imgUri) {
-    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
+    //user.updateProfile({
+    //    //photoURL: 'images/car-car.png'
+    //    photoURL: 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
 
-        // JPEG file
-        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
-            // Do something with it, like write to it, upload it, etc.
-            // writeFile(fileEntry, imgUri);
-            console.log("got file: " + fileEntry.fullPath);
-            // displayFileData(fileEntry.fullPath, "File copied to");
+    //}).then(function () {
+    //    myApp.alert('sejjejje');
+    //});
 
-        }, onErrorCreateFile);
+    //var profile_pic = user.photoURL;
 
-    }, onErrorResolveUrl);
-}
+    //loadProfilePic("images/car-car.png").then(function (blob) {
+    //    var xyz = blob;
+    //    user.updateProfile({
+    //        displayName: "wwji",
+    //        photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
+    //    });
+    //    console.log(blob);
+    //    console.log(xyz);
+    //    console.log(user.photoURL);
+    //});
 
-//FilePicker//
-function openFilePicker(selection) {
+    //var browsepic = myApp.photoBrowser({
+    //    //photo: ['images/car-car.png']
+    //    photos: [user.photoURL]
+    //    // theme: 'dark'
+    //});
 
-    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
-    var options = setOptions(srcType);
-    var func = createNewFileEntry;
 
-    if (selection == "picker-thmb") {
-        // To downscale a selected image,
-        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
-        options.targetHeight = 100;
-        options.targetWidth = 100;
-    }
 
     navigator.camera.getPicture(function cameraSuccess(imageUri) {
 
@@ -1615,7 +1614,7 @@ function openFilePicker(selection) {
         console.debug("Unable to obtain picture: " + error, "app");
 
     }, options);
-}
+})
 
 
 //Display User My Profile
@@ -1682,6 +1681,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
         }
     });
 
+ 
 
      $$('.button-profile-pic').on('click', function () {
          var options = [
@@ -1756,6 +1756,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
 // Select Location function
 //---------------------------
 myApp.onPageInit("select-location", function (page) {
+    myApp.showIndicator();
     var default_marker = [];
     var default_pos = {
         lat: 0,
@@ -2023,7 +2024,8 @@ myApp.onPageInit("select-location", function (page) {
                 geocodeLatLng(selfset_pos, selfset_pos);
 
                 if (selectedLocation && selfset) {
-                    $$('input[name=default-loca]').click();
+                    $$('input[name=default-loca]').prop('checked', false);
+                    document.getElementById("pac-input").style.visibility = "visible";
                     selfset_pos = user_pos;
                     pos = {
                         lat: selfset_pos.lat,
@@ -2044,6 +2046,7 @@ myApp.onPageInit("select-location", function (page) {
                 }));
 
                 initAutocomplete(map);
+                myApp.hideIndicator();
             }, function () {
                     myApp.alert("Ops! Geolocation service failed.", "Message");
                 }, { enableHighAccuracy: true });
@@ -2235,22 +2238,24 @@ myApp.onPageInit('promotion', function (page) {
     //-------------
     //Initiate UI
     //-------------
-
     //promotion info
+
+    myApp.showIndicator();
     for (var promoType in Db.admin.promotions) {
         for (var promoNum in Db.admin.promotions[promoType]) {
             $$('#nearbyPromo').append('\
                 <div class="card">\
                     <div class="card-content">\
-                        <div class="card-content-inner">\
+                        <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
                             <p class="row">\
                                 <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
-                                <span class="col-70">\
+                                <span class="col-70" style="height:100%;">\
                                     <b class="promo-card-title">'+ promoType + '</b><br />\
-                                    <i class="promo-card-content">'+ Db.admin.promotions[promoType][promoNum] + '</i>\
+                                    <i class="promo-card-content">'+ Db.admin.promotions[promoType][promoNum] + '</i><br />\
                                 </span>\
                             </p>\
                         </div>\
+                        <div class="promo-deadline" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">Until:&ensp;'+ promoNum + '&emsp;</div>\
                     </div >\
                 </div >\
             ');
@@ -2262,12 +2267,12 @@ myApp.onPageInit('promotion', function (page) {
         }
     }
 
+    var nearbyMarkers = [];
+    var nearbyInfo = [];
     var nearby_map = new google.maps.Map(document.getElementById('nearby-map'), {
         center: { lat: -34.397, lng: 150.644 },
         zoom: 17
     });
-    var nearbyMarkers = [];
-    var nearbyInfo = [];
 
     createMap(nearby_map);
 
@@ -2356,9 +2361,9 @@ myApp.onPageInit('promotion', function (page) {
                 for (var promoCompany in Db.admin.promotions) {
                     if (~results[i].name.indexOf(promoCompany)) {
                         // Create a infowindow for each place.
-                        var contentString = '<h4>' + results[i].name + '</h4>';
+                        var contentString = Db.admin.rewards[promoCompany] + ' tokens';
                         var infowindow = new google.maps.InfoWindow({
-                            content: contentString
+                            content: '<h4>Click here to watch the video<br />and get free ' + contentString.fontcolor("goldenrod") + '</h4>'
                         });
                         nearbyInfo.push(infowindow);
 
@@ -2369,16 +2374,40 @@ myApp.onPageInit('promotion', function (page) {
                             position: pos,
                             icon: Strg.icon[promoCompany]
                         }));
-                        google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
-                            return function () {
-                                nearbyInfo[innerKey].open(nearby_map, nearbyMarkers[innerKey]);
+                        for (var rewardCompany in Db.admin.rewards) {
+                            if (rewardCompany == promoCompany) {
+                                nearbyMarkers[promoMarker].setAnimation(google.maps.Animation.BOUNCE);
+                                nearbyInfo[promoMarker].open(nearby_map, nearbyMarkers[promoMarker]);
+                                (function (promoM) {
+                                    setTimeout(function () {
+                                        nearbyInfo[promoM].close();
+                                    }, 10000);
+                                })(promoMarker)
+                                google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
+                                    return function () {
+                                        nearbyInfo[innerKey].close();
+                                        nearbyMarkers[innerKey].setAnimation(null);
+                                    }
+                                }(promoMarker));
                             }
-                        }(promoMarker));
+                        }
+
+                        $$('.promo-card-title').each(function () {
+                            if ($$(this).text() == promoCompany) {
+                                $$('#nearby-map-promo').append('<div class="card">' + $$(this).closest('.card').html() + '</div>');
+                            }
+                        })
                     }
                 }
             }
+            if (checkPromo) {
+                checkPromo = false;
+                myApp.showTab('#nearbyPromo');
+            }
+            myApp.hideIndicator();
         }
     }
+
 });
 
 //Change Profile
@@ -2440,3 +2469,16 @@ myApp.onPageInit('settings-change-hp', function (page) {
     });
 
 });
+    /*
+myApp.onPageInit('change-profile-picture', function (page) {
+    var myPhotoBrowserDark = myApp.photoBrowser({
+        photos: [
+            'http://lorempixel.com/1024/1024/sports/1/',
+        ],
+        theme: 'dark'
+    });
+    $$('.pb-standalone-dark').on('click', function () {
+        myPhotoBrowserDark.open();
+    });
+
+})*/
