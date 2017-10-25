@@ -182,7 +182,7 @@ function removeVehicle(item) {
                 text: 'Ok',
                 onClick: function () {
                     $$('.actively-parking-car').each(function () {
-                        if ($$(this).find('#car-icon').text().replace(/shopping_cart/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
+                        if ($$(this).find('#car-icon').text().replace(/drive_eta/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
                             $$(this).remove();
                         }
                     })
@@ -225,7 +225,7 @@ function loadSpecificTransaction(carPlate) {
 //--------------------------------
 function refreshActiveHistory() {
     $$('.actively-parking-car').each(function () {
-        var ownedCarPlate = $$(this).find('#car-icon').text().replace(/shopping_cart/g, '');
+        var ownedCarPlate = $$(this).find('#car-icon').text().replace(/drive_eta/g, '');
         var endTime = carRead[ownedCarPlate].parking.timestamp + carRead[ownedCarPlate].parking.duration;
         var remainTime = endTime - Date.now();
         var timeVal;
@@ -382,7 +382,7 @@ function showHistory() {
                     '<div><i class="material-icons">place</i>' + historyList[historyTempIndex].city +'</div>' +
                     '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
                     '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
-                    '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + '</div>' +
+                    '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + ' tokens</div>' +
                     '</div>' +
                     '</div>' +
                     '</div>' +
@@ -699,7 +699,7 @@ myApp.onPageInit('main', function (page) {
                         '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
                         '<div class="item-inner">' +
                         '<div class="item-title-row">' +
-                        '<div id="car-icon" class="item-title"><i class="material-icons">shopping_cart</i>' + activeCarPlate + '</div>' +
+                        '<div id="car-icon" class="item-title"><i class="material-icons">drive_eta</i>' + activeCarPlate + '</div>' +
                         '<input id="timestamp-active-end" value="' + end_time + '" />' +
                         '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
@@ -953,7 +953,7 @@ myApp.onPageInit('main', function (page) {
                                         '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
                                             '<div class="item-inner">' +
                                                 '<div class="item-title-row">' +
-                                                    '<div id="car-icon" class="item-title"><i class="material-icons">shopping_cart</i>' + carPlate + '</div>' +
+                                                    '<div id="car-icon" class="item-title"><i class="material-icons">drive_eta</i>' + carPlate + '</div>' +
                                                     '<input id="timestamp-active-end" value="' + end_time + '" />' +
                                                     '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                     '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
@@ -1007,6 +1007,9 @@ myApp.onPageInit('main', function (page) {
         refreshActiveHistory();
     })
 
+    $$('#tab-active-button').on('click', function () {
+        refreshActiveHistory();
+    })
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
@@ -1067,7 +1070,7 @@ myApp.onPageInit('main', function (page) {
         }, 5000);
     });
 
-    showHistory();
+    refreshHistory();
 
     $$('#show-history').on("accordion:open", function () {
         for (j = 0; j < historyCurrentIndex; j++) {
@@ -1085,7 +1088,7 @@ myApp.onPageInit('main', function (page) {
     });
 
     
-    showTopupHist();
+    refreshTopupHist();
 
     $$('#show-topup-hist').on("accordion:open", function () {
         for (j = 0; j < topupHistCurrentIndex; j++) {
@@ -1199,6 +1202,7 @@ function extendParkingTime(theCar) {
         getDuration();
     })
 };
+
 //---------------------------------------
 // Extend Function
 //---------------------------------------
@@ -1230,8 +1234,7 @@ function extendConfirmed(theCar) {
                 $$('.close-picker').click();
             }
 
-        //Update to 
-
+        //Update to firebase
         var amount = carRead[theCar].parking.amount;
         var duration = carRead[theCar].parking.duration;
         var timestamp = carRead[theCar].parking.timestamp;
@@ -1332,6 +1335,7 @@ function terminateParkingTime(theCar) {
     })
     refreshActiveHistory();
 }
+
 
 
 myApp.onPageInit('signup', function (page) {
