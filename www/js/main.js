@@ -2331,7 +2331,7 @@ myApp.onPageInit('promotion', function (page) {
             }
         },100)
     }
-
+   
     //-------------------------------
     // Search nearby POI
     //-------------------------------
@@ -2387,6 +2387,11 @@ myApp.onPageInit('promotion', function (page) {
                                     return function () {
                                         nearbyInfo[innerKey].close();
                                         nearbyMarkers[innerKey].setAnimation(null);
+                                        myApp.popover('.popover-ads-video', '#nearby-promo-ads');
+                                        document.getElementById('ads-video').play();
+                                        $$('#ads-video').on('ended', function () {
+                                            //myApp.closeModal();
+                                        })
                                     }
                                 }(promoMarker));
                             }
