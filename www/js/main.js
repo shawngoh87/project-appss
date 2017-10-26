@@ -28,6 +28,7 @@ var user_pos = {
     full_addr: 'none'
 };
 var geo_accuracy;
+document.getElementById('login-logo').style.setProperty("top", "45%");
 
 //------------------------------------------
 // Check Whether User has signed in or not
@@ -38,8 +39,8 @@ firebase.auth().onAuthStateChanged(function (user) {
         if (!user.emailVerified) {                // Reminder: NOT the condition.
             // email succesfully verified
             // User is signed in.
-            document.getElementById("user-input-four-element").style.visibility = "hidden";
-            document.getElementById("log-in-notify").style.visibility = "visible";
+            //document.getElementById("user-input-four-element").style.visibility = "hidden";
+            //document.getElementById("log-in-notify").style.visibility = "visible";
             $$('.index-preloader').show();
             initUserInfo();
             Loaded = 0;
@@ -70,8 +71,9 @@ firebase.auth().onAuthStateChanged(function (user) {
             // not yet verifiy email
             myApp.alert('An email verification has been sent to you. Please verify it before signing in.', 'Notification');
             firebase.auth().signOut().then(function () { }).catch(function (error) { });
-            document.getElementById("user-input-four-element").style.visibility = "visible";
-            document.getElementById("log-in-notify").style.visibility = "hidden";
+            //document.getElementById("user-input-four-element").style.visibility = "visible";
+            //document.getElementById("log-in-notify").style.visibility = "hidden";
+            $$('.index-preloader').hide();
         }
     }
     else {
@@ -182,7 +184,14 @@ $$('.button-login').on('click', function () {
     var si_email = $$('.user-email').val();
     var si_password = $$('.password').val();
 
+    document.getElementById("user-input-four-element").style.visibility = "hidden";
+    document.getElementById("log-in-notify").style.visibility = "visible";
+    $$('.index-preloader').show();
+
     firebase.auth().signInWithEmailAndPassword(si_email, si_password).catch(function (error) {
+        document.getElementById("user-input-four-element").style.visibility = "visible";
+        document.getElementById("log-in-notify").style.visibility = "hidden";
+        $$('.index-preloader').hide();
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
