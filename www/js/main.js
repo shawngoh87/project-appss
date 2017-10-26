@@ -28,19 +28,21 @@ var user_pos = {
     full_addr: 'none'
 };
 var geo_accuracy;
-document.getElementById('login-logo').style.setProperty("top", "45%");
+document.getElementById('login-logo').style.setProperty("top", "37%");
+document.getElementById("forget-password").style.visibility = "hidden";
 
 //------------------------------------------
 // Check Whether User has signed in or not
 //------------------------------------------
 firebase.auth().onAuthStateChanged(function (user) {
     document.getElementById('login-logo').style.setProperty("top", "18%");
+    document.getElementById("forget-password").style.visibility = "visible";
     if (user) {
         if (!user.emailVerified) {                // Reminder: NOT the condition.
             // email succesfully verified
             // User is signed in.
-            //document.getElementById("user-input-four-element").style.visibility = "hidden";
-            //document.getElementById("log-in-notify").style.visibility = "visible";
+            document.getElementById("user-input-four-element").style.visibility = "hidden";
+            document.getElementById("log-in-notify").style.visibility = "visible";
             $$('.index-preloader').show();
             initUserInfo();
             Loaded = 0;
@@ -71,8 +73,8 @@ firebase.auth().onAuthStateChanged(function (user) {
             // not yet verifiy email
             myApp.alert('An email verification has been sent to you. Please verify it before signing in.', 'Notification');
             firebase.auth().signOut().then(function () { }).catch(function (error) { });
-            //document.getElementById("user-input-four-element").style.visibility = "visible";
-            //document.getElementById("log-in-notify").style.visibility = "hidden";
+            document.getElementById("user-input-four-element").style.visibility = "visible";
+            document.getElementById("log-in-notify").style.visibility = "hidden";
             $$('.index-preloader').hide();
         }
     }
