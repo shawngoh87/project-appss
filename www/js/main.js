@@ -562,11 +562,6 @@ function myactive() {
     $$("#tab-park").removeClass("active")
 }
 
-function myactive() {
-    $$("#tab-profile").addClass("active")
-    $$("#tab-park").removeClass("active")
-}
-
 myApp.onPageInit('main', function (page) {
     console.log(Db);
     var tokenNO, tokenReq, tokenBal, parkDuration, carPlate, confirmText;
@@ -1547,11 +1542,108 @@ function changeColorTheme(color) {
     }
 }
 
-//Display User My Profile
+function to_blob(url) {
+
+    return new Promise(function (resolve, reject) {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.responseType = "blob";
+            xhr.onerror = function () { reject("Network error.") };
+            xhr.onload = function () {
+                if (xhr.status === 200) { resolve(xhr.response) }
+                else { reject("Loading error:" + xhr.statusText) }
+            };
+            xhr.send();
+        }
+        catch (err) { reject(err.message) }
+    });
+}
+
+function setOptions(srcType) {
+    var options = {
+        // Some common settings are 20, 50, and 100
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI,
+        // In this app, dynamically set the picture source, Camera or photo gallery
+        sourceType: srcType,
+        encodingType: Camera.EncodingType.JPEG,
+        mediaType: Camera.MediaType.PICTURE,
+        allowEdit: true,
+        correctOrientation: true  //Corrects Android orientation quirks
+    }
+    return options;
+}
+
+function createNewFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
+
+        // JPEG file
+        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
+            // Do something with it, like write to it, upload it, etc.
+            // writeFile(fileEntry, imgUri);
+            console.log("got file: " + fileEntry.fullPath);
+            // displayFileData(fileEntry.fullPath, "File copied to");
+
+        }, onErrorCreateFile);
+
+    }, onErrorResolveUrl);
+}
+
+//FilePicker//
+function openFilePicker(selection) {
+
+    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
+    var options = setOptions(srcType);
+    var func = createNewFileEntry;
+
+    if (selection == "picker-thmb") {
+        // To downscale a selected image,
+        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
+        options.targetHeight = 100;
+        options.targetWidth = 100;
+    }
+
+    navigator.camera.getPicture(function cameraSuccess(imageUri) {
+
+        var blob = to_blob(imageUri);
+        return blob;
+        console.log("return blob liao");
+
+    }, function cameraError(error) {
+        console.debug("Unable to obtain picture: " + error, "app");
+
+    }, options);
+}
+
+//My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
+    var profilepicRef = storageuserRef.child('profile_pic.jpg');
+    /*
+    profilepicRef.getDownloadURL().then(function (url) {
+        user.updateProfile({
+            photoURL: url
+        }).then(function () {
+            console.log("url loaded");
+        });
+    }).catch(function (error) {
+        switch (error.code) {
+            case 'storage/object_not_found':
+                // File doesn't exist
+                break;
+            case 'storage/unauthorized':
+                // User doesn't have permission to access the object
+                break;
+            case 'storage/unknown':
+                // Unknown error occurred, inspect the server response
+                break;
+        }
+    });
+    */
+
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
-    var str2 = '" width="100">';
+    var str2 = '" width="100" height="100">';
     if (user.photo_URL != "") {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
     } else {
@@ -1566,41 +1658,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.load-birthday').html(Db.user.birthday);
     $$('.load-address').html(Db.user.address);
 
-
-    var profilepicRef = storageuserRef.child('profile_pic.jpg');
-    /*
-    // Get the download URL
-    profilepicRef.getDownloadURL().then(function (url) {
-        // Insert url into an <img> tag to "download"
-        user.updateProfile({
-            photoURL: url
-        }).then(function () {
-            console.log("url into photoURL dy");
-            console.log(user.photoURL);
-            console.log(url);
-            myApp.alert('hhdhdhdh');
-        });
-    }).catch(function (error) {
-        switch (error.code) {
-            case 'storage/object_not_found':
-                // File doesn't exist
-                break;
-
-            case 'storage/unauthorized':
-                // User doesn't have permission to access the object
-                break;
-
-            case 'storage/canceled':
-                // User canceled the upload
-                break;
-
-            case 'storage/unknown':
-                // Unknown error occurred, inspect the server response
-                break;
-        }
-    });
-    */
-
+    //Profile-Pic Action Sheet
     $$('.button-profile-pic').on('click', function () {
         var options = [
             {
@@ -1608,13 +1666,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 bold: true,
                 onClick: function () {
                     //mainView.router.loadPage("view-profile-picture.html");
-                    // var img_blob = to_blob("");
                     to_blob("images/gareki.jpg").then(function (blob) {
-                        console.log('blob of gareki.jpg ?');
-                        console.log(blob);
-                        console.log('old user.photoURL');
-                        console.log(user.photoURL);
-
                         var metadata = {
                             name: 'profile_pic',
                             contentType: 'image/jpg'
@@ -1641,112 +1693,29 @@ myApp.onPageInit('profile-myprofile', function (page) {
                                     break;
                             }
                         }, function () {
-                            // Upload completed successfully, now we can get the download URL
                             var downloadURL = uploadTask.snapshot.downloadURL;
-                            console.log('this is downloadURL of profile_pic.jpg');
-                            console.log(downloadURL);
-                        });
-
-                        console.log("before reset url down de user.photoURL, should be same");
-                        console.log(user.photoURL);
-
-                        // Get the download URL
-                        profilepicRef.getDownloadURL().then(function (url) {
-                            // Insert url into an <img> tag to "download"
-
-                            console.log('this is url, should same with downloadURL?');
-                            console.log(url);
-
                             user.updateProfile({
-                                photoURL: url
+                                photoURL: downloadURL
                             }).then(function () {
-                                console.log("url into photoURL dy");
-                                console.log('after reset to new user.photoURL ');
-                                console.log(user.photoURL);
-                                console.log('url');
-                                console.log(url);
-                            });
-                        }).catch(function (error) {
-                            switch (error.code) {
-                                case 'storage/object_not_found':
-                                    break;
-                                case 'storage/unauthorized':
-                                    break;
-                                case 'storage/canceled':
-                                    break;
-                                case 'storage/unknown':
-                                    break;
-                            }
+                                console.log("url loaded")
+                                mainView.router.refreshPage();
+                            })
                         });
-
-                        console.log('after reset to new user.photoURL ');
-                        console.log(user.photoURL);
-                        console.log('url');
-                        console.log(url);
                     });
-
-
-
-
-                    /////////////////////////////////////////////////////
-
-                    /*to_blob("images/gareki.jpg").then(function (blob) {
-                        user.updateProfile({
-                            displayName: "wwji",
-                            photoURL: "https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwj678eU8oXXAhVFMY8KHaXqCdsQjRwIBw&url=http%3A%2F%2Fjonvilma.com%2Fgirl.html&psig=AOvVaw2kB6mjACFhL8hl_znsVyQZ&ust=1508818791837265"
-                        });
-                        console.log(blob);
-                        console.log(user.photoURL);
-                    });
-                    */
-
-
                 }
             },
             {
                 text: 'Edit Profile Picture',
                 bold: true,
                 onClick: function () {
+                    /*
                     var img_blob = openFilePicker();
                     var metadata = {
                         name: 'profile_pic',
                         contentType: 'image/jpg'
+                    
                     };
-                    /*
-                    var uploadTask = storageuserRef.child(profile_pic.jpg).put(img_blob, metadata);
-                    // Listen for state changes, errors, and completion of the upload.
-                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-                            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('Upload is ' + progress + '% done');
-                            switch (snapshot.state) {
-                                case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                    console.log('Upload is paused');
-                                    break;
-                                case firebase.storage.TaskState.RUNNING: // or 'running'
-                                    console.log('Upload is running');
-                                    break;
-                            }
-                        }, function (error) {
- 
-                            // A full list of error codes is available at
-                            // https://firebase.google.com/docs/storage/web/handle-errors
-                            switch (error.code) {
-                                case 'storage/unauthorized':
-                                    // User doesn't have permission to access the object
-                                    break;
- 
-                                case 'storage/canceled':
-                                    // User canceled the upload
-                                    break;
-                                case 'storage/unknown':
-                                    // Unknown error occurred, inspect error.serverResponse
-                                    break;
-                            }
-                        }, function () {
-                            // Upload completed successfully, now we can get the download URL
-                            var downloadURL = uploadTask.snapshot.downloadURL;
-                        });*/
+                    */
                 }
             }
         ];
@@ -1762,6 +1731,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
 
     });
 });
+
 //---------------------------
 // Select Location function
 //---------------------------
