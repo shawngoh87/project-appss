@@ -1741,10 +1741,24 @@ myApp.onPageInit('profile-myprofile', function (page) {
     $$('.button-profile-pic').on('click', function () {
         var options = [
             {
-                text: '(Test-gareki)Set Profile Picture',
+                text: 'View Profile Picture',
                 bold: true,
                 onClick: function () {
-                    //mainView.router.loadPage("view-profile-picture.html");
+                    mainView.router.loadPage("view-profile-picture.html");
+                }
+            },
+            {
+                text: 'Set(test) Profile Picture',
+                bold: true,
+                onClick: function () {
+                    /*
+                   var img_blob = openFilePicker();
+                   var metadata = {
+                       name: 'profile_pic',
+                       contentType: 'image/jpg'
+                   
+                   };
+                   */
                     to_blob("images/gareki.jpg").then(function (blob) {
                         var metadata = {
                             name: 'profile_pic',
@@ -1782,20 +1796,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
                         });
                     });
                 }
-            },
-            {
-                text: 'Edit Profile Picture',
-                bold: true,
-                onClick: function () {
-                    /*
-                    var img_blob = openFilePicker();
-                    var metadata = {
-                        name: 'profile_pic',
-                        contentType: 'image/jpg'
-                    
-                    };
-                    */
-                }
             }
         ];
         var cancel = [
@@ -1810,6 +1810,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
 
     });
 });
+
 
 //---------------------------
 // Select Location function
@@ -2548,4 +2549,16 @@ myApp.onPageInit('settings-change-hp', function (page) {
         }
     });
 
+});
+
+
+//View Profile Picture
+myApp.onPageInit('view-profile-picture', function (page) {
+    var str1 = '<img class="profile-pic" src="';
+    var str2 = '">';
+    if (user.photo_URL != "") {
+        $$('#view-profile-pic').append(str1 + user.photoURL + str2);
+    } else {
+        $$('#view-profile-pic').append('<img src="images/profile_pic_default.png">');
+    }
 });
