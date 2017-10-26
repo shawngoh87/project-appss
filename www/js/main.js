@@ -596,31 +596,31 @@ myApp.onPageInit('main', function (page) {
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
                 var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 var parkingCity = carRead[ownedCarPlate].parking.city;
-                //if (parkingActive) {
-                //    if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                //        carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
-                //            amount: parkingAmount,
-                //            location: parkingLocation,
-                //            duration: timestamp2Time(parkingDuration).name,
-                //            promocode: parkingPromocode,
-                //            start_time: parkingTimestamp,
-                //            city: parkingCity
-                //        })
-                //        historyRef.child(9999999999999 - parkingTimestamp).update({
-                //            carPlate: ownedCarPlate,
-                //            amount: parkingAmount,
-                //            location: parkingLocation,
-                //            duration: timestamp2Time(parkingDuration).name,
-                //            startTime: parkingTimestamp,
-                //            city: parkingCity
-                //        }).then(function () {
-                //            refreshHistory();
-                //        })
-                //        carRef.child(ownedCarPlate).child('parking').update({
-                //            active: false,
-                //        })
-                //    }
-                //}
+                if (parkingActive) {
+                    if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                        carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                            amount: parkingAmount,
+                            location: parkingLocation,
+                            duration: timestamp2Time(parkingDuration).name,
+                            promocode: parkingPromocode,
+                            start_time: parkingTimestamp,
+                            city: parkingCity
+                        })
+                        historyRef.child(9999999999999 - parkingTimestamp).update({
+                            carPlate: ownedCarPlate,
+                            amount: parkingAmount,
+                            location: parkingLocation,
+                            duration: timestamp2Time(parkingDuration).name,
+                            startTime: parkingTimestamp,
+                            city: parkingCity
+                        }).then(function () {
+                            refreshHistory();
+                        })
+                        carRef.child(ownedCarPlate).child('parking').update({
+                            active: false,
+                        })
+                    }
+                }
             }
 
             // Init vehicle tab
