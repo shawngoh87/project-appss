@@ -899,25 +899,51 @@ myApp.onPageInit('main', function (page) {
                     myApp.alert('Insufficient balance.', 'Notification');
                 }
                 else {
-                    myApp.modal({
-                        title: 'Payment confirmed',
-                        text: 'Nearbyshop might have some special promotions for YOU! Get FREE tokens by watching their promotion videos',
-                        verticalButtons: true,
-                        buttons: [
-                            {
-                                text: 'Check it out',
-                                onClick: function () {
-                                    mainView.router.loadPage("promotion.html");
-                                }
-                            },
-                            {
-                                text: 'Nevermind',
-                                onClick: function () {
-                                    //Do nothing
+                    var pos = { lat: user_pos.lat, lng: user_pos.lng };
+                    var nearbyPromoShop = false;
+                    var request = {
+                        location: pos,
+                        radius: '250',          // unit is in meters (value now is 250m)
+                        type: ['restaurant', 'bank']
+                    };
+
+                    var service = new google.maps.places.PlacesService(document.createElement('div'));
+                    service.nearbySearch(request, checkNearby);
+
+                    function checkNearby(results, status) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            for (var i = 0; i < results.length; i++) {
+                                for (var promoCompany in Db.admin.promotions) {
+                                    if (~results[i].name.indexOf(promoCompany)) {
+                                        nearbyPromoShop = true;
+                                    }
                                 }
                             }
-                        ]
-                    })
+                            if (nearbyPromoShop) {
+                                myApp.modal({
+                                    title: 'Payment confirmed',
+                                    text: 'Nearbyshop might have some special promotions for YOU! Get FREE tokens by watching their promotion videos <br /><br />',
+                                    afterText:'<img src="https://developers.google.com/places/documentation/images/powered-by-google-on-white.png">',
+                                    verticalButtons: true,
+                                    buttons: [
+                                        {
+                                            text: 'Check it out',
+                                            onClick: function () {
+                                                mainView.router.loadPage("promotion.html");
+                                            }
+                                        },
+                                        {
+                                            text: 'Nevermind',
+                                            onClick: function () {
+                                                //Do nothing
+                                            }
+                                        }
+                                    ]
+                                })
+                            }
+                        }
+                    }
+
                     userRef.update({
                         balance: tokenBal
                     })
