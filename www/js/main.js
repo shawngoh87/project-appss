@@ -881,7 +881,7 @@ myApp.onPageInit('main', function (page) {
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
-                'Park Until&emsp;&emsp;&emsp;&emsp;:' + $$('.selected-duration').text() + '<br>' +
+                'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;:' + $$('.selected-duration').text() + '<br>' +
                 'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
@@ -2387,10 +2387,13 @@ myApp.onPageInit('promotion', function (page) {
                                     return function () {
                                         nearbyInfo[innerKey].close();
                                         nearbyMarkers[innerKey].setAnimation(null);
-                                        myApp.popover('.popover-ads-video', '#nearby-promo-ads');
-                                        document.getElementById('ads-video').play();
-                                        $$('#ads-video').on('ended', function () {
-                                            //myApp.closeModal();
+                                        storageRef.child('ads/Bottle[1].mp4').getDownloadURL().then(function (url) {
+                                            $$('.ads-video-src').attr('src', url);
+                                            myApp.popover('.popover-ads-video', '#nearby-promo-ads');
+                                            document.getElementById('ads-video').play();
+                                            $$('#ads-video').on('ended', function () {
+                                                myApp.closeModal();
+                                            })
                                         })
                                     }
                                 }(promoMarker));
