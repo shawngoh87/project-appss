@@ -897,7 +897,12 @@ myApp.onPageInit('main', function (page) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
                 'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;:' + $$('.selected-duration').text() + '<br>' +
-                'Token required is &emsp;:' + tokenReq.toString() + '<br><br>' +
+                'Token required is &emsp;:' + tokenReq.toString() +
+                '<div class="promo-code" >\
+                    <p class="row">\
+                        <input type="text" id="used-promo-code" style="text-align:center;" placeholder=" PROMOCODE" />\
+                    </p>\
+                </div >'+
                 'Confirm Transaction?';
             myApp.confirm(confirmText, 'Confirmation', function () {
 
@@ -971,7 +976,8 @@ myApp.onPageInit('main', function (page) {
                         timestamp: timestamp,
                         duration: parkDuration,
                         location: { lat: user_pos.lat, lng: user_pos.lng },
-                        city: user_pos.city
+                        city: user_pos.city,
+                        promocode: $$('#used-promo-code').val()
                     })
 
                     //write data to UI
