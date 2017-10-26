@@ -79,6 +79,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         }
     }
     else {
+        $$('.index-preloader').hide();
         // User signed out.
         // Turn off .on() listeners here.
         document.getElementById("user-input-four-element").style.visibility = "visible";
@@ -244,6 +245,8 @@ function removeVehicle(item) {
         ]
     })
 }
+
+
 
 // Vehicle tab - Load specific vehicle history via routing
 function loadSpecificTransaction(carPlate) {
@@ -1494,7 +1497,7 @@ myApp.onPageInit('signup', function (page) {
     //-----------------------------
     $$('#button-signup-back').on('click', function () {
         mainView.router.back();
-    })
+    });
 
     //-----------------------------
     // submit button for signUp 
@@ -1521,58 +1524,98 @@ myApp.onPageInit('signup', function (page) {
             myApp.alert('Password and Confirm Password does not match. Please try again.', 'Error');
         }
         else {
-            su_email = $$('#su-email').val();
-            su_password = $$('#su-password').val();
-            su_username = $$('#su-username').val();
-            su_phone = $$('#su-phone-no').val();
-            su_ic = $$('#su-ic').val();
+            var param = {
+                url: 'https://api.authy.com/protected/json/phones/verification/start?via=sms&phone_number=' + $$('#su-phone-no').val() + '&country_code=60&locale=en',
+                method: 'POST',
+                contentType: 'application/json',
+                crossDomain: true,
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
+                },
+                success: function (data, status, xhr) {
 
-            firebase.auth().createUserWithEmailAndPassword(su_email, su_password).then(function (data) {
-                var curr_user = firebase.auth().currentUser;
-                //--------------------------------
-                // Sent email verification
-                //--------------------------------
-                curr_user.sendEmailVerification().then(function () {
-                    // Email sent.                    
-                }).catch(function (error) {
-                    // An error happened.
-                });
+                    myApp.prompt('Verification code', function(value){
+                        var param2 = {
+                            url: 'https://api.authy.com/protected/json/phones/verification/check?phone_number=' + $$('#su-phone-no').val() + '&country_code=60&verification_code=' + value,
+                            method: 'GET',
+                            contentType: 'application/json',
+                            crossDomain: true,
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
+                            },
+                            success: function (data, status, xhr) {
+                                
+                                if (status !== 200) {
+                                    alert('Verification failed!');
+                                    return
+                                }
+                                su_email = $$('#su-email').val();
+                                su_password = $$('#su-password').val();
+                                su_username = $$('#su-username').val();
+                                su_phone = $$('#su-phone-no').val();
+                                su_ic = $$('#su-ic').val();
 
-                //--------------------------------
-                // Set user info to database
-                //--------------------------------               
-                firebase.database().ref('users/' + curr_user.uid).set({
-                    email: su_email,
-                    username: su_username,
-                    phone_no: su_phone,
-                    balance: 0,
-                    IC: su_ic
-                });
+                                firebase.auth().createUserWithEmailAndPassword(su_email, su_password).then(function (data) {
+                                    var curr_user = firebase.auth().currentUser;
+                                    //--------------------------------
+                                    // Sent email verification
+                                    //--------------------------------
+                                    curr_user.sendEmailVerification().then(function () {
+                                        // Email sent.                    
+                                    }).catch(function (error) {
+                                        // An error happened.
+                                    });
 
-                //------------------------------
-                // force sign out after sign up
-                //------------------------------
-                firebase.auth().signOut().then(function () {
-                    // Sign-out successful.                    
-                    mainView.router.back(); // Route later
-                }).catch(function (error) {
-                    // An error happened.
-                });
+                                    //--------------------------------
+                                    // Set user info to database
+                                    //--------------------------------               
+                                    firebase.database().ref('users/' + curr_user.uid).set({
+                                        email: su_email,
+                                        username: su_username,
+                                        phone_no: su_phone,
+                                        balance: 0,
+                                        IC: su_ic
+                                    });
+
+                                    //------------------------------
+                                    // force sign out after sign up
+                                    //------------------------------
+                                    firebase.auth().signOut().then(function () {
+                                        // Sign-out successful.                    
+                                        mainView.router.back(); // Route later
+                                    }).catch(function (error) {
+                                        // An error happened.
+                                    });
 
 
-            }).catch(function (error) {
-                // Handle Sign Up Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                if (errorCode === "auth/email-already-in-use")
-                    myApp.alert(errorMessage, 'Error');
-                else if (errorCode === "auth/invalid-email")
-                    myApp.alert(errorMessage, 'Error');
-                else if (errorCode === "auth/operation-not-allowed")
-                    myApp.alert(errorMessage, 'Error');
-                else if (errorCode === "auth/weak-password")
-                    myApp.alert(errorMessage, 'Error');
-            });
+                                }).catch(function (error) {
+                                    // Handle Sign Up Errors here.
+                                    var errorCode = error.code;
+                                    var errorMessage = error.message;
+                                    if (errorCode === "auth/email-already-in-use")
+                                        myApp.alert(errorMessage, 'Error');
+                                    else if (errorCode === "auth/invalid-email")
+                                        myApp.alert(errorMessage, 'Error');
+                                    else if (errorCode === "auth/operation-not-allowed")
+                                        myApp.alert(errorMessage, 'Error');
+                                    else if (errorCode === "auth/weak-password")
+                                        myApp.alert(errorMessage, 'Error');
+                                });
+                            },
+                            error: function (xhr, status) {
+                                alert('ERROR VERIFY: ' + status);
+                            }
+                        }
+                        $$.ajax(param2);
+                    });
+                },
+                error: function (xhr, status) {
+                    alert('ERROR SEND: ' + status);
+                }
+            }
+            $$.ajax(param);
 
         }
     })
