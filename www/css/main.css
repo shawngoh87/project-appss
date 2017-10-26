@@ -189,6 +189,10 @@ a.close-popover{
     color:white;
 }
 
+.item-media.profile-info{
+    width:25%;
+}
+
 /* JJL */
 .mylogo {
     display: block;
