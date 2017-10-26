@@ -2398,9 +2398,10 @@ myApp.onPageInit('promotion', function (page) {
                                         return function () {
                                             nearbyInfo[innerKey].close();
                                             nearbyMarkers[innerKey].setAnimation(null);
-                                            storageRef.child('ads/Bottle[1].mp4').getDownloadURL().then(function (url) {
-                                                $$('.ads-video-src').attr('src', url);
+                                            storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
+                                                $$('#ads-video-mp4-src').attr('src', url);
                                                 myApp.popover('.popover-ads-video', '#nearby-promo-ads', false);
+                                                document.getElementById('ads-video').load();
                                                 document.getElementById('ads-video').play();
                                                 $$('#ads-video').on('ended', function () {
                                                     userRef.update({
