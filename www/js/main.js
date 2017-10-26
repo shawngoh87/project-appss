@@ -16,7 +16,7 @@ var mainView = myApp.addView('.view-main', {
 var Db = {};
 var Strg = {};
 var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef;
-var colorTheme = "aliceblue";
+var colorTheme;
 var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false;
 var expired = false, extendDuration;
 
@@ -83,6 +83,15 @@ function initUserInfo() {
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
+    if (!localStorage.getItem("color_theme")) {
+        Db.color_theme = 'blue';
+        localStorage.setItem('color_theme', Db.color_theme);
+    }
+    else {
+        Db.color_theme = localStorage.getItem('color_theme');
+        changeColorTheme(Db.color_theme);
+    }
+    
     userRef.on('value',
         // Succeeded promise
         function (snapshot) {
@@ -95,6 +104,8 @@ function initUserInfo() {
             carRead = Db.user.cars;
             historyRead = Db.user.history;
             topupHistRead = Db.user.topup_history;
+            
+            
             refreshActiveHistory();
         },
         // Failed promise
@@ -1483,77 +1494,59 @@ myApp.onPageInit('signup', function (page) {
 // ======= Color themes ======= 
 myApp.onPageInit('color-themes', function (page) {
     $$(page.container).find('.color-theme').click(function () {
-        var classList = $$('body')[0].classList;
-        for (var i = 0; i < classList.length; i++) {
-            if (classList[i].indexOf('theme') === 0) classList.remove(classList[i]);
-        }
-        classList.add('theme-' + $$(this).attr('data-theme'));
-        switch ($$(this).attr('data-theme')) {
-            case 'red':
-                colorTheme = "lightpink";
-                break;
-            case 'pink':
-                colorTheme = "lightpink";
-                break;
-            case 'purple':
-                colorTheme = "plum";
-                break;
-            case 'deeppurple':
-                colorTheme = "plum";
-                break;
-            case 'indigo':
-                colorTheme = "aliceblue";
-                break;
-            case 'blue':
-                colorTheme = "aliceblue";
-                break;
-            case 'lightblue':
-                colorTheme = "aliceblue";
-            case 'cyan':
-                colorTheme = "aliceblue";
-                break;
-            case 'teal':
-                colorTheme = "palegreen";
-                break;
-            case 'green':
-                colorTheme = "palegreen";
-                break;
-            case 'lightgreen':
-                colorTheme = "palegreen";
-                break;
-            case 'lime':
-                colorTheme = "lightgoldenrodyellow";
-                break;
-            case 'yellow':
-                colorTheme = "lightgoldenrodyellow";
-                break;
-            case 'amber':
-                colorTheme = "lightgoldenrodyellow";
-                break;
-            case 'orange':
-                colorTheme = "lightyellow";
-                break;
-            case 'deeporange':
-                colorTheme = "lightsalmon";
-                break;
-            case 'brown':
-                colorTheme = "lightgoldenrodyellow";
-                break;
-            case 'gray':
-                colorTheme = "whitesmoke";
-                break;
-            case 'bluegray':
-                colorTheme = "whitesmoke";
-                break;
-            case 'black':
-                colorTheme = "whitesmoke";
-                break;
-                break;
-        }
-        //colorTheme = $$(this).attr('data-theme');
+        changeColorTheme($$(this).attr('data-theme'));
+        localStorage.removeItem("color_theme");
+        localStorage.setItem('color_theme', $$(this).attr('data-theme'));
     });
 });
 
+function changeColorTheme(color) {
+    var classList = $$('body')[0].classList;
+    for (var i = 0; i < classList.length; i++) {
+        if (classList[i].indexOf('theme') === 0) classList.remove(classList[i]);
+    }
+    classList.add('theme-' + color);
+    switch (color) {
+        case 'red':
+        case 'pink':
+            colorTheme = "lightpink";
+            break;
+        case 'purple':
+        case 'deeppurple':
+            colorTheme = "plum";
+            break;
+        case 'indigo':
+        case 'blue':
+        case 'lightblue': ;
+        case 'cyan':
+            colorTheme = "aliceblue";
+            break;
+        case 'teal':
+        case 'green':
+        case 'lightgreen':
+            colorTheme = "palegreen";
+            break;
+        case 'lime':
+        case 'yellow':
+        case 'amber':
+            colorTheme = "lightgoldenrodyellow";
+            break;
+        case 'orange':
+        case 'deeporange':
+            colorTheme = "lightsalmon";
+            break;
+        case 'brown':
+            colorTheme = "lightgoldenrodyellow";
+            break;
+        case 'gray':
+        case 'bluegray':
+        case 'black':
+            colorTheme = "whitesmoke";
+            break;
+    }
+}
+
+//Display User My Profile
 myApp.onPageInit('profile-myprofile', function (page) {
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
