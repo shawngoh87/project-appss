@@ -89,7 +89,7 @@ function initUserInfo() {
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
-    if (!localStorage.getItem("color_theme")) {
+    if (!localStorage.getItem('color_theme')) {
         Db.color_theme = 'blue';
         localStorage.setItem('color_theme', Db.color_theme);
     }
@@ -330,7 +330,7 @@ function refreshActiveHistory() {
                             start_time: parkingTimestamp,
                             city: parkingCity
                         })
-                        historyRef.child(9999999999999 -parkingTimestamp).update({
+                        historyRef.child(parkingTimestamp).update({
                             carPlate: ownedCarPlate,
                             amount: parkingAmount,
                             location: parkingLocation,
@@ -359,10 +359,15 @@ function showHistory() {
     historyCurrentIndex = 0;
     var historyCounter;
     if (historyRead == null) {
-        historyCounter = 0;
+        historyCurentIndex = 0
     }
     else {
-        historyCounter = Object.keys(historyRead).length;
+        if (Object.keys(historyRead).length <= 100) {
+            historyCurrentIndex = Object.keys(historyRead).length;
+        }
+        else {
+            historyCurrentIndex = 100;
+        }
     }
 
     var historyList = new Array(); //historyList
@@ -371,28 +376,29 @@ function showHistory() {
         //Grouping of same date
         if (historyStackDate === null) {                                 //--------Starting
             historyStackDate = historyDate;
+            historyCurrentIndex--;
+            historyStampIndex = historyCurrentIndex;
             historyList[historyCurrentIndex] = historyRead[eleMent];
-            historyCurrentIndex++;
             //Check for last iteration
-            if (historyCurrentIndex === historyCounter) {
+            if (historyCurrentIndex <= 0) {
                 showMeHistory();
             }
         }
         else if (historyStackDate.getYear() === historyDate.getYear() &&
             historyStackDate.getMonth() === historyDate.getMonth() &&
             historyStackDate.getDate() === historyDate.getDate()) {      //--------Same date
+            historyCurrentIndex--;
             historyList[historyCurrentIndex] = historyRead[eleMent];
-            historyCurrentIndex++;
-            if (historyCurrentIndex === historyCounter) {
+            if (historyCurrentIndex <= 0) {
                 showMeHistory();
             }
         }
         else {                                                          //--------Next date checked
             showMeHistory();
             historyStackDate = historyDate;                             //--------Stack the new date for date grouping
+            historyCurrentIndex--;
             historyList[historyCurrentIndex] = historyRead[eleMent];
-            historyCurrentIndex++;
-            if (historyCurrentIndex === historyCounter) {
+            if (historyCurrentIndex <= 0) {
                 showMeHistory();
             }
         }
@@ -404,7 +410,7 @@ function showHistory() {
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
             ];
             var historyTemplate = "";
-            for (historyTempIndex = historyStampIndex; historyTempIndex < historyCurrentIndex; historyTempIndex++) {
+            for (historyTempIndex = historyCurrentIndex; historyTempIndex <= historyStampIndex; historyTempIndex++) {
                 historyTime = new Date(historyList[historyTempIndex].startTime);
                 var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
                     '<a href="#" class="item-content item-link">' +
@@ -435,13 +441,13 @@ function showHistory() {
                 historyTemplate += historyTemp2;
 
             }
-            historyStampIndex = historyCurrentIndex;
+            historyStampIndex = historyCurrentIndex-1;
             var historyTemp1 = '<div class="timeline-item">' +
                 '<div id="timeline-date" class="timeline-item-date">' + historyStackDate.getDate() + '<sub><sup>' + monthNames[historyStackDate.getMonth()] + '</sup></sub></div>' +
                 '<div class="timeline-item-divider"></div >' +
                 '<div class="timeline-item-content list-block inset">' +
                 '<ul>' + historyTemplate;
-            $$("#show-history").append(historyTemp1);
+            $$("#show-history").prepend(historyTemp1);
 
         }
     }
@@ -468,10 +474,15 @@ function showTopupHist() {
     var topupHistList = new Array(); //topuphistoryList
     var topupHistCounter;
     if (topupHistRead == null) {
-        topupHistCounter = 0;
+        topupHistCurentIndex = 0
     }
     else {
-        topupHistCounter = Object.keys(topupHistRead).length;
+        if (Object.keys(topupHistRead).length <= 100) {
+            topupHistCurrentIndex = Object.keys(topupHistRead).length;
+        }
+        else {
+            topupHistCurrentIndex = 100;
+        }
     }
     for (var topupElement in topupHistRead) {
         var topupHistDate = new Date(topupHistRead[topupElement].topup_time);
@@ -479,28 +490,29 @@ function showTopupHist() {
         //Grouping of same date
         if (topupHistStackDate === null) {                                 //--------Starting
             topupHistStackDate = topupHistDate;
+            topupHistCurrentIndex--;
+            topupHistStampIndex = topupHistCurrentIndex;
             topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-            topupHistCurrentIndex++;
             //Check for last iteration
-            if (topupHistCurrentIndex === topupHistCounter) {
+            if (topupHistCurrentIndex <= 0) {
                 showMeTopupHist();
             }
         }
         else if (topupHistStackDate.getYear() === topupHistDate.getYear() &&
             topupHistStackDate.getMonth() === topupHistDate.getMonth() &&
             topupHistStackDate.getDate() === topupHistDate.getDate()) {      //--------Same date
+            topupHistCurrentIndex--;
             topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-            topupHistCurrentIndex++;
-            if (topupHistCurrentIndex === topupHistCounter) {
+            if (topupHistCurrentIndex <= 0) {
                 showMeTopupHist();
             }
         }
         else {                                                          //--------Next date checked
             showMeTopupHist();
             topupHistStackDate = topupHistDate;                             //--------Stack the new date for date grouping
+            topupHistCurrentIndex--;
             topupHistList[topupHistCurrentIndex] = topupHistRead[topupElement];
-            topupHistCurrentIndex++;
-            if (topupHistCurrentIndex === topupHistCounter) {
+            if (topupHistCurrentIndex <=0) {
                 showMeTopupHist();
             }
         }
@@ -513,7 +525,7 @@ function showTopupHist() {
             ];
             var monthNameFull = new Array("January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December");
             var topupHistTemplate = "";
-            for (topupHistTempIndex = topupHistStampIndex; topupHistTempIndex < topupHistCurrentIndex; topupHistTempIndex++) {
+            for (topupHistTempIndex = topupHistCurrentIndex; topupHistTempIndex <= topupHistStampIndex; topupHistTempIndex++) {
                 topupHistTime = new Date(topupHistList[topupHistTempIndex].topup_time);
                 var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
                     '<a href="#"  class="item-content item-link" >' +
@@ -542,13 +554,13 @@ function showTopupHist() {
                 }
                 topupHistTemplate += topupHistTemp2;
             }
-            topupHistStampIndex = topupHistCurrentIndex;
+            topupHistStampIndex = topupHistCurrentIndex-1;
             var topupHistTemp1 = '<div class="timeline-item">' +
                 '<div id="timeline-date" class="timeline-item-date">' + topupHistStackDate.getDate() + '<sub><sup>' + monthNames[topupHistStackDate.getMonth()] + '</sup></sub></div>' +
                 '<div class="timeline-item-divider"></div >' +
                 '<div class="timeline-item-content list-block inset">' +
                 '<ul>' + topupHistTemplate;
-            $$("#show-topup-hist").append(topupHistTemp1);
+            $$("#show-topup-hist").prepend(topupHistTemp1);
 
         }
     }
@@ -612,7 +624,7 @@ myApp.onPageInit('main', function (page) {
                             start_time: parkingTimestamp,
                             city: parkingCity
                         })
-                        historyRef.child(9999999999999 - parkingTimestamp).update({
+                        historyRef.child(parkingTimestamp).update({
                             carPlate: ownedCarPlate,
                             amount: parkingAmount,
                             location: parkingLocation,
@@ -813,7 +825,7 @@ myApp.onPageInit('main', function (page) {
                             start_time: parkingTimestamp,
                             city: parkingCity
                         })
-                        historyRef.child(9999999999999 -parkingTimestamp).update({
+                        historyRef.child(parkingTimestamp).update({
                             carPlate: ownedCarPlate,
                             amount: parkingAmount,
                             location: parkingLocation,
@@ -1158,7 +1170,14 @@ myApp.onPageInit('main', function (page) {
     refreshHistory();
 
     $$('#show-history').on("accordion:open", function () {
-        for (j = 0; j < historyCurrentIndex; j++) {
+        var k;
+        if (Object.keys(historyRead).length <= 100) {
+            k = Object.keys(historyRead).length;
+        }
+        else {
+            k = 100;
+        }
+        for (j = 0; j <= k ; j++) {
             var ID = document.getElementById('histInfo' + j + '1');
             myApp.accordionCheckClose(ID);
         }
@@ -1176,7 +1195,14 @@ myApp.onPageInit('main', function (page) {
     refreshTopupHist();
 
     $$('#show-topup-hist').on("accordion:open", function () {
-        for (j = 0; j < topupHistCurrentIndex; j++) {
+        var k;
+        if (Object.keys(historyRead).length <= 100) {
+            k = Object.keys(historyRead).length;
+        }
+        else {
+            k = 100;
+        }
+        for (j = 0; j <= k; j++) {
             var ID = document.getElementById('topupHistInfo' + j + '1');
             myApp.accordionCheckClose(ID);
         }
@@ -1422,7 +1448,7 @@ function terminateParkingTime(theCar) {
             balance: tokenBalance
         })
 
-        historyRef.child(9999999999999 - terminateTimestamp).update({
+        historyRef.child(terminateTimestamp).update({
             carPlate: theCar,
             amount: terminateAmount,
             location: terminateLocation,
