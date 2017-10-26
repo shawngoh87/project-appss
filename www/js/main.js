@@ -886,7 +886,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     // Pay Button Function
     //-----------------------
-    $$('.confirm-payment').on('click', function () {
+    $$('.confirm-payment-button').on('click', function () {
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +

@@ -18,78 +18,83 @@
     </div>
     <div class="page-content">
         <div class="tabs">
-
             <div id="tab-park" class="tab active">
-                <div class="wallet">
-                    <div id="money-icon"><i class="material-icons">monetization_on</i></div>
-                    <div class="token"></div>
-                    <div class="topup-button" style="cursor:pointer;"><i class="material-icons">add</i></div>
+                <div class="content-block">
+                    <div class="wallet">
+                        <div id="money-icon"><i class="material-icons">monetization_on</i></div>
+                        <div class="token"></div>
+                        <div class="topup-button" style="cursor:pointer;"><i class="material-icons">add</i></div>
+                    </div>
                 </div>
-                <div class="promo-code">
-                    <p class="row">
-                        <span class="col-5"></span>
-                        <span class="col-55">
-                            <input type="text" id="used-promo-code" style="text-align:center;" placeholder=" PROMOCODE" />
-                        </span>
-                        <span class="col-45"></span>
-                    </p>
+                <div class="content-block">
+                    <div class="promo-code">
+                        <p class="row">
+                            <span class="col-5"></span>
+                            <span class="col-55">
+                                <input type="text" id="used-promo-code" style="text-align:center;" placeholder=" PROMOCODE" />
+                            </span>
+                            <span class="col-45"></span>
+                        </p>
+                    </div>
                 </div>
-                <div id="parking-info" class="list-block">
-                    <ul>
-                        <li>
-                            <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover select-car-menu">
-                                <div class="item-content">
-                                    <div class="item-media"><i class="material-icons selected-car-logo">directions_car</i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title selected-car-plate">Select Car</div>
+                <div class="content-block">
+                    <div id="parking-info" class="list-block">
+                        <ul>
+                            <li>
+                                <a href="#" data-popover=".popover-menu-car" class="item-link close-panel open-popover select-car-menu">
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="material-icons selected-car-logo">directions_car</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title selected-car-plate">Select Car</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <div class="popover popover-menu-car">
-                                <div class="popover-inner">
-                                    <div class="list-block">
-                                        <ul class="select-car"></ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="select-location">
-                            <a href="selectLocation.html" class="item-link close-panel">
-                                <div class="item-content">
-                                    <div class="item-media"><i class="material-icons selected-location-logo">location_on</i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title selected-location">Location</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <div class="item-content">
-                                <div class="item-media"><i class="icon material-icons selected-duration-logo">schedule</i></div>
-                                <div class="item-inner">
-                                    <div class="item-title label">
-                                        <p class="slider-info row">
-                                            <span class="col-30">Park until:</span>
-                                            <span class="col-50">Duration:</span>
-                                            <span class="col-20">Token:</span>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="slider-info row">
-                                            <span class="col-30 selected-duration"></span>
-                                            <span class="col-55 selected-park-duration"></span>
-                                            <span class="col-15 required-token"></span>
-                                        </p>
-                                    </div>
-                                    <div class="item-input">
-                                        <div class="range-slider">
-                                            <input type="range" class="park-duration" min="600000" max="43200000" value="3600000" step="600000" />
+                                </a>
+                                <div class="popover popover-menu-car">
+                                    <div class="popover-inner">
+                                        <div class="list-block">
+                                            <ul class="select-car"></ul>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
+                            </li>
+                            <li class="select-location">
+                                <a href="selectLocation.html" class="item-link close-panel">
+                                    <div class="item-content">
+                                        <div class="item-media"><i class="material-icons selected-location-logo">location_on</i></div>
+                                        <div class="item-inner">
+                                            <div class="item-title selected-location">Location</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media"><i class="icon material-icons selected-duration-logo">schedule</i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title label">
+                                            <p class="slider-info row">
+                                                <span class="col-30">Park until:</span>
+                                                <span class="col-50">Duration:</span>
+                                                <span class="col-20">Token:</span>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="slider-info row">
+                                                <span class="col-30 selected-duration"></span>
+                                                <span class="col-55 selected-park-duration"></span>
+                                                <span class="col-15 required-token"></span>
+                                            </p>
+                                        </div>
+                                        <div class="item-input">
+                                            <div class="range-slider">
+                                                <input type="range" class="park-duration" min="600000" max="43200000" value="3600000" step="600000" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <!----------------------------------->
                 <!--------Pay Button----------------->
