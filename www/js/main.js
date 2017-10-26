@@ -36,6 +36,8 @@ firebase.auth().onAuthStateChanged(function (user) {
         if (!user.emailVerified) {                // Reminder: NOT the condition.
             // email succesfully verified
             // User is signed in.
+            document.getElementById("user-input-four-element").style.visibility = "hidden";
+            document.getElementById("log-in-notify").style.visibility = "visible";
             $$('.index-preloader').show();
             initUserInfo();
             Loaded = 0;
@@ -66,11 +68,15 @@ firebase.auth().onAuthStateChanged(function (user) {
             // not yet verifiy email
             myApp.alert('An email verification has been sent to you. Please verify it before signing in.', 'Notification');
             firebase.auth().signOut().then(function () { }).catch(function (error) { });
+            document.getElementById("user-input-four-element").style.visibility = "visible";
+            document.getElementById("log-in-notify").style.visibility = "hidden";
         }
     }
     else {
         // User signed out.
         // Turn off .on() listeners here.
+        document.getElementById("user-input-four-element").style.visibility = "visible";
+        document.getElementById("log-in-notify").style.visibility = "hidden";
     }
 });
 

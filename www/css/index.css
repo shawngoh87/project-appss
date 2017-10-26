@@ -37,15 +37,29 @@ body {
     top: 50%;
     left:3%;
     text-align:center;
-    width:94%;
+    width:94%;    
 }
 
-.usertext{
+#log-in-notify {
+    width:50%; 
+    position:absolute; 
+    left:25%; 
+    top:63%; 
+    visibility:hidden;
+    text-align:center;
+    color:white;
+}
+
+#user-input-four-element {
+    visibility: visible;
+}
+
+.usertext {
     border: none;
     margin: 4px 0px;
-    width:80%;
-    border-radius: 5px; 
-    padding:2% 5%;  
+    width: 80%;
+    border-radius: 5px;
+    padding: 2% 5%;
 }
 
 .button-login-page{
