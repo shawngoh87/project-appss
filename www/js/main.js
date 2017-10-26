@@ -117,7 +117,6 @@ function initUserInfo() {
             historyRead = Db.user.history;
             topupHistRead = Db.user.topup_history;
             
-            
             refreshActiveHistory();
         },
         // Failed promise
