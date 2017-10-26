@@ -681,6 +681,7 @@ myApp.onPageInit('main', function (page) {
             //Get tokens
             userRef.child('balance').on('value', function (snapshot) {
                 $$('.token').html(+snapshot.val());
+                console.log('token:'+snapshot.val())
             })
 
             //Get History of Active Car
@@ -2366,7 +2367,7 @@ myApp.onPageInit('promotion', function (page) {
                     lng: results[i].geometry.location.lng()
                 };
               
-                // Create a marker for each place.    
+                // Create a marker for each place. 
                 for (var promoCompany in Db.admin.promotions) {
                     if (~results[i].name.indexOf(promoCompany)) {
                         // Create a infowindow for each place.
@@ -2391,21 +2392,30 @@ myApp.onPageInit('promotion', function (page) {
                                     setTimeout(function () {
                                         nearbyInfo[promoM].close();
                                     }, 10000);
-                                })(promoMarker)
-                                google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
-                                    return function () {
-                                        nearbyInfo[innerKey].close();
-                                        nearbyMarkers[innerKey].setAnimation(null);
-                                        storageRef.child('ads/Bottle[1].mp4').getDownloadURL().then(function (url) {
-                                            $$('.ads-video-src').attr('src', url);
-                                            myApp.popover('.popover-ads-video', '#nearby-promo-ads');
-                                            document.getElementById('ads-video').play();
-                                            $$('#ads-video').on('ended', function () {
-                                                myApp.closeModal();
+                                })(promoMarker);
+                                (function (rewardCompany) {
+                                    google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
+                                        return function () {
+                                            nearbyInfo[innerKey].close();
+                                            nearbyMarkers[innerKey].setAnimation(null);
+                                            storageRef.child('ads/Bottle[1].mp4').getDownloadURL().then(function (url) {
+                                                $$('.ads-video-src').attr('src', url);
+                                                myApp.popover('.popover-ads-video', '#nearby-promo-ads', false);
+                                                document.getElementById('ads-video').play();
+                                                $$('#ads-video').on('ended', function () {
+                                                    userRef.update({
+                                                        balance: Db.user.balance + Db.admin.rewards[rewardCompany]
+                                                    }).then(function () {
+                                                        myApp.closeModal();
+                                                        $$('#ads-video').off('ended');
+                                                        google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
+                                                        myApp.alert(rewardCompany + ' rewards you ' + Db.admin.rewards[rewardCompany] + ' tokens', 'Notification')
+                                                    })
+                                                })
                                             })
-                                        })
-                                    }
-                                }(promoMarker));
+                                        }
+                                    }(promoMarker));
+                                })(rewardCompany);
                             }
                         }
 
