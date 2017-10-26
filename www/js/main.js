@@ -596,31 +596,31 @@ myApp.onPageInit('main', function (page) {
                 var parkingLocation = carRead[ownedCarPlate].parking.location;
                 var parkingPromocode = carRead[ownedCarPlate].parking.promocode;
                 var parkingCity = carRead[ownedCarPlate].parking.city;
-                if (parkingActive) {
-                    if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
-                        carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
-                            amount: parkingAmount,
-                            location: parkingLocation,
-                            duration: timestamp2Time(parkingDuration).name,
-                            promocode: parkingPromocode,
-                            start_time: parkingTimestamp,
-                            city: parkingCity
-                        })
-                        historyRef.child(9999999999999 - parkingTimestamp).update({
-                            carPlate: ownedCarPlate,
-                            amount: parkingAmount,
-                            location: parkingLocation,
-                            duration: timestamp2Time(parkingDuration).name,
-                            startTime: parkingTimestamp,
-                            city: parkingCity
-                        }).then(function () {
-                            refreshHistory();
-                        })
-                        carRef.child(ownedCarPlate).child('parking').update({
-                            active: false,
-                        })
-                    }
-                }
+                //if (parkingActive) {
+                //    if (parkingDuration + parkingTimestamp < Math.floor(Date.now())) {
+                //        carRef.child(ownedCarPlate).child('history').child(ownedCarPlate + parkingTimestamp).update({
+                //            amount: parkingAmount,
+                //            location: parkingLocation,
+                //            duration: timestamp2Time(parkingDuration).name,
+                //            promocode: parkingPromocode,
+                //            start_time: parkingTimestamp,
+                //            city: parkingCity
+                //        })
+                //        historyRef.child(9999999999999 - parkingTimestamp).update({
+                //            carPlate: ownedCarPlate,
+                //            amount: parkingAmount,
+                //            location: parkingLocation,
+                //            duration: timestamp2Time(parkingDuration).name,
+                //            startTime: parkingTimestamp,
+                //            city: parkingCity
+                //        }).then(function () {
+                //            refreshHistory();
+                //        })
+                //        carRef.child(ownedCarPlate).child('parking').update({
+                //            active: false,
+                //        })
+                //    }
+                //}
             }
 
             // Init vehicle tab
@@ -2411,10 +2411,13 @@ myApp.onPageInit('promotion', function (page) {
                                             nearbyMarkers[innerKey].setAnimation(null);
                                             storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
                                                 $$('#ads-video-mp4-src').attr('src', url);
-                                                myApp.popover('.popover-ads-video', '#nearby-promo-ads', false);
+                                                document.getElementById("video-background").style.visibility = "visible";
+                                                document.getElementById("ads-video").style.visibility = "visible";
                                                 document.getElementById('ads-video').load();
                                                 document.getElementById('ads-video').play();
                                                 $$('#ads-video').on('ended', function () {
+                                                    document.getElementById("video-background").style.visibility = "hidden";
+                                                    document.getElementById("ads-video").style.visibility = "hidden";
                                                     userRef.update({
                                                         balance: Db.user.balance + Db.admin.rewards[rewardCompany]
                                                     }).then(function () {
