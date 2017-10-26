@@ -2589,15 +2589,70 @@ myApp.onPageInit('settings-change-hp', function (page) {
 
     $$('#button-update-hp').on('click', function () {
         if ($$('#new-hp').val() != ("") ) {
+            
+            myApp.popover('.popover-enter-password', $$('#button-update-hp'));
+            $$('#button-verify-password').on('click', function () {
+                if ($$('#verify-password').val() === $$('#confirm-verify-password').val()) {
+                    var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#verify-password').val());
+                    user.reauthenticateWithCredential(credential).then(function () {
+                        console.log('password correct')
+                        var param = {
+                            url: 'https://api.authy.com/protected/json/phones/verification/start?via=sms&phone_number=' + $$('#new-hp').val() + '&country_code=60&locale=en',
+                            method: 'POST',
+                            contentType: 'application/json',
+                            crossDomain: true,
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
+                            },
+                            success: function (data, status, xhr) {
 
-            userRef.update({
-                phone_no: $$('#new-hp').val(),
-            }).then(function () {
-                ;
-                myApp.alert('Your H/P number has been updated successfully!');
-                mainView.router.refreshPage();
-            }).catch(function (error) {
-            });
+                                myApp.prompt('Verification code', function (value) {
+                                    var param2 = {
+                                        url: 'https://api.authy.com/protected/json/phones/verification/check?phone_number=' + $$('#su-phone-no').val() + '&country_code=60&verification_code=' + value,
+                                        method: 'GET',
+                                        contentType: 'application/json',
+                                        crossDomain: true,
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
+                                        },
+                                        success: function (data, status, xhr) {
+
+                                            if (status !== 200) {
+                                                alert('Verification failed!');
+                                                return
+                                            }
+                                            userRef.update({
+                                                phone_no: $$('#new-hp').val(),
+                                            }).then(function () {
+                                                myApp.alert('Your H/P number has been updated successfully!');
+                                                mainView.router.refreshPage();
+                                            }).catch(function (error) {
+                                            });
+                                        },
+                                        error: function (xhr, status) {
+                                            alert('ERROR VERIFY: ' + status);
+                                        }
+                                    }
+                                    $$.ajax(param2);
+                                });
+                            },
+                            error: function (xhr, status) {
+                                alert('ERROR SEND: ' + status);
+                            }
+                        }
+                        $$.ajax(param);
+                    }).catch(function (error) {
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+                        if (errorCode === "auth/wrong-password")
+                            myApp.alert(errorMessage, 'Error');
+                    })
+                } else {
+                    myApp.alert('Password and confirm password does not match', 'Error!');
+                }
+            })
         }
         else {
             myApp.alert('H/P Number cannot be empty.', 'Error!');
