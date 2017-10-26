@@ -1509,11 +1509,11 @@ function changeColorTheme(color) {
     switch (color) {
         case 'red':
         case 'pink':
-            colorTheme = "lightpink";
+            colorTheme = "#ffe0e0";
             break;
         case 'purple':
         case 'deeppurple':
-            colorTheme = "plum";
+            colorTheme = "#f9e0ff";
             break;
         case 'indigo':
         case 'blue':
@@ -1524,7 +1524,7 @@ function changeColorTheme(color) {
         case 'teal':
         case 'green':
         case 'lightgreen':
-            colorTheme = "palegreen";
+            colorTheme = "#eeffe8";
             break;
         case 'lime':
         case 'yellow':
@@ -1533,7 +1533,7 @@ function changeColorTheme(color) {
             break;
         case 'orange':
         case 'deeporange':
-            colorTheme = "lightsalmon";
+            colorTheme = "#ffdfbf";
             break;
         case 'brown':
             colorTheme = "lightgoldenrodyellow";
