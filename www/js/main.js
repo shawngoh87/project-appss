@@ -28,10 +28,12 @@ var user_pos = {
     full_addr: 'none'
 };
 var geo_accuracy;
+
 //------------------------------------------
 // Check Whether User has signed in or not
 //------------------------------------------
 firebase.auth().onAuthStateChanged(function (user) {
+    document.getElementById('login-logo').style.setProperty("top", "18%");
     if (user) {
         if (!user.emailVerified) {                // Reminder: NOT the condition.
             // email succesfully verified
