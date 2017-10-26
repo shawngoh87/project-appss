@@ -84,7 +84,6 @@
 }
 
 #parking-info{
-    position:absolute;
     top:30%;
     width:100%;
 }
@@ -94,7 +93,6 @@
 }
 
 .promo-code{
-    position:absolute;
     top: 25%;
     width: 100%;
 }
@@ -108,7 +106,6 @@
 }
 
 .wallet{
-    position:absolute;
     box-sizing: border-box;
     border-radius:5px;
     padding: 16px;
@@ -175,15 +172,11 @@ a.close-popover{
 }
 
 .content-block.confirm-payment{
-    position:absolute;
-    top:65%;
     width:100%;
     margin: 0px;
 }
 
 .content-block.check-promotion {
-    position: absolute;
-    top: 75%;
     width: 100%;
     margin: 0px;
 }
