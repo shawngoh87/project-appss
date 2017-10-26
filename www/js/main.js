@@ -1229,11 +1229,11 @@ myApp.onPageInit('main', function (page) {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
                 // Sign-out successful.
-                mainView.router.back();     // cant use router.loadPage(index.html), there are some issue
+                myApp.showPreloader();
+                location = "index.html";
             }).catch(function (error) {
                 // An error happened.
             });
-            myApp.alert('Successfully logout!!!');
         });
     });
 

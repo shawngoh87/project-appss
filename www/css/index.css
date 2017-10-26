@@ -71,6 +71,7 @@ body {
     padding: 2% 0px;
     text-decoration: none;
     width:90%;
+    cursor: pointer;
 }
 
 .button-login-page.button-login{    
