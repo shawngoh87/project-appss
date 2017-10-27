@@ -215,14 +215,18 @@ a.close-popover{
 
 /* Sen Kit */
 #history-tabbar {
-    top: 0px
+    position: fixed
+}
+
+.tabs-swipeable-wrap{
+    margin-top: 12%;
 }
 
 .list-block.media-list, #history-list, #topup-list, #lbl-cc, #desc-cc, #history-timeline, #extend-content, #duration-content{
     margin:0px;
 }
 
-#history-content, #topup-content{
+#active-content,#history-content, #topup-content{
     margin:0px;
     padding:0px;
 }
@@ -282,7 +286,8 @@ a.close-popover{
 #confirm-btn{
     text-align:center;
     border:none;
-    border-radius:10px
+    border-radius:10px;
+    margin-top: 20px
 }
 
 #popover-active{
