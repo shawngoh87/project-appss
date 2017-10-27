@@ -235,11 +235,16 @@ function removeVehicle(item) {
                         if ($$(this).find('#car-icon').text().replace(/drive_eta/g, '') == $$(item).closest('.card').find('.owned-car').text()) {
                             $$(this).remove();
                         }
-                    })
-
-                    carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();   
-                     
+                    })                    
+                    //carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();                     
                     $$(item).closest('.card').remove();
+                    console.log($$(item).closest('.card').find('.owned-car').text());
+
+                    firebase.database().ref('users/' + user.uid + '/cars/' + $$(item).closest('.card').find('.owned-car').text()).update({
+                        isDelete: true
+                    });
+                    console.log('I am here!');
+                    
                 }
             },
         ]
@@ -657,13 +662,19 @@ myApp.onPageInit('main', function (page) {
             }
 
             // Init vehicle tab
+            
             var cars = Db.user.cars;
+            
             for (var displayCarPlate in cars) {//write to UI
+
                 var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
                 var str2 = '</div><div class="cards-item-title">'
                 var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="display: none">cancel</i></div></div> </a > </li></ul></div></div></div>';
                 //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-                $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                if (cars[displayCarPlate].isDelete === false)
+                {
+                    $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                }                                                                                
             }
 
             // flip delete 
@@ -681,7 +692,9 @@ myApp.onPageInit('main', function (page) {
                         var str2 = '</div><div class="cards-item-title">'
                         var str3 = '</div></div><div class="item-after"><a href="#" onclick="removeVehicle(this);" class="override-icon-color"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></a></div></div></div></li></ul></div></div></div>';
 
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        if (cars[displayCarPlate].isDelete === false) {
+                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        }                     
                     }
                     $$('.vehicle-cancel').show();
                     $$(this).attr('state', 'close');
@@ -696,7 +709,9 @@ myApp.onPageInit('main', function (page) {
                         var str2 = '</div><div class="cards-item-title">'
                         var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
 
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        if (cars[displayCarPlate].isDelete === false) {
+                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        }                        
                     }
 
                     $$(this).attr('state', 'open');
@@ -1119,11 +1134,15 @@ myApp.onPageInit('main', function (page) {
                         var str2 = '</div><div class="cards-item-title">'
                         var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
 
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        if (cars[displayCarPlate].isDelete === false) {
+                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+                        }
+                                                                          
                     }
 
-                    $$(this).attr('state', 'open');
+                    $$(this).attr('state', 'close');
                     $$('.floating-button').click();
+
 
         myApp.modal({
             title: 'Add vehicle',
@@ -1143,7 +1162,8 @@ myApp.onPageInit('main', function (page) {
                         carRef.child(displayCarPlate).update({
                             description: $$('#txt-car-description').val(),
                             timestamp_reg: Math.floor(Date.now()),
-                            history: ''
+                            history: '',
+                            isDelete: false
                         });
 
                         carRef.child(displayCarPlate).child('parking').update({
