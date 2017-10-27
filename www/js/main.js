@@ -2592,12 +2592,12 @@ myApp.onPageInit('settings-change-hp', function (page) {
             
             myApp.popover('.popover-enter-password', $$('#button-update-hp'));
             $$('#button-verify-password').on('click', function () {
+
                 if ($$('#verify-password').val() === $$('#confirm-verify-password').val()) {
                     myApp.closeModal();
                     myApp.showIndicator();
                     var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#verify-password').val());
                     user.reauthenticateWithCredential(credential).then(function () {
-                        myApp.hideIndicator();
                         console.log('password correct')
                         var param = {
                             url: 'https://api.authy.com/protected/json/phones/verification/start?via=sms&phone_number=' + $$('#new-hp').val() + '&country_code=60&locale=en',
@@ -2609,8 +2609,9 @@ myApp.onPageInit('settings-change-hp', function (page) {
                                 "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
                             },
                             success: function (data, status, xhr) {
-
+                                myApp.hideIndicator();
                                 myApp.prompt('Verification code', function (value) {
+                                    myApp.showIndicator();
                                     var param2 = {
                                         url: 'https://api.authy.com/protected/json/phones/verification/check?phone_number=' + $$('#new-hp').val() + '&country_code=60&verification_code=' + value,
                                         method: 'GET',
@@ -2621,6 +2622,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
                                             "X-Authy-API-Key": "qApVobMpvUu4WrJxfkEYgXzoBOjmRvYj"
                                         },
                                         success: function (data, status, xhr) {
+                                            myApp.hideIndicator();
 
                                             if (status !== 200) {
                                                 alert('Verification failed!');
@@ -2635,6 +2637,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
                                             });
                                         },
                                         error: function (xhr, status) {
+                                            myApp.hideIndicator();
                                             alert('ERROR VERIFY: ' + status);
                                         }
                                     }
@@ -2642,6 +2645,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
                                 });
                             },
                             error: function (xhr, status) {
+                                myApp.hideIndicator();
                                 alert('ERROR SEND: ' + status);
                             }
                         }
