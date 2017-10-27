@@ -2593,6 +2593,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
             myApp.popover('.popover-enter-password', $$('#button-update-hp'));
             $$('#button-verify-password').on('click', function () {
                 if ($$('#verify-password').val() === $$('#confirm-verify-password').val()) {
+                    myApp.closeModal();
                     var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#verify-password').val());
                     user.reauthenticateWithCredential(credential).then(function () {
                         console.log('password correct')
