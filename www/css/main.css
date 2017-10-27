@@ -351,6 +351,14 @@ a.close-popover{
     margin-bottom:0px;
 }
 
+input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+
 /*--------zachaary--------*/
 #histInfo, #topupHistInfo {
     text-align: right;

@@ -1246,12 +1246,12 @@ myApp.onPageInit('main', function (page) {
     $$('.load-token').append(Db.user.balance.toString());
 
     var ministr1 = '<img src="';
-    var ministr2 = '" width="80">';
+    var ministr2 = '" width="80" height="80">';
     
     if (user.photo_URL != "") {
         $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
     } else {
-        $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
+        $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="80" height="80">');
     }
 
 });
@@ -1709,6 +1709,55 @@ function setOptions(srcType) {
     return options;
 }
 
+var testurl;
+
+//FilePicker//
+function openFilePicker(selection) {
+
+    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
+    var options = setOptions(srcType);
+    var func = createNewFileEntry;
+    var imgUri = null;
+    testurl = null;
+
+    if (selection == "picker-thmb") {
+        // To downscale a selected image,
+        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
+        options.targetHeight = 100;
+        options.targetWidth = 100;
+    }
+
+    navigator.camera.getPicture(function cameraSuccess(data) {
+        /*
+        var blob = to_blob(imageUri);
+        return blob;
+        console.log("return blob liao");
+        */
+        testurl = data.toString().replace('blob:','');
+        console.log(data);
+        console.log("return imageUri liao");
+    }, function cameraError(error) {
+        console.debug("Unable to obtain picture: " + error, "app");
+
+        }, options);
+    console.log('returned');
+}
+
+function getFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(imgUri, function success(fileEntry) {
+
+        // Do something with the FileEntry object, like write to it, upload it, etc.
+        // writeFile(fileEntry, imgUri);
+        console.log("got file: " + fileEntry.fullPath);
+        // displayFileData(fileEntry.nativeURL, "Native URL");
+
+    }, function () {
+        // If don't get the FileEntry (which may happen when testing
+        // on some emulators), copy to a new FileEntry.
+        createNewFileEntry(imgUri);
+    });
+}
+
 function createNewFileEntry(imgUri) {
     window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
 
@@ -1722,32 +1771,6 @@ function createNewFileEntry(imgUri) {
         }, onErrorCreateFile);
 
     }, onErrorResolveUrl);
-}
-
-//FilePicker//
-function openFilePicker(selection) {
-
-    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
-    var options = setOptions(srcType);
-    var func = createNewFileEntry;
-
-    if (selection == "picker-thmb") {
-        // To downscale a selected image,
-        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
-        options.targetHeight = 100;
-        options.targetWidth = 100;
-    }
-
-    navigator.camera.getPicture(function cameraSuccess(imageUri) {
-
-        var blob = to_blob(imageUri);
-        return blob;
-        console.log("return blob liao");
-
-    }, function cameraError(error) {
-        console.debug("Unable to obtain picture: " + error, "app");
-
-    }, options);
 }
 
 //My Profile!!!!
@@ -1796,6 +1819,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     //Profile-Pic Action Sheet
     $$('.button-profile-pic').on('click', function () {
         var options = [
+          
             {
                 text: 'View Profile Picture',
                 bold: true,
@@ -1852,7 +1876,15 @@ myApp.onPageInit('profile-myprofile', function (page) {
                         });
                     });
                 }
-            }
+            },
+        
+        {
+            text: 'test croppie Profile Picture',
+                bold: true,
+                onClick: function () {
+                    mainView.router.loadPage("test-croppie.html");
+                    }
+        }
         ];
         var cancel = [
             {
@@ -2683,4 +2715,43 @@ myApp.onPageInit('view-profile-picture', function (page) {
         $$('.view-profile-pic-append').append('<img class="view-profile-pic" src="images/profile_pic_default.png" />');
     }
     
+});
+
+myApp.onPageInit('test-croppie', function (page) {
+    var test = $('#main-cropper').croppie({
+        viewport: { width: 250, height: 250, type: 'circle' },
+        boundary: { width: 300, height: 300 },
+        showZoomer: false,
+    });
+    test.bind({
+        url: 'img/mountain.jpg',
+    });
+
+    $$('.actionUpload').on('click', function () {
+        openFilePicker(); 
+        var waitPhoto = setInterval(function () {
+            if (testurl) {
+                clearInterval(waitPhoto);
+                console.log(testurl)
+            }
+        },100)
+    });
+
+   
+    //    var testurl = openFilePicker();
+    //    console.log(testurl);
+    //}); 
+
+    //$$('.actionCancel').on('click', function () {
+    //    console.log(openFilePicker());
+    //    console.log(testurl);
+    //});
+
+
+    $$('.actionDone').on('click', function () {
+        //on button click
+        test.result('blob').then(function (blob) {
+            // do something with cropped blob
+        });
+    });
 });
