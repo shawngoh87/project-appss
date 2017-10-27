@@ -213,6 +213,12 @@ a.close-popover{
     margin-bottom: 10px;
 }
 
+.view-profile-pic {
+    display: block;
+    width: 100%;
+    margin: 20% auto;
+}
+
 /* Sen Kit */
 #history-tabbar {
     position: fixed

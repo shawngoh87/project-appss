@@ -1774,12 +1774,13 @@ myApp.onPageInit('profile-myprofile', function (page) {
         }
     });
     */
-
+    console.log(user.photoURL);
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100" height="100">';
-    if (user.photo_URL != "") {
+    if (user.photoURL != "") {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
+        console.log(user.photoURL);
     } else {
         $$('.button-profile-pic').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
     }
@@ -2672,11 +2673,14 @@ myApp.onPageInit('settings-change-hp', function (page) {
 
 //View Profile Picture
 myApp.onPageInit('view-profile-picture', function (page) {
-    var str1 = '<img class="profile-pic" src="';
-    var str2 = '">';
-    if (user.photo_URL != "") {
-        $$('#view-profile-pic').append(str1 + user.photoURL + str2);
+    //Display Profile Pic and Info
+    var str1 = '<img class="view-profile-pic" src="';
+    var str2 = '" />';
+    if (user.photoURL != "") {
+        $$('.view-profile-pic-append').append(str1 + user.photoURL + str2);
+        console.log(user.photoURL);
     } else {
-        $$('#view-profile-pic').append('<img src="images/profile_pic_default.png">');
+        $$('.view-profile-pic-append').append('<img class="view-profile-pic" src="images/profile_pic_default.png" />');
     }
+    
 });
