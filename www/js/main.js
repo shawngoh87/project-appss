@@ -243,8 +243,6 @@ function removeVehicle(item) {
                     firebase.database().ref('users/' + user.uid + '/cars/' + $$(item).closest('.card').find('.owned-car').text()).update({
                         isDelete: true
                     });
-                    console.log('I am here!');
-                    
                 }
             },
         ]
@@ -2531,7 +2529,7 @@ myApp.onPageInit('promotion', function (page) {
                         // Create a infowindow for each place.
                         var contentString = Db.admin.rewards[promoCompany] + ' tokens';
                         var infowindow = new google.maps.InfoWindow({
-                            content: '<h4>Click here to watch the video<br />and get free ' + contentString.fontcolor("goldenrod") + '</h4>'
+                            content: '<h4>' + contentString.fontcolor("goldenrod") + '</h4>'
                         });
                         nearbyInfo.push(infowindow);
 
@@ -2583,7 +2581,7 @@ myApp.onPageInit('promotion', function (page) {
 
                         $$('.promo-card-title').each(function () {
                             if ($$(this).text() == promoCompany) {
-                                $$('#nearby-map-promo').append('<div class="card">' + $$(this).closest('.card').html() + '</div>');
+                                $$('#nearby-map-promo').append('<li><div class="card">' + $$(this).closest('.card').html() + '</div></li>');
                             }
                         })
                     }
@@ -2593,6 +2591,7 @@ myApp.onPageInit('promotion', function (page) {
                 checkPromo = false;
                 myApp.showTab('#nearbyPromo');
             }
+            $$('#nearby-map-promo').append('<li><div class="card">&emsp;</div></li><li><div class="card">&emsp;</div></li>');
             myApp.hideIndicator();
         }
     }

@@ -118,17 +118,5 @@
 }
 
 #nearby-map {
-    position: absolute;
-    height: 45%;
-    width: 90%;
-    top: 10%;
-    left: 5%;
-}
-
-#nearby-map-promo {
-    position: absolute;
-    height: 40%;
-    width: 90%;
-    top: 55%;
-    left: 5%;
+    height: 300px;
 }
