@@ -120,3 +120,7 @@
 #nearby-map {
     height: 300px;
 }
+
+#nearbyShop .content-block{
+    margin: 0px 0px;
+}
