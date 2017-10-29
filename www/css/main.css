@@ -72,6 +72,128 @@
 
 /* Yean Choon */
 
+/*Color theme*/
+.theme-red .wallet,
+.theme-red .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #f44336;
+}
+
+.theme-pink .wallet,
+.theme-pink .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #e91e63;
+}
+
+.theme-purple .wallet,
+.theme-purple .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #9c27b0;
+}
+
+.theme-deeppurple .wallet,
+.theme-deeppurple .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #673ab7;
+}
+
+.theme-indigo .wallet,
+.theme-indigo .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #3f51b5;
+}
+
+.theme-blue .wallet,
+.theme-blue .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #2196f3;
+}
+
+.theme-lightblue .wallet,
+.theme-lightblue .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #03a9f4;
+}
+
+.theme-cyan .wallet,
+.theme-cyan .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #00bcd4;
+}
+
+.theme-teal .wallet,
+.theme-teal .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #009688;
+}
+
+.theme-green .wallet,
+.theme-green .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #4caf50;
+}
+
+.theme-lightgreen .wallet,
+.theme-lightgreen .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #8bc34a;
+}
+
+.theme-lime .wallet,
+.theme-lime .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #cddc39;
+}
+
+.theme-yellow .wallet,
+.theme-yellow .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #ffeb3b;
+}
+
+.theme-amber .wallet,
+.theme-amber .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #ffc107;
+}
+
+.theme-orange .wallet,
+.theme-orange .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #ff9800;
+}
+
+.theme-deeporange .wallet,
+.theme-deeporange .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #ff5722;
+}
+
+.theme-brown .wallet,
+.theme-brown .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #795548;
+}
+
+.theme-gray .wallet,
+.theme-gray .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #9e9e9e;
+}
+
+.theme-bluegray .wallet,
+.theme-bluegray .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #607d8b;
+}
+
+.theme-black .wallet,
+.theme-black .button.button-raised.confirm-payment-button-inner {
+    color: white;
+    background-color: #000;
+}
+/*End of color theme*/
+
 .list-block{
     background-color:white;
 }
@@ -121,21 +243,18 @@
     -ms-flex-align: center;
     align-items: center;
     align-items: center;
-    background-color:#2196F3;
     width:100%;
     height:80px;
 }
 
 #money-icon{
     width:10%;
-    margin:4px 4px;
-    color:goldenrod;
+    margin:4px 20px;
 }
 
 .token{
     right:0%;
     font-size:42px;
-    color: #422608;
     text-align:left;
     width:80%;
 }
@@ -182,11 +301,6 @@ a.close-popover{
 
 .confirm-payment-button{
     background-color:white;
-}
-
-.button.button-raised.confirm-payment-button-inner{
-    background-color: #2196F3;
-    color:white;
 }
 
 .item-media.profile-info{

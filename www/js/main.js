@@ -12,6 +12,14 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
+//--------------------------------
+//Color them of main page
+//--------------------------------
+if (localStorage.getItem('color_theme')) {
+    changeColorTheme(localStorage.getItem('color_theme'));
+}
+
+
 // Global Variables
 var Db = {};
 var Strg = {};
@@ -2074,6 +2082,10 @@ myApp.onPageInit("select-location", function (page) {
             map.fitBounds(bounds);
             map.setZoom(18);
         });
+
+        $$('body').on('touchstart', '.pac-container', function (e) {
+            e.stopImmediatePropagation();
+        })
     }
 
     //---------------------------------------

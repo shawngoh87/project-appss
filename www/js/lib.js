@@ -64,12 +64,12 @@ function timestamp2Time(value) {
 function clockPass(value) {
     var datestamp = Math.floor(Date.now()) + +value;
     var date = new Date(datestamp);
-    var h, m, aORp = 'a';
+    var h, m, AorP = 'A';
     h = date.getHours();
     m = date.getMinutes();
     if (h >= 12) {
         if (m > 0) {
-            aORp = 'p';
+            AorP = 'P';
         }
     }
     if (h === 0) {
@@ -81,6 +81,6 @@ function clockPass(value) {
     if (m < 10) {
         m = '0' + m;
     }
-    var str = h + ':' + m + aORp + '.m.';
+    var str = h + ':' + m + ' ' + AorP + 'M';
     return str
 }
