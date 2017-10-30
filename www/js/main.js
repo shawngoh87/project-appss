@@ -1270,7 +1270,7 @@ myApp.onPageInit('main', function (page) {
     var ministr1 = '<img src="';
     var ministr2 = '" width="80" height="80">';
     
-    if (user.photo_URL != "") {
+    if (user.photo_URL != null) {
         $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
     } else {
         $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="80" height="80">');
@@ -1798,6 +1798,13 @@ function createNewFileEntry(imgUri) {
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
     var profilepicRef = storageuserRef.child('profile_pic.jpg');
+    console.log(user.photoURL);
+    /*
+    user.updateProfile({
+        photoURL: null
+    }).then(function () {
+        console.log("url nulled")
+    })
     
     profilepicRef.getDownloadURL().then(function (url) {
         user.updateProfile({
@@ -1823,7 +1830,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100" height="100">';
-    if (user.photoURL != "") {
+    if (user.photoURL != null) {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
         console.log(user.photoURL);
     } else {
@@ -2235,43 +2242,45 @@ myApp.onPageInit("select-location", function (page) {
 //Need to change ordering way//////////////////////
 //Promocode
 myApp.onPageInit('profile-promocode', function (page) {
-    //Display Promocode
-    function loadPromocode() {
-        var uid = firebase.auth().currentUser.uid;
-        var path = 'users/' + user.uid + '/promotion';
+    var available_promo = 0;
+    var have_promo = 0;
+    //To display
+    var str1 = '<li class="accordion-item"> <a href="#" class="item-link item-content"> <div class="item-inner"> <div class="item-title">'
+    var str2 = '</div>'
+    var str3 = '</div > </a > <div class="accordion-item-content"> <div class="content-block"> <p>Discount Amount: '
+    var str4 = ' tokens</p> <p>Expiry Date: '
+    var str5 = '</p> <p>'
+    var str6 = '</p> </div> </div> </li>'
 
-        firebase.database().ref(path).once('value').then(function (snapshot) {
-            var data = snapshot.val();
-
-            for (var eachPromotion in data) {
-                var promocode = data[eachPromotion];
-
-                // For readability purpose
-                var str1 = '<li class="accordion-item"> <a href="#" class="item-link item-content"> <div class="item-inner"> <div class="item-title">'
-                var str2 = '</div>'
-                //only for all
-                var str_a = '<div class="item-after" style = "color: springgreen" > '
-                if (promocode.status.toLowerCase() === 'available') {
-                    $$('.promo-list-available').append(str1 + eachPromotion + str2 + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text);
-                    var str_all = '<div class="item-after" style = "color: springgreen" >Available</div>'
-                } else if (promocode.status.toLowerCase() === 'expired') {
-                    var str_all = '<div class="item-after" style = "color: red" >Expired</div>'
-                } else if (promocode.status.toLowerCase() === 'used') {
-                    var str_all = '<div class="item-after">Used</div>'
-                }
-
-                var str3 = '</div > </a > <div class="accordion-item-content"> <div class="content-block"> <p>Discount Amount: '
-                var str4 = ' tokens</p> <p>Expiry Date: '
-                var str5 = '</p> <p>'
-                var str6 = '</p> </div> </div> </li>'
-
-                $$('.promo-list-all').append(str1 + eachPromotion + str2 + str_all + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text + str6);
+    function loadPromo() {
+        var promotion = Db.user.promotion; // Clone it to prevent async bugs
+        for (var eachPromotion in promotion) {
+            have_promo = 1;
+            var promocode = promotion[eachPromotion];
+            if (promocode.status.toLowerCase() === 'available') {
+                $$('.promo-list-available').append(str1 + eachPromotion + str2 + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text);
+                available_promo = 1;
+                var str_all = '<div class="item-after" style = "color: springgreen" >Available</div>'
+            } else if (promocode.status.toLowerCase() === 'expired') {
+                var str_all = '<div class="item-after" style = "color: red" >Expired</div>'
+            } else if (promocode.status.toLowerCase() === 'used') {
+                var str_all = '<div class="item-after">Used</div>'
             }
+            $$('.promo-list-all').append(str1 + eachPromotion + str2 + str_all + str3 + promocode.amount + str4 + promocode.expiry_date + str5 + promocode.text + str6);
+        }
+    };
 
-        });
-    }
+    function is_no_promo() {
+        if (available_promo == 0) {
+            $$('.promo-list-available').append('<div class="content-block-title" style="text-align:center">No available promocode</div>');
+        }
+        if (have_promo == 0) {
+            $$('.promo-list-all').append('<div class="content-block-title" style="text-align:center">No promocode</div>');
+        }
+    };
 
-    loadPromocode();
+    loadPromo();
+    is_no_promo();
 });
 
 //Change password
@@ -2296,7 +2305,7 @@ myApp.onPageInit('settings-change-password', function (page) {
             var errorMessage = error.message;
             if (errorCode === "auth/wrong-password")
                 myApp.alert(errorMessage, 'Error');
-            })
+        })
     });
 });
 
@@ -2732,16 +2741,15 @@ myApp.onPageInit('settings-change-hp', function (page) {
 
 //View Profile Picture
 myApp.onPageInit('view-profile-picture', function (page) {
-    //Display Profile Pic and Info
+
     var str1 = '<img class="view-profile-pic" src="';
     var str2 = '" />';
-    if (user.photoURL != "") {
+    if (user.photoURL != null) {
         $$('.view-profile-pic-append').append(str1 + user.photoURL + str2);
         console.log(user.photoURL);
     } else {
         $$('.view-profile-pic-append').append('<img class="view-profile-pic" src="images/profile_pic_default.png" />');
     }
-    
 });
 
 function previewFile() {
