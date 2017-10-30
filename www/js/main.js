@@ -12,13 +12,6 @@ var $$ = Dom7;
 var mainView = myApp.addView('.view-main', {
 });
 
-//--------------------------------
-//Color them of main page
-//--------------------------------
-if (localStorage.getItem('color_theme')) {
-    changeColorTheme(localStorage.getItem('color_theme'));
-}
-
 
 // Global Variables
 var Db = {};
@@ -27,6 +20,16 @@ var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, 
 var colorTheme;
 var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false;
 var expired = false, extendDuration;
+
+//--------------------------------
+//Color them of main page
+//--------------------------------
+if (localStorage.getItem('color_theme')) {
+    changeColorTheme(localStorage.getItem('color_theme'));
+}
+else {
+    changeColorTheme('blue');
+}
 
 // Global user position Var
 var user_pos = {
@@ -104,14 +107,7 @@ function initUserInfo() {
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
-    if (!localStorage.getItem('color_theme')) {
-        Db.color_theme = 'blue';
-        localStorage.setItem('color_theme', Db.color_theme);
-    }
-    else {
-        Db.color_theme = localStorage.getItem('color_theme');
-        changeColorTheme(Db.color_theme);
-    }
+
     
     userRef.on('value',
         // Succeeded promise
