@@ -2660,9 +2660,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
         if ($$('#new-hp').val() != ("") ) {
             
             myApp.popover('.popover-enter-password', $$('#button-update-hp'));
-            $$('#button-verify-password').on('click', function () {
-
-                if ($$('#verify-password').val() === $$('#confirm-verify-password').val()) {
+            $$('#button-verify-password').on('click', function () { 
                     myApp.closeModal();
                     myApp.showIndicator();
                     var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#verify-password').val());
@@ -2725,10 +2723,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
                         var errorMessage = error.message;
                         if (errorCode === "auth/wrong-password")
                             myApp.alert(errorMessage, 'Error');
-                    })
-                } else {
-                    myApp.alert('Password and confirm password does not match', 'Error!');
-                }
+                    })          
             })
         }
         else {
