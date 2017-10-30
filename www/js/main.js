@@ -1798,8 +1798,8 @@ function createNewFileEntry(imgUri) {
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
     var profilepicRef = storageuserRef.child('profile_pic.jpg');
+     /*
     console.log(user.photoURL);
-    /*
     user.updateProfile({
         photoURL: null
     }).then(function () {
@@ -1825,8 +1825,8 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 break;
         }
     });
-    */
     console.log(user.photoURL);
+    */
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100" height="100">';
@@ -2272,10 +2272,10 @@ myApp.onPageInit('profile-promocode', function (page) {
 
     function is_no_promo() {
         if (available_promo == 0) {
-            $$('.promo-list-available').append('<div class="content-block-title" style="text-align:center">No available promocode</div>');
+            $$('.promo-list-available').append('<div class="no-promo">No available promocode!</div>');
         }
         if (have_promo == 0) {
-            $$('.promo-list-all').append('<div class="content-block-title" style="text-align:center">No promocode</div>');
+            $$('.promo-list-all').append('<div class="no-promo">No promocode!</div>');
         }
     };
 
