@@ -1825,7 +1825,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 break;
         }
     });
-    
+    */
     console.log(user.photoURL);
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
