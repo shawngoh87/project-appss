@@ -10,7 +10,9 @@
         <div id="main-cropper"></div>
         <a class="button actionUpload">
             <span>Upload</span>
-            <input type="file" id="upload" value="Choose Image" accept="image/*">
+            <!--<input type="file" id="upload" value="Choose Image" accept="image/*">-->
+            <input type="file" onchange="previewFile()"><br>
+            <img src="" height="200" alt="Image preview...">
         </a>
         <button class="actionDone">Done</button>
         <button class="actionCancel">Cancel</button>

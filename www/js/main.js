@@ -1798,7 +1798,7 @@ function createNewFileEntry(imgUri) {
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
     var profilepicRef = storageuserRef.child('profile_pic.jpg');
-    /*
+    
     profilepicRef.getDownloadURL().then(function (url) {
         user.updateProfile({
             photoURL: url
@@ -1818,7 +1818,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 break;
         }
     });
-    */
+    
     console.log(user.photoURL);
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
@@ -2744,6 +2744,24 @@ myApp.onPageInit('view-profile-picture', function (page) {
     
 });
 
+function previewFile() {
+    var preview = document.querySelector('img'); //selects the query named img
+    var file = document.querySelector('input[type=file]').files[0]; //sames as here
+    var reader = new FileReader();
+
+    reader.onloadend = function () {
+        preview.src = reader.result;
+    }
+
+    if (file) {
+        reader.readAsDataURL(file); //reads the data as a URL
+    } else {
+        preview.src = "";
+    }
+}
+
+previewFile();  //calls the function named previewFile()
+
 myApp.onPageInit('test-croppie', function (page) {
     var test = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
@@ -2751,17 +2769,19 @@ myApp.onPageInit('test-croppie', function (page) {
         showZoomer: false,
     });
     test.bind({
-        url: 'img/mountain.jpg',
+        url: '',
     });
 
     $$('.actionUpload').on('click', function () {
-        openFilePicker(); 
-        var waitPhoto = setInterval(function () {
-            if (testurl) {
-                clearInterval(waitPhoto);
-                console.log(testurl)
-            }
-        },100)
+        //openFilePicker(); 
+        //var waitPhoto = setInterval(function () {
+        //    if (testurl) {
+        //        clearInterval(waitPhoto);
+        //        console.log(testurl)
+        //    }
+        //},100)
+
+        
     });
 
    
