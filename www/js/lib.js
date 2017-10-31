@@ -84,3 +84,4 @@ function clockPass(value) {
     var str = h + ':' + m + ' ' + AorP + 'M';
     return str
 }
+

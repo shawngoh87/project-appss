@@ -20,6 +20,7 @@ var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, 
 var colorTheme;
 var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false;
 var expired = false, extendDuration;
+var customMarker;
 
 //--------------------------------
 //Color them of main page
@@ -36,7 +37,8 @@ var user_pos = {
     lat: 0,
     lng: 0,
     city: 'none',
-    full_addr: 'none'
+    full_addr: 'none',
+    locality: 'none'
 };
 var geo_accuracy;
 document.getElementById('login-logo').style.setProperty("top", "37%");
@@ -61,7 +63,6 @@ firebase.auth().onAuthStateChanged(function (user) {
             setTimeout(function () {
                 console.log('Timedout');
                 if (!Loaded) {
-                    Db.admin = JSON.parse(localStorage.getItem('admin'));
                     Strg.logo = JSON.parse(localStorage.getItem('logo'));
                     Strg.icon = JSON.parse(localStorage.getItem('icon'));
                     Db.user = JSON.parse(localStorage.getItem('user'));
@@ -107,7 +108,7 @@ function initUserInfo() {
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
-
+    Db.admin = {};
     
     userRef.on('value',
         // Succeeded promise
@@ -129,13 +130,17 @@ function initUserInfo() {
             console.log(err);
         }
     );
-    adminRef.on('value', function (snapshot) {
-        Db.admin = snapshot.val();
-        localStorage.setItem('admin', JSON.stringify(Db.admin));
-        rate = Db.admin.token_per_minute / 60000;
+    adminRef.child('token_per_minute').on('value', function (snapshot) {
+        rate = snapshot.val() / 60000;
+    })
+    adminRef.child('rewards').on('value', function (snapshot) {
+        Db.admin.rewards = snapshot.val();
+    })
+    adminRef.child('promotion_company').on('value', function (snapshot) {
         Strg.logo = {};
         Strg.icon = {};
-        for (var promoCompany in Db.admin.promotions) {
+        for (var number in snapshot.val()) {
+            var promoCompany = snapshot.child(number).val();
             (function (promoC) {
                 storageRef.child('logo/' + promoC + '.png').getDownloadURL().then(function (url) {
                     Strg.logo[promoC] = url;
@@ -149,11 +154,11 @@ function initUserInfo() {
         }
         var strgIntrv = setInterval(function () {
             var finishLogo = false, finishIcon = false;
-            if (Strg.logo.length == Db.admin.promotions.length) {
+            if (Strg.logo.length == snapshot.val().length) {
                 localStorage.setItem('logo', JSON.stringify(Strg.logo));
                 finishLogo = true;
             }
-            if (Strg.icon.length == Db.admin.promotions.length) {
+            if (Strg.icon.length == snapshot.val().length) {
                 localStorage.setItem('icon', JSON.stringify(Strg.icon));
                 finishIcon = true;
             }
@@ -161,6 +166,10 @@ function initUserInfo() {
                 clearInterval(strgIntrv);
             }
         })
+    })
+
+    storageRef.child('icon/Marker.png').getDownloadURL().then(function (url) {
+        customMarker = url;
     })
 }
 
@@ -618,7 +627,7 @@ myApp.onPageInit('main', function (page) {
         myApp.alert('Poor internet connection.', 'Notification');
     }, 10000);
     var waitIntrv = setInterval(function () {
-        if (Db.user && Db.admin) {
+        if (Db.user && rate) {
             clearInterval(waitIntrv);
             console.log("Loading completed")
             myApp.hideIndicator();
@@ -969,38 +978,86 @@ myApp.onPageInit('main', function (page) {
 
                     function checkNearby(results, status) {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            var comparedLocality = 0, localityList = [];
                             for (var i = 0; i < results.length; i++) {
-                                for (var promoCompany in Db.admin.promotions) {
-                                    if (~results[i].name.indexOf(promoCompany)) {
-                                        nearbyPromoShop = true;
-                                    }
+                                if (results[i].types[0] == 'locality' || results[i].types[1] == 'locality') {
+                                    localityList.push(results[i].vicinity);
                                 }
                             }
-                            if (nearbyPromoShop) {
-                                myApp.modal({
-                                    title: 'Payment confirmed',
-                                    text: 'Nearbyshop might have some special promotions for YOU! Get FREE tokens by watching their promotion videos <br /><br />',
-                                    afterText:'<img src="https://developers.google.com/places/documentation/images/powered-by-google-on-white.png">',
-                                    verticalButtons: true,
-                                    buttons: [
-                                        {
-                                            text: 'Check it out',
-                                            onClick: function () {
-                                                mainView.router.loadPage("promotion.html");
-                                            }
-                                        },
-                                        {
-                                            text: 'Nevermind',
-                                            onClick: function () {
-                                                //Do nothing
+                            console.log(results)
+                            console.log(localityList)
+                            for (var localitY in localityList) {
+                                (function (locality) {
+                                    adminRef.child('promotions/' + locality).once('value', function (snapshot) {
+                                        for (var sublocality in snapshot.val()) {
+                                            console.log(sublocality)
+                                            for (var promoCompany in snapshot.child(sublocality).val()) {
+                                                console.log(promoCompany)
+                                                for (var i = 0; i < results.length; i++) {
+                                                    if (~results[i].name.indexOf(promoCompany) && ~results[i].vicinity.indexOf(sublocality)) {
+                                                        nearbyPromoShop = true;
+                                                    }
+                                                }
                                             }
                                         }
-                                    ]
-                                })
+                                        comparedLocality++;
+                                    })
+                                })(localityList[localitY]);
                             }
+                            var intrvNearbyGotPromo = setInterval(function () {
+                                if (comparedLocality == localityList.length) {
+                                    clearInterval(intrvNearbyGotPromo);
+                                    if (nearbyPromoShop) {
+                                        myApp.modal({
+                                            title: 'Payment confirmed',
+                                            text: 'Nearbyshop might have some special promotions for YOU! Get FREE tokens by watching their promotion videos <br /><br />',
+                                            afterText: '<img src="https://developers.google.com/places/documentation/images/powered-by-google-on-white.png">',
+                                            verticalButtons: true,
+                                            buttons: [
+                                                {
+                                                    text: 'Check it out',
+                                                    onClick: function () {
+                                                        mainView.router.loadPage("promotion.html");
+                                                    }
+                                                },
+                                                {
+                                                    text: 'Nevermind',
+                                                    onClick: function () {
+                                                        //Do nothing
+                                                    }
+                                                }
+                                            ]
+                                        })
+                                    }
+                                }
+                            },100)
                         }
                     }
-
+                    if (Db.user.locality) {
+                        for (var localitY in user_pos.locality) {
+                            (function (locality) {
+                                if (Db.user.locality[locality]) {
+                                    userRef.child('locality').update({
+                                        [locality]: Db.user.locality[locality] + 1
+                                    });
+                                }
+                                else {
+                                    userRef.child('locality').update({
+                                        [locality]: 1
+                                    });
+                                }
+                            })(user_pos.locality[localitY]);
+                        }
+                    }
+                    else {
+                        for (var locality in user_pos.locality) {
+                            (function (locality) {
+                                userRef.child('locality').update({
+                                    [locality]: 1
+                                });
+                            })(user_pos.locality[localitY]);
+                        }
+                    }
                     userRef.update({
                         balance: tokenBal
                     })
@@ -1939,13 +1996,15 @@ myApp.onPageInit("select-location", function (page) {
         lat: 0,
         lng: 0,
         city: 'none',
-        full_addr: 'none'
+        full_addr: 'none',
+        locality: 'none'
     };
     var selfset_pos = {
         lat: 0,
         lng: 0,
         city: 'none',
-        full_addr: 'none'
+        full_addr: 'none',
+        locality: 'none'
     };
     var default_user_addr;
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -1975,7 +2034,8 @@ myApp.onPageInit("select-location", function (page) {
             // Create a marker for each place.
             default_marker.push(new google.maps.Marker({
                 map: map,
-                position: pos
+                position: pos,
+                icon: customMarker
             }));
         }
         else {
@@ -1996,7 +2056,8 @@ myApp.onPageInit("select-location", function (page) {
             // Create a marker for each place.
             default_marker.push(new google.maps.Marker({
                 map: map,
-                position: pos
+                position: pos,
+                icon: customMarker
             }));
         }
     });
@@ -2008,12 +2069,14 @@ myApp.onPageInit("select-location", function (page) {
             user_pos['lng'] = selfset_pos['lng'];
             user_pos['city'] = selfset_pos['city'];
             user_pos['full_addr'] = selfset_pos['full_addr'];
+            user_pos['locality'] = selfset_pos['locality'];
         }
         else {
             user_pos['lat'] = default_pos['lat'];
             user_pos['lng'] = default_pos['lng'];
             user_pos['city'] = default_pos['city'];
             user_pos['full_addr'] = default_pos['full_addr'];
+            user_pos['locality'] = default_pos['locality'];
         }
         console.log(user_pos);
         mainView.router.back();
@@ -2063,7 +2126,8 @@ myApp.onPageInit("select-location", function (page) {
                 // Create a marker for each place.
                 default_marker.push(new google.maps.Marker({
                     map: map,
-                    position: place.geometry.location
+                    position: place.geometry.location,
+                    icon: customMarker
                 }));
 
                 selfset_pos['lat'] = place.geometry.location.lat();
@@ -2096,10 +2160,31 @@ myApp.onPageInit("select-location", function (page) {
     //---------------------------------------
     function geocodeLatLng(latlng, obj) {
         var geocoder = new google.maps.Geocoder;
+        var request = {
+            location: latlng,
+            radius: '250',          // unit is in meters (value now is 250m)
+            type: ['restaurant', 'bank']
+        };
+
+        var service = new google.maps.places.PlacesService(document.createElement('div'));
+        service.nearbySearch(request, checkNearby);
+
+        function checkNearby(results, status) {
+            var localityList = [];
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].types[0] == 'locality' || results[i].types[1] == 'locality') {
+                        localityList.push(results[i].vicinity);
+                    }
+                }
+            }
+            obj['locality'] = localityList;
+        }
         geocoder.geocode({ 'location': latlng }, function (results, status) {
-            var city, route;
+            var city, route, locality;
             if (status === 'OK') {
                 if (results[0]) {
+                    console.log(results[0])
                     results[0].address_components.forEach(function (element2) {
                         element2.types.forEach(function (element3) {
                             switch (element3) {
@@ -2108,6 +2193,9 @@ myApp.onPageInit("select-location", function (page) {
                                     break;
                                 case 'route':
                                     route = element2.long_name;
+                                    break;
+                                case 'locality':
+                                    locality = element2.long_name;
                                     break;
                             }
                         })
@@ -2223,7 +2311,8 @@ myApp.onPageInit("select-location", function (page) {
                 // Create a marker 
                 default_marker.push(new google.maps.Marker({
                     map: map,
-                    position: pos
+                    position: pos,
+                    icon: customMarker
                 }));
 
                 initAutocomplete(map);
@@ -2425,31 +2514,7 @@ myApp.onPageInit('promotion', function (page) {
     //promotion info
 
     myApp.showIndicator();
-    for (var promoType in Db.admin.promotions) {
-        for (var promoNum in Db.admin.promotions[promoType]) {
-            $$('#nearbyPromo').append('\
-                <div class="card">\
-                    <div class="card-content">\
-                        <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
-                            <p class="row">\
-                                <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
-                                <span class="col-70" style="height:100%;">\
-                                    <b class="promo-card-title">'+ promoType + '</b><br />\
-                                    <i class="promo-card-content">'+ Db.admin.promotions[promoType][promoNum] + '</i><br />\
-                                </span>\
-                            </p>\
-                        </div>\
-                        <div class="promo-deadline" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">Until:&ensp;'+ promoNum + '&emsp;</div>\
-                    </div >\
-                </div >\
-            ');
-            $$('.promo-card-title').each(function () {
-                if ($$(this).text() == promoType) {
-                    $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoType]);
-                }
-            })
-        }
-    }
+
 
     var nearbyMarkers = [];
     var nearbyInfo = [];
@@ -2457,8 +2522,52 @@ myApp.onPageInit('promotion', function (page) {
         center: { lat: -34.397, lng: 150.644 },
         zoom: 17
     });
+    userRef.child('locality').orderByValue().limitToLast(3).once('value', function (snapshot) {
+        var checkedLocality = 0, readyLocality = 0;
+        for (var localitY in snapshot.val()) {
+            readyLocality++;
+            (function (locality) {
+                adminRef.child('promotions/' + locality).once('value', function (snapshot) {
+                    for (var sublocality in snapshot.val()) {
+                        for (var promoCompany in snapshot.child(sublocality).val()) {
+                            for (var promoNum in snapshot.child(sublocality).child(promoCompany).val()) {
+                                $$('#nearbyPromo').append('\
+                                <div class="card">\
+                                    <div class="card-content">\
+                                        <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
+                                            <p class="row">\
+                                                <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
+                                                <span class="col-70" style="height:100%;">\
+                                                    <b class="promo-card-title">'+ promoCompany + '</b><br />\
+                                                    <i class="promo-card-content">'+ snapshot.child(sublocality).child(promoCompany).child(promoNum).val() + '</i><br />\
+                                                </span>\
+                                            </p>\
+                                        </div>\
+                                        <div class="promo-sublocality" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">'+ sublocality + '&emsp;</div>\
+                                    </div >\
+                                </div >\
+                            ');
+                                $$('.promo-card-title').each(function () {
+                                    if ($$(this).text() == promoCompany) {
+                                        $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoCompany]);
+                                    }
+                                })
+                            }
+                        }
+                    }
+                    checkedLocality++;
+                })
+            })(localitY);
+        }
+        var promoCardIntrv = setInterval(function () {
+            if (checkedLocality == readyLocality) {
+                clearInterval(promoCardIntrv);
+                $$('#nearbyPromo').append('<div class="card">&emsp;</div></li><li><div class="card">&emsp;</div>');
+                createMap(nearby_map);
+            }
+        }, 100);
+    })
 
-    createMap(nearby_map);
 
     //--------------
     // init map
@@ -2504,6 +2613,7 @@ myApp.onPageInit('promotion', function (page) {
                 nearbyMarkers.push(new google.maps.Marker({
                     map: nearby_map,
                     position: pos,
+                    icon: customMarker
                 }));
 
                 google.maps.event.addListener(nearbyMarkers[0], 'click', function () {
@@ -2535,82 +2645,108 @@ myApp.onPageInit('promotion', function (page) {
     function displayNearby(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             var promoMarker = 0;
+            var localityList = [];
+            var comparedLocality = 0;
             for (var i = 0; i < results.length; i++) {
-                var pos = {
-                    lat: results[i].geometry.location.lat(),
-                    lng: results[i].geometry.location.lng()
-                };
-              
-                // Create a marker for each place. 
-                for (var promoCompany in Db.admin.promotions) {
-                    if (~results[i].name.indexOf(promoCompany)) {
-                        // Create a infowindow for each place.
-                        var contentString = Db.admin.rewards[promoCompany] + ' tokens';
-                        var infowindow = new google.maps.InfoWindow({
-                            content: '<h4>' + contentString.fontcolor("goldenrod") + '</h4>'
-                        });
-                        nearbyInfo.push(infowindow);
-
-                        promoMarker++;
-
-                        nearbyMarkers.push(new google.maps.Marker({
-                            map: nearby_map,
-                            position: pos,
-                            icon: Strg.icon[promoCompany]
-                        }));
-                        for (var rewardCompany in Db.admin.rewards) {
-                            if (rewardCompany == promoCompany) {
-                                nearbyMarkers[promoMarker].setAnimation(google.maps.Animation.BOUNCE);
-                                nearbyInfo[promoMarker].open(nearby_map, nearbyMarkers[promoMarker]);
-                                (function (promoM) {
-                                    setTimeout(function () {
-                                        nearbyInfo[promoM].close();
-                                    }, 10000);
-                                })(promoMarker);
-                                (function (rewardCompany) {
-                                    google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
-                                        return function () {
-                                            nearbyInfo[innerKey].close();
-                                            nearbyMarkers[innerKey].setAnimation(null);
-                                            storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
-                                                $$('#ads-video-mp4-src').attr('src', url);
-                                                document.getElementById("video-background").style.visibility = "visible";
-                                                document.getElementById("ads-video").style.visibility = "visible";
-                                                document.getElementById('ads-video').load();
-                                                document.getElementById('ads-video').play();
-                                                $$('#ads-video').on('ended', function () {
-                                                    document.getElementById("video-background").style.visibility = "hidden";
-                                                    document.getElementById("ads-video").style.visibility = "hidden";
-                                                    userRef.update({
-                                                        balance: Db.user.balance + Db.admin.rewards[rewardCompany]
-                                                    }).then(function () {
-                                                        myApp.closeModal();
-                                                        $$('#ads-video').off('ended');
-                                                        google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
-                                                        myApp.alert(rewardCompany + ' rewards you ' + Db.admin.rewards[rewardCompany] + ' tokens', 'Notification')
-                                                    })
-                                                })
-                                            })
-                                        }
-                                    }(promoMarker));
-                                })(rewardCompany);
-                            }
-                        }
-
-                        $$('.promo-card-title').each(function () {
-                            if ($$(this).text() == promoCompany) {
-                                $$('#nearby-map-promo').append('<li><div class="card">' + $$(this).closest('.card').html() + '</div></li>');
-                            }
-                        })
-                    }
+                if (results[i].types[0]=='locality' || results[i].types[1]=='locality') {
+                    localityList.push(results[i].vicinity);
                 }
             }
-            if (checkPromo) {
-                checkPromo = false;
-                myApp.showTab('#nearbyPromo');
+            console.log(results)
+            console.log(localityList)
+                // Create a marker for each place.
+            for (var localitY in localityList) {
+                (function (locality) {
+                    adminRef.child('promotions/' + locality).once('value', function (snapshot) {
+                        for (var sublocality in snapshot.val()) {
+                            console.log(sublocality)
+                            for (var promoCompany in snapshot.child(sublocality).val()) {
+                                console.log(promoCompany)
+                                for (var i = 0; i < results.length; i++) {
+                                    if (~results[i].name.indexOf(promoCompany) && ~results[i].vicinity.indexOf(sublocality)) {
+                                        var pos = {
+                                            lat: results[i].geometry.location.lat(),
+                                            lng: results[i].geometry.location.lng()
+                                        };
+
+                                        // Create a infowindow for each place.
+                                        var contentString = Db.admin.rewards[promoCompany] + ' tokens';
+                                        var infowindow = new google.maps.InfoWindow({
+                                            content: '<h4>' + contentString.fontcolor("goldenrod") + '</h4>'
+                                        });
+                                        nearbyInfo.push(infowindow);
+
+                                        promoMarker++;
+
+                                        nearbyMarkers.push(new google.maps.Marker({
+                                            map: nearby_map,
+                                            position: pos,
+                                            icon: Strg.icon[promoCompany]
+                                        }));
+                                        $$('.promo-card-title').each(function () {
+                                            if ($$(this).text() == promoCompany && $$(this).closest('.card').find('.promo-sublocality').text() == sublocality) {
+                                                $$('#nearby-map-promo').append('<li><div class="card">' + $$(this).closest('.card').html() + '</div></li>');
+                                            }
+                                        })
+                                        for (var rewardCompany in Db.admin.rewards) {
+                                            if (rewardCompany == promoCompany) {
+                                                nearbyMarkers[promoMarker].setAnimation(google.maps.Animation.BOUNCE);
+                                                nearbyInfo[promoMarker].open(nearby_map, nearbyMarkers[promoMarker]);
+                                                (function (promoM) {
+                                                    setTimeout(function () {
+                                                        nearbyInfo[promoM].close();
+                                                    }, 10000);
+                                                })(promoMarker);
+                                                (function (rewardCompany) {
+                                                    google.maps.event.addListener(nearbyMarkers[promoMarker], 'click', function (innerKey) {
+                                                        return function () {
+                                                            nearbyInfo[innerKey].close();
+                                                            nearbyMarkers[innerKey].setAnimation(null);
+                                                            storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
+                                                                $$('#ads-video-mp4-src').attr('src', url);
+                                                                document.getElementById("video-background").style.visibility = "visible";
+                                                                document.getElementById("ads-video").style.visibility = "visible";
+                                                                document.getElementById('ads-video').load();
+                                                                document.getElementById('ads-video').play();
+                                                                $$('#ads-video').on('ended', function () {
+                                                                    document.getElementById("video-background").style.visibility = "hidden";
+                                                                    document.getElementById("ads-video").style.visibility = "hidden";
+                                                                    userRef.update({
+                                                                        balance: Db.user.balance + Db.admin.rewards[rewardCompany]
+                                                                    }).then(function () {
+                                                                        myApp.closeModal();
+                                                                        $$('#ads-video').off('ended');
+                                                                        google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
+                                                                        myApp.alert(rewardCompany + ' rewards you ' + Db.admin.rewards[rewardCompany] + ' tokens', 'Notification')
+                                                                    })
+                                                                })
+                                                            })
+                                                        }
+                                                    }(promoMarker));
+                                                })(rewardCompany);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        comparedLocality++;
+                    })
+                })(localityList[localitY]);
             }
-            $$('#nearby-map-promo').append('<li><div class="card">&emsp;</div></li><li><div class="card">&emsp;</div></li>');
-            myApp.hideIndicator();
+            var nearbyDisplayIntrv = setInterval(function () {
+                if (comparedLocality == localityList.length) {
+                    clearInterval(nearbyDisplayIntrv);
+                    if (checkPromo) {
+                        if (promoMarker === 0) {
+                            checkPromo = false;
+                            myApp.showTab('#nearbyPromo');
+                        }
+                    }
+                    $$('#nearby-map-promo').append('<li><div class="card">&emsp;</div></li><li><div class="card">&emsp;</div></li>');
+                    myApp.hideIndicator();
+                }
+            },100)
         }
     }
 
