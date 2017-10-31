@@ -1914,54 +1914,8 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 }
             },
             {
-                text: 'Set(test) Profile Picture',
+                text: '<input type="file" id="change-picture" accept="image/*" style="width:100%; height:100%;" />Change Profile Picture',
                 bold: true,
-                onClick: function () {
-                    /*
-                   var img_blob = openFilePicker();
-                   var metadata = {
-                       name: 'profile_pic',
-                       contentType: 'image/jpg'
-                   
-                   };
-                   */
-                    to_blob("images/gareki.jpg").then(function (blob) {
-                        var metadata = {
-                            name: 'profile_pic',
-                            contentType: 'image/jpg'
-                        };
-                        var uploadTask = storageuserRef.child('profile_pic.jpg').put(blob, metadata);
-                        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('Upload is ' + progress + '% done');
-                            switch (snapshot.state) {
-                                case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                    console.log('Upload is paused');
-                                    break;
-                                case firebase.storage.TaskState.RUNNING: // or 'running'
-                                    console.log('Upload is running');
-                                    break;
-                            }
-                        }, function (error) {
-                            switch (error.code) {
-                                case 'storage/unauthorized':
-                                    break;
-                                case 'storage/canceled':
-                                    break;
-                                case 'storage/unknown':
-                                    break;
-                            }
-                        }, function () {
-                            var downloadURL = uploadTask.snapshot.downloadURL;
-                            user.updateProfile({
-                                photoURL: downloadURL
-                            }).then(function () {
-                                console.log("url loaded")
-                                mainView.router.refreshPage();
-                            })
-                        });
-                    });
-                }
             },
         
         {
@@ -1981,7 +1935,49 @@ myApp.onPageInit('profile-myprofile', function (page) {
         ];
         var action_profile_pic = [options, cancel];
         myApp.actions(action_profile_pic);
-
+        $$('#change-picture').on('change', function (event) {
+            var files = event.target.files, file;
+            if (files && files.length > 0) {
+                file = files[0];
+                var picutreURL = window.URL.createObjectURL(file);
+                to_blob(picutreURL).then(function (blob) {
+                    var metadata = {
+                        name: 'profile_pic',
+                        contentType: 'image/jpg'
+                    };
+                    var uploadTask = storageuserRef.child('profile_pic.jpg').put(blob, metadata);
+                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        switch (snapshot.state) {
+                            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                console.log('Upload is paused');
+                                break;
+                            case firebase.storage.TaskState.RUNNING: // or 'running'
+                                console.log('Upload is running');
+                                break;
+                        }
+                    }, function (error) {
+                        switch (error.code) {
+                            case 'storage/unauthorized':
+                                break;
+                            case 'storage/canceled':
+                                break;
+                            case 'storage/unknown':
+                                break;
+                        }
+                    }, function () {
+                        var downloadURL = uploadTask.snapshot.downloadURL;
+                        user.updateProfile({
+                            photoURL: downloadURL
+                        }).then(function () {
+                            console.log("url loaded")
+                            mainView.router.refreshPage();
+                        })
+                    });
+                });
+            }
+        });
     });
 });
 
