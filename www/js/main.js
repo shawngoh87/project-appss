@@ -1269,14 +1269,11 @@ myApp.onPageInit('main', function (page) {
 
     var ministr1 = '<img src="';
     var ministr2 = '" width="80" height="80">';
-    console.log(user.photoURL);
 
     if (user.photoURL != null) {
         $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
-        console.log('enter if');
     } else {
         $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="80" height="80">');
-        console.log('enter else');
     }
 
 });
@@ -2312,7 +2309,7 @@ myApp.onPageInit('settings-change-password', function (page) {
     });
 });
 
-
+//add upload pic, add case-key(timestamp?), add copy to admin backup//////////////////////
 //Make Report (CarLoss/IllegalPark)
 myApp.onPageInit('profile-report', function (page) {
 
@@ -2365,6 +2362,7 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_location: cl_location,
                 cl_remarks: cl_remarks
             }).then(function () {
+
                 myApp.alert('Report Submitted!');
                 mainView.router.refreshPage();
             }).catch(function (error) {
