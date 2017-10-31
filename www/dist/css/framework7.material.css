@@ -6415,7 +6415,7 @@ html.with-statusbar-overlay.ios .framework7-root > .progressbar {
 .timeline-item-divider:before {
   content: ' ';
   width: 1px;
-  height: 100vh;
+  height: 300vh;
   position: absolute;
   left: 50%;
   background: inherit;
