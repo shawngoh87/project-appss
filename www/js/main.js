@@ -18,7 +18,7 @@ var Db = {};
 var Strg = {};
 var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef;
 var colorTheme;
-var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false;
+var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false, uploadedProfilePic = false;
 var expired = false, extendDuration;
 var customMarker;
 
@@ -611,6 +611,7 @@ myApp.onPageInit('profile-help', function (page) {
 function myactive() {
     $$("#tab-profile").addClass("active")
     $$("#tab-park").removeClass("active")
+    uploadedProfilePic = true;
 }
 
 myApp.onPageInit('main', function (page) {
@@ -1914,17 +1915,16 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 }
             },
             {
-                text: '<input type="file" id="change-picture" accept="image/*" style="width:100%; height:100%;" />Change Profile Picture',
+                text: '<input type="file" class="change-picture" accept="image/*" style="width:100%; height:100%;" />Change Profile Picture',
                 bold: true,
             },
-        
-        {
-            text: 'test croppie Profile Picture',
-                bold: true,
-                onClick: function () {
-                    mainView.router.loadPage("test-croppie.html");
-                    }
-        }
+            {
+                text: 'test croppie Profile Picture',
+                    bold: true,
+                    onClick: function () {
+                        mainView.router.loadPage("test-croppie.html");
+                        }
+            }
         ];
         var cancel = [
             {
@@ -1935,7 +1935,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
         ];
         var action_profile_pic = [options, cancel];
         myApp.actions(action_profile_pic);
-        $$('#change-picture').on('change', function (event) {
+        $$('.change-picture').on('change', function (event) {
             var files = event.target.files, file;
             if (files && files.length > 0) {
                 file = files[0];
@@ -1968,6 +1968,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
                         }
                     }, function () {
                         var downloadURL = uploadTask.snapshot.downloadURL;
+                        $$('.profile-pic-mini').find('img').attr('src', downloadURL);
                         user.updateProfile({
                             photoURL: downloadURL
                         }).then(function () {
@@ -2679,11 +2680,33 @@ myApp.onPageInit('promotion', function (page) {
                                             position: pos,
                                             icon: Strg.icon[promoCompany]
                                         }));
-                                        $$('.promo-card-title').each(function () {
-                                            if ($$(this).text() == promoCompany && $$(this).closest('.card').find('.promo-sublocality').text() == sublocality) {
-                                                $$('#nearby-map-promo').append('<li><div class="card">' + $$(this).closest('.card').html() + '</div></li>');
-                                            }
-                                        })
+                                        //-----------------------------------------------
+                                        for (var promoNum in snapshot.child(sublocality).child(promoCompany).val()) {
+                                            $$('#nearby-map-promo').append('\
+                                                <li>\
+                                                    <div class="card">\
+                                                        <div class="card-content">\
+                                                            <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
+                                                                <p class="row">\
+                                                                    <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
+                                                                    <span class="col-70" style="height:100%;">\
+                                                                        <b class="nearby-promo-card-title">'+ promoCompany + '</b><br />\
+                                                                        <i class="promo-card-content">'+ snapshot.child(sublocality).child(promoCompany).child(promoNum).val() + '</i><br />\
+                                                                    </span>\
+                                                                </p>\
+                                                            </div>\
+                                                            <div class="promo-sublocality" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">'+ sublocality + '&emsp;</div>\
+                                                        </div >\
+                                                    </div >\
+                                                </li>\
+                                            ');
+                                            $$('.nearby-promo-card-title').each(function () {
+                                                if ($$(this).text() == promoCompany) {
+                                                    $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoCompany]);
+                                                }
+                                            })
+                                        }
+                                        //----------------------------------------------
                                         for (var rewardCompany in Db.admin.rewards) {
                                             if (rewardCompany == promoCompany) {
                                                 nearbyMarkers[promoMarker].setAnimation(google.maps.Animation.BOUNCE);
