@@ -2532,21 +2532,21 @@ myApp.onPageInit('promotion', function (page) {
                         for (var promoCompany in snapshot.child(sublocality).val()) {
                             for (var promoNum in snapshot.child(sublocality).child(promoCompany).val()) {
                                 $$('#nearbyPromo').append('\
-                                <div class="card">\
-                                    <div class="card-content">\
-                                        <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
-                                            <p class="row">\
-                                                <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
-                                                <span class="col-70" style="height:100%;">\
-                                                    <b class="promo-card-title">'+ promoCompany + '</b><br />\
-                                                    <i class="promo-card-content">'+ snapshot.child(sublocality).child(promoCompany).child(promoNum).val() + '</i><br />\
-                                                </span>\
-                                            </p>\
-                                        </div>\
-                                        <div class="promo-sublocality" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">'+ sublocality + '&emsp;</div>\
+                                    <div class="card">\
+                                        <div class="card-content">\
+                                            <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
+                                                <p class="row">\
+                                                    <span class="col-30"><img class="promo-card-logo" src="brokenImg" /></span>\
+                                                    <span class="col-70" style="height:100%;">\
+                                                        <b class="promo-card-title">'+ promoCompany + '</b><br />\
+                                                        <i class="promo-card-content">'+ snapshot.child(sublocality).child(promoCompany).child(promoNum).val() + '</i><br />\
+                                                    </span>\
+                                                </p>\
+                                            </div>\
+                                            <div class="promo-sublocality" color="gray" style="text-align:right; width:100%; height:16px; font-size:x-small;">'+ sublocality + '&emsp;</div>\
+                                        </div >\
                                     </div >\
-                                </div >\
-                            ');
+                                ');
                                 $$('.promo-card-title').each(function () {
                                     if ($$(this).text() == promoCompany) {
                                         $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoCompany]);
@@ -2562,7 +2562,7 @@ myApp.onPageInit('promotion', function (page) {
         var promoCardIntrv = setInterval(function () {
             if (checkedLocality == readyLocality) {
                 clearInterval(promoCardIntrv);
-                $$('#nearbyPromo').append('<div class="card">&emsp;</div></li><li><div class="card">&emsp;</div>');
+                $$('#nearbyPromo').append('<div class="card">&emsp;</div><div class="card">&emsp;</div><div class="card">&emsp;</div>');
                 createMap(nearby_map);
             }
         }, 100);
