@@ -1269,11 +1269,14 @@ myApp.onPageInit('main', function (page) {
 
     var ministr1 = '<img src="';
     var ministr2 = '" width="80" height="80">';
-    
-    if (user.photo_URL != null) {
+    console.log(user.photoURL);
+
+    if (user.photoURL != null) {
         $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
+        console.log('enter if');
     } else {
         $$('.profile-pic-mini').append('<img class="profile-pic" src="images/profile_pic_default.png" width="80" height="80">');
+        console.log('enter else');
     }
 
 });
