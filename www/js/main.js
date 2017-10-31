@@ -2748,7 +2748,8 @@ myApp.onPageInit('view-profile-picture', function (page) {
     }
 });
 
-function previewFile() {
+
+/*function previewFile() {
     var preview = document.querySelector('img'); //selects the query named img
     var file = document.querySelector('input[type=file]').files[0]; //sames as here
     var reader = new FileReader();
@@ -2765,7 +2766,7 @@ function previewFile() {
 }
 
 previewFile();  //calls the function named previewFile()
-
+*/
 myApp.onPageInit('test-croppie', function (page) {
     var test = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
@@ -2777,13 +2778,13 @@ myApp.onPageInit('test-croppie', function (page) {
     });
 
     $$('.actionUpload').on('click', function () {
-        //openFilePicker(); 
-        //var waitPhoto = setInterval(function () {
-        //    if (testurl) {
-        //        clearInterval(waitPhoto);
-        //        console.log(testurl)
-        //    }
-        //},100)
+        openFilePicker(); 
+        var waitPhoto = setInterval(function () {
+            if (testurl) {
+                clearInterval(waitPhoto);
+                console.log(testurl)
+            }
+        },100)
 
         
     });
