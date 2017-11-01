@@ -2905,139 +2905,107 @@ myApp.onPageInit('view-profile-picture', function (page) {
 });
 
 
-/*function previewFile() {
-    var preview = document.querySelector('img'); //selects the query named img
-    var file = document.querySelector('input[type=file]').files[0]; //sames as here
-    var reader = new FileReader();
-
-    reader.onloadend = function () {
-        preview.src = reader.result;
-    }
-
-    if (file) {
-        reader.readAsDataURL(file); //reads the data as a URL
-    } else {
-        preview.src = "";
-    }
-}
-
-previewFile();  //calls the function named previewFile()
-*/
 myApp.onPageInit('test-croppie', function (page) {
-
-
-
-    $$('.actionUpload').on('click', function () {
-        openFilePicker();
-        var waitPhoto = setInterval(function () {
-            if (testurl) {
-                clearInterval(waitPhoto);
-                console.log(testurl)
-
-
-                test.croppie('bind', {
-                    url: testurl,
-                }).then(function () {
-                    console.log('jQuery bind complete');
-                });
-
-            }
-        }, 100)
-    });
-
-
-
-    var test = $('#main-cropper').croppie({
-        viewport: { width: 250, height: 250, type: 'circle' },
-        boundary: { width: 300, height: 300 },
-        showZoomer: true,
-        enableExif: true
-    });
-
-    /*
-        function readFile(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('.upload-demo').addClass('ready');
-                    $uploadCrop.croppie('bind', {
-                        url: e.target.result
-                    }).then(function () {
-                        console.log('jQuery bind complete');
-                    });
-
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-            else {
-                swal("Sorry - you're browser doesn't support the FileReader API");
-            }
-        }
-    */
-    //       $('#upload').on('change', function () { readFile(this); });
-    $('.upload-result').on('click', function (ev) {
-        test.croppie('result', {
-            type: 'canvas',
-            size: 'viewport'
-        }).then(function (resp) {
-            popupResult({
-                src: resp
-            });
-        });
-    });
-
-
-
-    /*
-    
-
-    test.bind({
-        url: '',
-    });
-
-
 
     function readFile(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
-                $('.upload-demo').addClass('ready');
-                $uploadCrop.croppie('bind', {
+                $('#main-cropper').addClass('ready');
+                test.croppie('bind', {
                     url: e.target.result
                 }).then(function () {
                     console.log('jQuery bind complete');
                 });
-
             }
-
             reader.readAsDataURL(input.files[0]);
         }
-        else {
-            swal("Sorry - you're browser doesn't support the FileReader API");
-        }
-
     }
-    //    var testurl = openFilePicker();
-    //    console.log(testurl);
-    //}); 
 
-    //$$('.actionCancel').on('click', function () {
-    //    console.log(openFilePicker());
-    //    console.log(testurl);
-    //});
+    var test = $('#main-cropper').croppie({
+        viewport: { width: 250, height: 250, type: 'circle' },
+        boundary: { width: 280, height: 280 },
+        showZoomer: true,
+        enableExif: true
+    });
 
+    $('.actionUpload').on('change', function () { readFile(this); });
+    $$('.upload-result').on('click', function (ev) {
+        test.croppie('result', {
+            type: 'blob',
+            size: { width: 400} ,
+            circle: 'false'
+        }).then(function (blob) {
+            var uploadTask = storageuserRef.child('profile_pic').put(blob);
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                }
+            }, function (error) {
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        break;
+                    case 'storage/canceled':
+                        break;
+                    case 'storage/unknown':
+                        break;
+                }
+            }, function () {
+                var downloadURL = uploadTask.snapshot.downloadURL;
+                $$('.profile-pic-mini').find('img').attr('src', downloadURL);
+                user.updateProfile({
+                    photoURL: downloadURL
+                }).then(function () {
+                    mainView.router.refreshPage();
+                })
+            });
+        });
+    });
 
+    /*
+     //if using cordova
+    $$('.actionUpload').on('click', function () {
+        openFilePicker();
+        var waitPhoto = setInterval(function () {
+            if (testurl) {
+                clearInterval(waitPhoto);
+                test.croppie('bind', {
+                    url: testurl,
+                }).then(function () {
+                    console.log('jQuery bind complete');
+                });
+            }
+        }, 100)
+    });
+
+        var test = $('#main-cropper').croppie({
+        viewport: { width: 250, height: 250, type: 'circle' },
+        boundary: { width: 300, height: 300 },
+        showZoomer: true,
+        enableExif: true
+    });
+    */
+   
+
+    //$$('.actionCancel').on('click', function () {    });
+
+    /*
     $$('.actionDone').on('click', function () {
         //on button click
         test.result('blob').then(function (blob) {
             // do something with cropped blob
         });
     });*/
-});
 
+});
 function popupResult(result) {
     var html;
     if (result.html) {

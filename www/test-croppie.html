@@ -1,4 +1,4 @@
-﻿<div data-page="test-croppie" class="page">
+﻿<div data-page="test-croppie" class="page" style="background-color:black">
     <div class="navbar">
         <div class="navbar-inner">
             <div class="left"><a href="#" class="back link icon-only"><i class="icon icon-back"></i></a></div>
@@ -25,12 +25,14 @@
                     <div id="main-cropper"></div>
                 </div>
                 <div class="content-block">
-                    <input type="button" class="button button-raised actionUpload" value="Choose a File" />
+                    <button class="button button-raised" style="width:100%"><input type="file" class="actionUpload" accept="image/*" style="width:100%; height:100%;" value="Choose a File" />Choose a File</button>
+                    <!--<input type="button" class="button button-raised actionUpload" value="Choose a File" />-->
                 </div>
                 <div class="content-block">
                     <input type="button" class="button button-raised upload-result" value="Result" />
                 </div>
-
+                <div class="content-block pastehere">
+                </div>
             </div>
         </div>
     </div>
