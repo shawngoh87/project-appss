@@ -2334,7 +2334,7 @@ myApp.onPageInit('settings-change-password', function (page) {
                 user.updatePassword($$('#new-password').val()).then(function () {
                     // Update successful.
                     myApp.alert('Your password has been updated!');
-                    mainView.router.loadPage("profile-settings.html");
+                    mainView.router.refreshPage();
                 }).catch(function (error) {
                     // An error happened.
                 });
