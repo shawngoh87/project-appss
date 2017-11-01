@@ -1887,6 +1887,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     });
     console.log(user.photoURL);
     */
+
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100" height="100">';
@@ -1913,18 +1914,14 @@ myApp.onPageInit('profile-myprofile', function (page) {
                 text: 'View Profile Picture',
                 bold: true,
                 onClick: function () {
-                    mainView.router.loadPage("view-profile-picture.html");
+                    mainView.router.loadPage("view-profile-pic.html");
                 }
             },
             {
-                text: '<input type="file" class="change-picture" accept="image/*" style="width:100%; height:100%;" />Change Profile Picture',
-                bold: true,
-            },
-            {
-                text: 'test croppie Profile Picture',
+                text: 'Edit Profile Picture',
                     bold: true,
                     onClick: function () {
-                        mainView.router.loadPage("test-croppie.html");
+                        mainView.router.loadPage("edit-profile-pic.html");
                         }
             }
         ];
@@ -1937,49 +1934,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
         ];
         var action_profile_pic = [options, cancel];
         myApp.actions(action_profile_pic);
-        $$('.change-picture').on('change', function (event) {
-            var files = event.target.files, file;
-            if (files && files.length > 0) {
-                file = files[0];
-                var picutreURL = window.URL.createObjectURL(file);
-                to_blob(picutreURL).then(function (blob) {
-                    var metadata = {
-                        name: 'profile_pic',
-                        contentType: 'image/jpg'
-                    };
-                    var uploadTask = storageuserRef.child('profile_pic.jpg').put(blob, metadata);
-                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
-                        switch (snapshot.state) {
-                            case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                console.log('Upload is paused');
-                                break;
-                            case firebase.storage.TaskState.RUNNING: // or 'running'
-                                console.log('Upload is running');
-                                break;
-                        }
-                    }, function (error) {
-                        switch (error.code) {
-                            case 'storage/unauthorized':
-                                break;
-                            case 'storage/canceled':
-                                break;
-                            case 'storage/unknown':
-                                break;
-                        }
-                    }, function () {
-                        var downloadURL = uploadTask.snapshot.downloadURL;
-                        $$('.profile-pic-mini').find('img').attr('src', downloadURL);
-                        user.updateProfile({
-                            photoURL: downloadURL
-                        }).then(function () {
-                            mainView.router.refreshPage();
-                        })
-                    });
-                });
-            }
-        });
     });
 });
 
@@ -2892,7 +2846,7 @@ myApp.onPageInit('settings-change-hp', function (page) {
 
 
 //View Profile Picture
-myApp.onPageInit('view-profile-picture', function (page) {
+myApp.onPageInit('view-profile-pic', function (page) {
 
     var str1 = '<img class="view-profile-pic" src="';
     var str2 = '" />';
@@ -2904,70 +2858,77 @@ myApp.onPageInit('view-profile-picture', function (page) {
     }
 });
 
-
-myApp.onPageInit('test-croppie', function (page) {
-
+myApp.onPageInit('edit-profile-pic', function (page) {
+    var isready = false;
     function readFile(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function (e) {
                 $('#main-cropper').addClass('ready');
-                test.croppie('bind', {
+                to_crop.croppie('bind', {
                     url: e.target.result
                 }).then(function () {
                     console.log('jQuery bind complete');
+                    isready = true;
                 });
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    var test = $('#main-cropper').croppie({
+    var to_crop = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
         boundary: { width: 280, height: 280 },
-        showZoomer: true,
+        showZoomer: false,
         enableExif: true
     });
 
-    $('.actionUpload').on('change', function () { readFile(this); });
-    $$('.upload-result').on('click', function (ev) {
-        test.croppie('result', {
-            type: 'blob',
-            size: { width: 400} ,
-            circle: 'false'
-        }).then(function (blob) {
-            var uploadTask = storageuserRef.child('profile_pic').put(blob);
-            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-                switch (snapshot.state) {
-                    case firebase.storage.TaskState.PAUSED: // or 'paused'
-                        console.log('Upload is paused');
-                        break;
-                    case firebase.storage.TaskState.RUNNING: // or 'running'
-                        console.log('Upload is running');
-                        break;
-                }
-            }, function (error) {
-                switch (error.code) {
-                    case 'storage/unauthorized':
-                        break;
-                    case 'storage/canceled':
-                        break;
-                    case 'storage/unknown':
-                        break;
-                }
-            }, function () {
-                var downloadURL = uploadTask.snapshot.downloadURL;
-                $$('.profile-pic-mini').find('img').attr('src', downloadURL);
-                user.updateProfile({
-                    photoURL: downloadURL
-                }).then(function () {
-                    mainView.router.refreshPage();
-                })
+    $('.actionChoose').on('change', function () { readFile(this); });
+    $$('.actionDone').on('click', function (ev) {
+        if (isready == true) {
+            to_crop.croppie('result', {
+                type: 'blob',
+                size: { width: 400 },
+                circle: 'false'
+            }).then(function (blob) {
+                var uploadTask = storageuserRef.child('profile_pic').put(blob);
+                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
+                            console.log('Upload is paused');
+                            break;
+                        case firebase.storage.TaskState.RUNNING: // or 'running'
+                            console.log('Upload is running');
+                            break;
+                    }
+                }, function (error) {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            break;
+                        case 'storage/canceled':
+                            break;
+                        case 'storage/unknown':
+                            break;
+                    }
+                }, function () {
+                    var downloadURL = uploadTask.snapshot.downloadURL;
+                    $$('.profile-pic-mini').find('img').attr('src', downloadURL);
+                    $$('.button-profile-pic').find('img').attr('src', downloadURL);
+                    user.updateProfile({
+                        photoURL: downloadURL
+                    }).then(function () {
+                        myApp.alert('Profile Picture has been updated!');
+                        isready = false;
+                        })
+                });
             });
-        });
+        }
+        else {
+            myApp.alert("Choose a File!!!!");
+        };
     });
 
     /*
@@ -2993,41 +2954,5 @@ myApp.onPageInit('test-croppie', function (page) {
         enableExif: true
     });
     */
-   
-
-    //$$('.actionCancel').on('click', function () {    });
-
-    /*
-    $$('.actionDone').on('click', function () {
-        //on button click
-        test.result('blob').then(function (blob) {
-            // do something with cropped blob
-        });
-    });*/
-
 });
-function popupResult(result) {
-    var html;
-    if (result.html) {
-        html = result.html;
-    }
-    if (result.src) {
-        html = '<img src="' + result.src + '" />';
-    }
-    //swal({
-    //    title: '',
-    //    html: true,
-    //    text: html,
-    //    allowOutsideClick: true
-    //});
-    setTimeout(function () {
-        $('.sweet-alert').css('margin', function () {
-            var top = -1 * ($(this).height() / 2),
-                left = -1 * ($(this).width() / 2);
-
-            return top + 'px 0 0 ' + left + 'px';
-        });
-    }, 1);
-}
-
 
