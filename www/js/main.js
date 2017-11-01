@@ -1813,9 +1813,11 @@ function openFilePicker(selection) {
         return blob;
         console.log("return blob liao");
         */
-        testurl = data.toString().replace('blob:','');
+        testurl = data;
+            //.toString().replace('blob:', '');
+        console.log('data');
         console.log(data);
-        console.log("return imageUri liao");
+        console.log("return data in terms of testurl liao");
     }, function cameraError(error) {
         console.debug("Unable to obtain picture: " + error, "app");
 
@@ -1890,7 +1892,7 @@ myApp.onPageInit('profile-myprofile', function (page) {
     var str2 = '" width="100" height="100">';
     if (user.photoURL != null) {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
-        console.log(user.photoURL);
+   //     console.log(user.photoURL);
     } else {
         $$('.button-profile-pic').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
     }
@@ -1972,7 +1974,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
                         user.updateProfile({
                             photoURL: downloadURL
                         }).then(function () {
-                            console.log("url loaded")
                             mainView.router.refreshPage();
                         })
                     });
@@ -2923,28 +2924,102 @@ myApp.onPageInit('view-profile-picture', function (page) {
 previewFile();  //calls the function named previewFile()
 */
 myApp.onPageInit('test-croppie', function (page) {
-    var test = $('#main-cropper').croppie({
-        viewport: { width: 250, height: 250, type: 'circle' },
-        boundary: { width: 300, height: 300 },
-        showZoomer: false,
-    });
-    test.bind({
-        url: '',
-    });
+
+
 
     $$('.actionUpload').on('click', function () {
-        openFilePicker(); 
+        openFilePicker();
         var waitPhoto = setInterval(function () {
             if (testurl) {
                 clearInterval(waitPhoto);
                 console.log(testurl)
-            }
-        },100)
 
-        
+
+                test.croppie('bind', {
+                    url: testurl,
+                }).then(function () {
+                    console.log('jQuery bind complete');
+                });
+
+            }
+        }, 100)
     });
 
-   
+
+
+    var test = $('#main-cropper').croppie({
+        viewport: { width: 250, height: 250, type: 'circle' },
+        boundary: { width: 300, height: 300 },
+        showZoomer: true,
+        enableExif: true
+    });
+
+    /*
+        function readFile(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('.upload-demo').addClass('ready');
+                    $uploadCrop.croppie('bind', {
+                        url: e.target.result
+                    }).then(function () {
+                        console.log('jQuery bind complete');
+                    });
+
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+            else {
+                swal("Sorry - you're browser doesn't support the FileReader API");
+            }
+        }
+    */
+    //       $('#upload').on('change', function () { readFile(this); });
+    $('.upload-result').on('click', function (ev) {
+        test.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+        }).then(function (resp) {
+            popupResult({
+                src: resp
+            });
+        });
+    });
+
+
+
+    /*
+    
+
+    test.bind({
+        url: '',
+    });
+
+
+
+    function readFile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.upload-demo').addClass('ready');
+                $uploadCrop.croppie('bind', {
+                    url: e.target.result
+                }).then(function () {
+                    console.log('jQuery bind complete');
+                });
+
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+        else {
+            swal("Sorry - you're browser doesn't support the FileReader API");
+        }
+
+    }
     //    var testurl = openFilePicker();
     //    console.log(testurl);
     //}); 
@@ -2960,5 +3035,31 @@ myApp.onPageInit('test-croppie', function (page) {
         test.result('blob').then(function (blob) {
             // do something with cropped blob
         });
-    });
+    });*/
 });
+
+function popupResult(result) {
+    var html;
+    if (result.html) {
+        html = result.html;
+    }
+    if (result.src) {
+        html = '<img src="' + result.src + '" />';
+    }
+    //swal({
+    //    title: '',
+    //    html: true,
+    //    text: html,
+    //    allowOutsideClick: true
+    //});
+    setTimeout(function () {
+        $('.sweet-alert').css('margin', function () {
+            var top = -1 * ($(this).height() / 2),
+                left = -1 * ($(this).width() / 2);
+
+            return top + 'px 0 0 ' + left + 'px';
+        });
+    }, 1);
+}
+
+

@@ -983,7 +983,7 @@
             initialZoom = 1,
             cssReset = {},
             img = self.elements.preview,
-            imgData = null,
+            imgData = self.elements.preview.getBoundingClientRect(),
             transformReset = new Transform(0, 0, initialZoom),
             originReset = new TransformOrigin(),
             isVisible = _isVisible.call(self);
@@ -998,8 +998,6 @@
         cssReset[CSS_TRANS_ORG] = originReset.toString();
         cssReset['opacity'] = 1;
         css(img, cssReset);
-
-        imgData = self.elements.preview.getBoundingClientRect();
 
         self._originalImageWidth = imgData.width;
         self._originalImageHeight = imgData.height;
@@ -1144,14 +1142,12 @@
             canvasWidth = outWidth,
             canvasHeight = outHeight,
             customDimensions = (data.outputWidth && data.outputHeight),
-            outputWidthRatio = 1;
-            outputHeightRatio = 1;
+            outputRatio = 1;
 
         if (customDimensions) {
             canvasWidth = data.outputWidth;
             canvasHeight = data.outputHeight;
-            outputWidthRatio = canvasWidth / outWidth;
-            outputHeightRatio = canvasHeight / outHeight;
+            outputRatio = canvasWidth / outWidth;
         }
 
         canvas.width = canvasWidth;
@@ -1159,9 +1155,8 @@
 
         if (data.backgroundColor) {
             ctx.fillStyle = data.backgroundColor;
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            ctx.fillRect(0, 0, outWidth, outHeight);
         }
-
 
         // start fixing data to send to draw image for enforceBoundary: false
         if (!self.options.enforceBoundary) {
@@ -1182,18 +1177,15 @@
                 outHeight = height;
             }
         }
-        else{
-           width=Math.min(width, self._originalImageWidth);
-           height=Math.min(height, self._originalImageHeight)
+
+        if (outputRatio !== 1) {
+            startX *= outputRatio;
+            startY *= outputRatio;
+            outWidth *= outputRatio;
+            outHeight *= outputRatio;
         }
 
-        if (outputWidthRatio !== 1 || outputHeightRatio !== 1) {
-            startX *= outputWidthRatio;
-            startY *= outputHeightRatio;
-            outWidth *= outputWidthRatio;
-            outHeight *= outputHeightRatio;
-        }
-        ctx.drawImage(this.elements.preview, left, top, width, height, startX, startY, outWidth, outHeight);
+        ctx.drawImage(this.elements.preview, left, top, Math.min(width, self._originalImageWidth), Math.min(height, self._originalImageHeight), startX, startY, outWidth, outHeight);
         if (circle) {
             ctx.fillStyle = '#fff';
             ctx.globalCompositeOperation = 'destination-in';
