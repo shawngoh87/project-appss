@@ -1308,7 +1308,6 @@ myApp.onPageInit('main', function (page) {
 
 
     //--Profile Tab-------------------------------------------------
-
     $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
@@ -1559,7 +1558,6 @@ function terminateParkingTime(theCar) {
     })
     refreshActiveHistory();
 }
-
 
 
 myApp.onPageInit('signup', function (page) {
@@ -1858,35 +1856,6 @@ function createNewFileEntry(imgUri) {
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
     var profilepicRef = storageuserRef.child('profile_pic.jpg');
-     /*
-    console.log(user.photoURL);
-    user.updateProfile({
-        photoURL: null
-    }).then(function () {
-        console.log("url nulled")
-    })
-    
-    profilepicRef.getDownloadURL().then(function (url) {
-        user.updateProfile({
-            photoURL: url
-        }).then(function () {
-            console.log("url loaded");
-        });
-    }).catch(function (error) {
-        switch (error.code) {
-            case 'storage/object_not_found':
-                // File doesn't exist
-                break;
-            case 'storage/unauthorized':
-                // User doesn't have permission to access the object
-                break;
-            case 'storage/unknown':
-                // Unknown error occurred, inspect the server response
-                break;
-        }
-    });
-    console.log(user.photoURL);
-    */
 
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
@@ -1909,7 +1878,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
     //Profile-Pic Action Sheet
     $$('.button-profile-pic').on('click', function () {
         var options = [
-          
             {
                 text: 'View Profile Picture',
                 bold: true,
@@ -2844,7 +2812,6 @@ myApp.onPageInit('settings-change-hp', function (page) {
 
 });
 
-
 //View Profile Picture
 myApp.onPageInit('view-profile-pic', function (page) {
 
@@ -2858,6 +2825,7 @@ myApp.onPageInit('view-profile-pic', function (page) {
     }
 });
 
+//Edit Profile Picture
 myApp.onPageInit('edit-profile-pic', function (page) {
     var isready = false;
     function readFile(input) {
