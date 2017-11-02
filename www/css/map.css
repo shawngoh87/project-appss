@@ -4,7 +4,7 @@
 }
 
 .grid-border {
-    border: 2px groove gray;
+    border: 2px groove lightgray;
     height: 180px;
 }
 
@@ -12,8 +12,11 @@
     padding: 3%;
 }
 
-.loca-grid-25 {
-    padding: 4%;
+#default-location {
+    width:100%;
+    height: 100%;
+    background-color:green;
+    color:white;
 }
 
 #default-address {
