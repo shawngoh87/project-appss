@@ -1936,11 +1936,62 @@ myApp.onPageInit("select-location", function (page) {
         zoom: 18
     });
 
-    //--------------------------------
-    // default checkbox function
-    //--------------------------------
-    $$('input[name=default-loca]').change(function () {
-        if ($$(this).is(':checked')) {
+    ////--------------------------------
+    //// default checkbox function
+    ////--------------------------------
+    //$$('input[name=default-loca]').change(function () {
+    //    if ($$(this).is(':checked')) {
+    //        selfset = false;
+    //        // checked
+    //        default_marker.forEach(function (marker) {
+    //            marker.setMap(null);
+    //        });
+    //        default_marker = [];
+    //        $$('#default-address').html(default_pos['full_addr']);
+    //        document.getElementById("pac-input").style.visibility = "hidden";
+    //        var pos = {
+    //            lat: default_pos['lat'],
+    //            lng: default_pos['lng']
+    //        }
+    //        map.setCenter(pos);
+    //        map.setZoom(18);
+    //        // Create a marker for each place.
+    //        default_marker.push(new google.maps.Marker({
+    //            map: map,
+    //            position: pos,
+    //            icon: customMarker
+    //        }));
+    //    }
+    //    else {
+    //        selfset = true;
+    //        // not checked
+    //        default_marker.forEach(function (marker) {
+    //            marker.setMap(null);
+    //        });
+    //        default_marker = [];
+    //        $$('#default-address').html(selfset_pos['full_addr']);
+    //        document.getElementById("pac-input").style.visibility = "visible";
+    //        var pos = {
+    //            lat: selfset_pos['lat'],
+    //            lng: selfset_pos['lng']
+    //        }
+    //        map.setCenter(pos);
+    //        map.setZoom(18);
+    //        // Create a marker for each place.
+    //        default_marker.push(new google.maps.Marker({
+    //            map: map,
+    //            position: pos,
+    //            icon: customMarker
+    //        }));
+    //    }
+    //});
+
+    var click_counter;
+    $$('#default-location').on('click', function () {
+        if (click_counter === 0) {
+            document.getElementById("default-location").style.backgroundColor = "green";
+            document.getElementById("default-location").style.color = "white";
+            document.getElementById("defaultcheckbox").checked = true;
             selfset = false;
             // checked
             default_marker.forEach(function (marker) {
@@ -1961,10 +2012,13 @@ myApp.onPageInit("select-location", function (page) {
                 position: pos,
                 icon: customMarker
             }));
+            click_counter = 1;
         }
-        else {
+        else if (click_counter === 1) {
+            document.getElementById("default-location").style.backgroundColor = "white";
+            document.getElementById("default-location").style.color = "green";
+            document.getElementById("defaultcheckbox").checked = false;
             selfset = true;
-            // not checked
             default_marker.forEach(function (marker) {
                 marker.setMap(null);
             });
@@ -1983,6 +2037,7 @@ myApp.onPageInit("select-location", function (page) {
                 position: pos,
                 icon: customMarker
             }));
+            click_counter = 0;
         }
     });
 
@@ -2215,10 +2270,16 @@ myApp.onPageInit("select-location", function (page) {
                 selfset_pos['lat'] = position.coords.latitude;
                 selfset_pos['lng'] = position.coords.longitude;
                 geocodeLatLng(selfset_pos, selfset_pos);
+                click_counter = 1;
+                document.getElementById("default-location").style.backgroundColor = "green";
+                document.getElementById("default-location").style.color = "white";
 
                 if (selectedLocation && selfset) {
                     $$('input[name=default-loca]').prop('checked', false);
                     document.getElementById("pac-input").style.visibility = "visible";
+                    click_counter = 0;
+                    document.getElementById("default-location").style.backgroundColor = "white";
+                    document.getElementById("default-location").style.color = "green";
                     selfset_pos = user_pos;
                     pos = {
                         lat: selfset_pos.lat,
