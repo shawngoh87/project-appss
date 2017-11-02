@@ -109,7 +109,7 @@ function initUserInfo() {
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
     Db.admin = {};
-    
+
     userRef.on('value',
         // Succeeded promise
         function (snapshot) {
@@ -135,6 +135,9 @@ function initUserInfo() {
     })
     adminRef.child('rewards').on('value', function (snapshot) {
         Db.admin.rewards = snapshot.val();
+    })
+    adminRef.child('qna').on('value', function (snapshot) {
+        Db.admin.qna = snapshot.val();
     })
     adminRef.child('promotion_company').on('value', function (snapshot) {
         Strg.logo = {};
@@ -950,7 +953,7 @@ myApp.onPageInit('main', function (page) {
     //-----------------------
     // Pay Button Function
     //-----------------------
-    $$('.confirm-payment-button').on('click', function () {
+    $$('.confirm-payment-button').on('click', function () {   
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
                 'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
@@ -2561,7 +2564,32 @@ myApp.onPageInit('promotion', function (page) {
         };
         var service = new google.maps.places.PlacesService(map);
         service.nearbySearch(request, displayNearby);
-    }
+    }    
+
+    var temp;
+    $$('#okButton').on('click', function () {
+        document.getElementById("ads-video").style.visibility = "hidden";
+        document.getElementById("myPopUp").style.visibility = "hidden";
+        document.getElementById("video-background").style.visibility = "hidden";
+        if ($("input[name=ads-ans]:checked").val() === "correct") {
+            userRef.update({
+                balance: Db.user.balance + Db.admin.rewards[temp]
+            }).then(function () {
+                myApp.closeModal();
+                $$('#ads-video').off('ended');
+                myApp.alert(temp + ' rewards you ' + Db.admin.rewards[temp] + ' tokens', 'Notification')
+            })
+        }
+        else {
+            myApp.alert('You got the wrong answer.', 'Notification')
+        }
+    });
+
+    $$('#cancelButton').on('click', function () {
+        document.getElementById("ads-video").style.visibility = "hidden";
+        document.getElementById("video-background").style.visibility = "hidden"; 
+        document.getElementById("myPopUp").style.visibility = "hidden";
+    });
 
     //-------------------------------
     // Display nearby POI on apps
@@ -2649,23 +2677,38 @@ myApp.onPageInit('promotion', function (page) {
                                                             nearbyInfo[innerKey].close();
                                                             nearbyMarkers[innerKey].setAnimation(null);
                                                             storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
+
                                                                 $$('#ads-video-mp4-src').attr('src', url);
+                                                                $$('#question').html(Db.admin.qna[rewardCompany].question);
+
+                                                                var rng = Math.floor((Math.random() * 10) + 1);
+                                                                if (rng >= 6) {
+                                                                    $$('#firstAns').html(Db.admin.qna[rewardCompany].correct);
+                                                                    document.getElementById("firstInput").value = "correct";
+                                                                    $$('#secondAns').html(Db.admin.qna[rewardCompany].wrong);
+                                                                    document.getElementById("secondInput").value = "wrong";
+                                                                } else {
+                                                                    $$('#firstAns').html(Db.admin.qna[rewardCompany].wrong);
+                                                                    document.getElementById("firstInput").value = "wrong";
+                                                                    $$('#secondAns').html(Db.admin.qna[rewardCompany].correct);
+                                                                    document.getElementById("secondInput").value = "correct";
+                                                                }
+
                                                                 document.getElementById("video-background").style.visibility = "visible";
-                                                                document.getElementById("ads-video").style.visibility = "visible";
+                                                                document.getElementById("myPopUp").style.visibility = "hidden";
+                                                                document.getElementById("ads-video").style.visibility = "visible";                                                                
                                                                 document.getElementById('ads-video').load();
                                                                 document.getElementById('ads-video').play();
                                                                 $$('#ads-video').on('ended', function () {
-                                                                    document.getElementById("video-background").style.visibility = "hidden";
-                                                                    document.getElementById("ads-video").style.visibility = "hidden";
-                                                                    userRef.update({
-                                                                        balance: Db.user.balance + Db.admin.rewards[rewardCompany]
-                                                                    }).then(function () {
-                                                                        myApp.closeModal();
-                                                                        $$('#ads-video').off('ended');
-                                                                        google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
-                                                                        myApp.alert(rewardCompany + ' rewards you ' + Db.admin.rewards[rewardCompany] + ' tokens', 'Notification')
-                                                                    })
+                                                                    document.getElementById("video-background").style.visibility = "visible";    
+                                                                    document.getElementById("ads-video").style.visibility = "hidden"; 
+                                                                    document.getElementById("myPopUp").style.visibility = "visible";      
+                                                                    google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
+                                                                    temp = rewardCompany;
                                                                 })
+
+                                                                
+
                                                             })
                                                         }
                                                     }(promoMarker));
