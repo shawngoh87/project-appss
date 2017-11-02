@@ -274,18 +274,27 @@ function loadSpecificTransaction(carPlate) {
     var history = Db.user.cars[carPlate].history; // Clone it to prevent async bugs
     for (var eachHistory in history) {
         var historyInstance = history[eachHistory];
-
+        var date = new Date(historyInstance.start_time)
+        var month = date.getMonth();
+        month += 1;
         // For readability purpose
         var str1 = '<div class="card"> <div class="card-header">';
-        var loc = historyInstance.address;
+        var loc = historyInstance.city;
         var str2 = '</div> <div class="card-footer"> <div class="col-75">';
-        var dur = historyInstance.duration;
+        var dur = date.getDate() + '/' + month + '/' + date.getFullYear() + ' ' + addZero(date.getHours()) + ':' + addZero(date.getMinutes());
         var str3 = '</div> <div class="col-25">';
-        var total = historyInstance.amount;
+        var total = historyInstance.duration+'<br>'+historyInstance.amount+ ' tokens';
         var str4 = '</div> </div> </div>';
 
-        pageContent += (str1 + loc + str2 + dur + str3 + total + str4);
-        $$('.vehicle-history-page').append(str1 + loc + str2 + dur + str3 + total + str4);
+        function addZero(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+        pageContent = (str1 + loc + str2 + dur + str3 + total + str4) + pageContent;
+
     }
     mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
 }
@@ -388,17 +397,12 @@ function showHistory() {
     var historyStackDate = null; //Stack Date for date checking
     var historyStampIndex = 0; //Index stamping for date
     historyCurrentIndex = 0;
-    var historyCounter;
+    var historyFirst, historyLast;
     if (historyRead == null) {
         historyCurentIndex = 0
     }
     else {
-        if (Object.keys(historyRead).length <= 100) {
             historyCurrentIndex = Object.keys(historyRead).length;
-        }
-        else {
-            historyCurrentIndex = 100;
-        }
     }
 
     var historyList = new Array(); //historyList
