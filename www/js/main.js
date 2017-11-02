@@ -453,19 +453,19 @@ function showHistory() {
                 var historyTemp2 = '<li class="accordion-item" id="histInfo' + [historyTempIndex] + '1">' +
                     '<a href="#" class="item-content item-link">' +
                     '<div class="item-inner" style="background-color:'+colorTheme+'" id="histItem">' +
-                    '<div id="car-icon" class="item-title"><i class="material-icons">directions_car</i>' + historyList[historyTempIndex].carPlate + '</div>' +
+                    '<div id="car-icon" class="item-title"><sub><i class="material-icons pad-icon">directions_car</i></sub>' + historyList[historyTempIndex].carPlate + '</div>' +
                     '<div class="item-after"><div id="histInfo">' + addZeroHist(historyTime.getHours()) + ":" + addZeroHist(historyTime.getMinutes()) + '<br>' + historyList[historyTempIndex].city +'</div>' +
                     '</div> ' +
                     '</div>' +
                     '</a>' +
                     '<div class="accordion-item-content" id="topup-accordion">' +
                     '<div class="content-block">' +
-                    '<div id="history-car-plate"><i class="material-icons">directions_car</i> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
+                    '<div id="history-car-plate"><sub><i class="material-icons">directions_car</i></sub> <b >' + historyList[historyTempIndex].carPlate + '<br> </b> </div>' +
                     '<div id="history-info">' +
-                    '<div><i class="material-icons">place</i>' + historyList[historyTempIndex].city +'</div>' +
-                    '<div><i class="material-icons">access_time</i> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
-                    '<div><i class="material-icons">hourglass_empty</i> ' + historyList[historyTempIndex].duration + '</div>' +
-                    '<div><i class="material-icons">attach_money</i> ' + historyList[historyTempIndex].amount + ' tokens</div>' +
+                    '<div><sub><i class="material-icons">place</i></sub>' + historyList[historyTempIndex].city + '</div>' +
+                    '<div><sub><i class="material-icons">access_time</i></sub> ' + historyTime.getDate() + ' ' + monthNames[historyStackDate.getMonth()] + ' ' + historyTime.getFullYear() + ' ' + addZeroHist(historyTime.getHours()) + ':' + addZeroHist(historyTime.getMinutes()) + '</div>' +
+                    '<div><sub><i class="material-icons">hourglass_empty</i></sub> ' + historyList[historyTempIndex].duration + '</div>' +
+                    '<div><sub><i class="material-icons">attach_money</i></sub> ' + historyList[historyTempIndex].amount + ' tokens</div>' +
                     '</div>' +
                     '</div>' +
                     '</div>' +
@@ -568,7 +568,7 @@ function showTopupHist() {
                 var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
                     '<a href="#"  class="item-content item-link" >' +
                     '<div class="item-inner" style="background-color:' + colorTheme +'" id="topupHistItem">' +
-                    '<div id="topup-icon" class="item-title"> <i class="material-icons">credit_card</i> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
+                    '<div id="topup-icon" class="item-title"> <sub><i class="material-icons pad-icon">credit_card</i></sub> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
                     '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
                     '</div > ' +
                     '</div>' +
@@ -576,9 +576,9 @@ function showTopupHist() {
                     '<div class="accordion-item-content" id="topup-accordion">' +
                     '<div class="content-block">' +
                     '<div id="topup-info">' +
-                    '<div><i class="material-icons">access_time</i>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
-                    '<div><i class="material-icons">attach_money</i> RM ' + topupHistList[topupHistTempIndex].amount + '<br></div>' +
-                    '<div><i class="material-icons">credit_card</i>XXXX-XXXX-XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '<br> (exp: ' + topupHistList[topupHistTempIndex].expired_date + ')</div>' +
+                    '<div><sub><i class="material-icons">access_time</i></sub>' + topupHistTime.getDate() + ' ' + monthNameFull[topupHistStackDate.getMonth()] + ' ' + topupHistTime.getFullYear() + '<br></div>' +
+                    '<div><sub><i class="material-icons">attach_money</i></sub> RM ' + topupHistList[topupHistTempIndex].amount + '<br></div>' +
+                    '<div><sub><i class="material-icons">credit_card</i></sub>XXXX-XXXX-XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '<br> (exp: ' + topupHistList[topupHistTempIndex].expired_date + ')</div>' +
                     '</div>' +
                     '</div>' +
                     '</div>' +
@@ -799,12 +799,12 @@ myApp.onPageInit('main', function (page) {
                         '<a href="#" data-popover=".popover-active' + activeCarPlate + '" class="item-link item-content open-popover">' +
                         '<div class="item-inner">' +
                         '<div class="item-title-row">' +
-                        '<div id="car-icon" class="item-title"><i class="material-icons">drive_eta</i>' + activeCarPlate + '</div>' +
+                        '<div id="car-icon" class="item-title"><sub><i class="material-icons">drive_eta</i></sub>' + activeCarPlate + '</div>' +
                         '<input id="timestamp-active-end" value="' + end_time + '" />' +
                         '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                         '</div>' +
-                        '<div class="item-subtitle active-car-location">' + user_pos.city + '</div>' +
+                        '<div class="item-subtitle active-car-location"><sub><i class="material-icons">place</i></sub>' + user_pos.city + '</div>' +
                         '</div>' +
                         '</a>' +
                         '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
@@ -1133,12 +1133,12 @@ myApp.onPageInit('main', function (page) {
                                         '<a href="#" data-popover=".popover-active' + carPlate + '" class="item-link item-content open-popover">' +
                                             '<div class="item-inner">' +
                                                 '<div class="item-title-row">' +
-                                                    '<div id="car-icon" class="item-title"><i class="material-icons">drive_eta</i>' + carPlate + '</div>' +
+                                                    '<div id="car-icon" class="item-title"><sub><i class="material-icons" style="padding-top:7px">drive_eta</i></sub>' + carPlate + '</div>' +
                                                     '<input id="timestamp-active-end" value="' + end_time + '" />' +
                                                     '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                                                     '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                                                     '</div>' +
-                                                    '<div class="item-subtitle active-car-location"><i class="material-icons">place</i>' + user_pos.city + '</div>' +
+                                                    '<div class="item-subtitle active-car-location"><sub><i class="material-icons">place</i></sub>' + user_pos.city + '</div>' +
                                             '</div>' +
                                         '</a>' +
                                         '<div class="popover popover-active' + carPlate + '" id="popover-active">' +
@@ -1160,7 +1160,7 @@ myApp.onPageInit('main', function (page) {
                                         '</div>' +
                                         '<span class="progressbar" id="progressbar' + carPlate + '" data-progress="' + dataProgress + '">' +
                                             '<span class="" id="innerProgressbar' + carPlate + '" style="transform: translate3d(' + percentProgress + '%, 0px, 0px);"></span>' +
-                                        '</span>'
+                                        '</span>' +
                                      '</li>';
 
                     $$('#ulist-active').append(str_active);
@@ -1310,9 +1310,6 @@ myApp.onPageInit('main', function (page) {
         }
         return;
     });
-
-    
-
 
     //--Profile Tab-------------------------------------------------
     $$('.confirm-logout-ok').on('click', function () {
