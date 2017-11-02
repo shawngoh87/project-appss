@@ -6,7 +6,6 @@
     background-color: black;
     position: absolute;
     visibility: hidden;
-    /*opacity: 0.7;*/
 }
 
 #ads-video {
@@ -16,4 +15,49 @@
     z-index: 20001;
     position: absolute;
     visibility: hidden;
+}
+
+#myPopUp {
+    width: 80%;
+    height: 46%;
+    position: absolute;
+    top: 27%;
+    left: 8%;
+    z-index: 20001;
+    visibility: hidden;
+    padding-left:5%;    
+    background-color:white;
+}
+
+#cancelButton {
+    color: blue;
+    border: none;
+    background-color: white;
+    text-align: center;
+    margin-left: 60%;
+    width: 27%;
+    position: absolute;
+    bottom: 0%;
+    right: 30%;
+    padding-top: 2%;
+    padding-bottom: 5%;
+    font-size: 17px;
+}
+
+#okButton {
+    color: blue;
+    border: none;
+    background-color: white;
+    text-align: center;
+    width: 30%;
+    padding-top: 2%;
+    padding-bottom: 5%;
+    font-size: 16px;
+    position: absolute;
+    right: 0%;
+    bottom: 0%;
+}
+
+.block{
+    display:block;
 }
