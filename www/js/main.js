@@ -568,7 +568,7 @@ function showTopupHist() {
                 var topupHistTemp2 = '<li class="accordion-item" id="topupHistInfo' + [topupHistTempIndex] + '1">' +
                     '<a href="#"  class="item-content item-link" >' +
                     '<div class="item-inner" style="background-color:' + colorTheme +'" id="topupHistItem">' +
-                    '<div id="topup-icon" class="item-title"> <sub><i class="material-icons pad-icon">credit_card</i></sub> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
+                    '<div id="topup-icon" class="item-title"> <sub><i class="material-icons">credit_card</i></sub> -XXXX-' + topupHistList[topupHistTempIndex].credit_card_no % 10000 + '</div>' +
                     '<div class="item-after"><div>RM ' + topupHistList[topupHistTempIndex].amount + '</div>' +
                     '</div > ' +
                     '</div>' +
@@ -804,7 +804,7 @@ myApp.onPageInit('main', function (page) {
                         '<div id="lbl-time-left" class="item-after">' + time_val + '</div>' +
                         '<div id="lbl-time-remain" class="item-after">' + time_unit + ' <br />remaining</div>' +
                         '</div>' +
-                        '<div class="item-subtitle active-car-location"><sub><i class="material-icons">place</i></sub>' + user_pos.city + '</div>' +
+                        '<div class="item-subtitle active-car-location">' + user_pos.city + '</div>' +
                         '</div>' +
                         '</a>' +
                         '<div class="popover popover-active' + activeCarPlate + '" id="popover-active">' +
@@ -831,7 +831,7 @@ myApp.onPageInit('main', function (page) {
                     $$('#ulist-active').append(str_active);
                     $$('.actively-parking-car').each(function () {
                         if ($$(this).find('#active-car-plate').text() === activeCarPlate) {
-                            $$(this).find('.active-car-location').html('<i class="material-icons">place</i>' + activeCity);
+                            $$(this).find('.active-car-location').html('<sub><i class="material-icons">place</i></sub>' + activeCity);
                             $$(this).find('#location').html(activeCity);
                         }
                     })
