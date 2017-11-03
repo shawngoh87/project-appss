@@ -862,6 +862,9 @@ myApp.onPageInit('main', function (page) {
         else {
             var availableCar = 0;
             for (var ownedCarPlate in carRead) {
+                if (carRead[ownedCarPlate].isDelete) {
+                    continue;
+                }
                 var parkingActive = carRead[ownedCarPlate].parking.active;
                 var parkingAmount = carRead[ownedCarPlate].parking.amount;
                 var parkingDuration = carRead[ownedCarPlate].parking.duration;
@@ -1228,6 +1231,7 @@ myApp.onPageInit('main', function (page) {
                     onClick: function () {
                         //Car Plate Format
                         var displayCarPlate = $$('#txt-car-plate').val().toUpperCase().replace(/ /g, '');
+                        var cars = Db.user.cars;
 
                         //write into database
                         carRef.child(displayCarPlate).update({
@@ -1245,13 +1249,22 @@ myApp.onPageInit('main', function (page) {
 
                         })
 
-                        //write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                        var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><i onclick="alert("a")" class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
-                        //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-                        $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
-                        myApp.closeModal();
+                        for (displayCarPlate in cars) {
+                            if (cars[displayCarPlate].isDelete === true) {
+                                myApp.alert("Car Model already exist!");
+                               
+                            }
+
+                            else if (cars[displayCarPlate].isDelete === false) {
+                                //write to UI
+                                var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
+                                var str2 = '</div><div class="cards-item-title">'
+                                var str3 = '</div></div><div class="item-after"><i onclick="alert("a")" class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
+                                //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
+                                $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
+                                myApp.closeModal();
+                            }
+                        }                                                  
                     }
                 },
             ]
@@ -3142,4 +3155,39 @@ myApp.onPageInit('edit-profile-pic', function (page) {
     });
     */
 });
+
+    //$$('.actionCancel').on('click', function () {
+    //    console.log(openFilePicker());
+    //    console.log(testurl);
+    //});
+
+
+    $$('.actionDone').on('click', function () {
+        //on button click
+        test.result('blob').then(function (blob) {
+            // do something with cropped blob
+        });
+    });
+
+
+
+
+function playAudio(event) {    
+
+    document.getElementById('default').pause();
+    document.getElementById('stargaze').pause();
+    document.getElementById('ding').pause();
+    document.getElementById('tri-tone').pause();
+
+    console.log("I'm here!");
+    console.log(event);
+
+    var sound = document.getElementById(event);
+    var ringtone = document.getElementById('ring-tone');
+    console.log(ringtone);
+    console.log(sound);
+    sound.load();
+    sound.play();
+
+}
 

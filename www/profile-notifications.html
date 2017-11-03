@@ -13,8 +13,8 @@
                         <div class="item-inner">
                             <div class="item-title">Notifications</div>
                             <div class="item-after">
-                                <label class="label-switch">
-                                    <input type="checkbox" />
+                                <label class="label-switch" id="notification-one">
+                                    <input type="checkbox" />                                           
                                     <div class="checkbox"></div>
                                 </label>
                             </div>
@@ -87,9 +87,9 @@
             <ul>
                 <li>
                     <a href="#" class="item-link item-content smart-select" data-open-in="picker">
-                        <select name="sound">
-                            <option value="default">Default</option>
-                            <option value="startgaze">Stargaze</option>
+                        <select name="sound" onchange="playAudio(this.value);" id="ring-tone">
+                            <option value="default">Default </option>                                                          
+                            <option value="stargaze">Stargaze</option>
                             <option value="ding">Ding</option>
                             <option value="tri-tone">Tri-tone</option>
                         </select>
@@ -100,9 +100,9 @@
                 </li>
                 <li>
                     <a href="#" class="item-link item-content smart-select" data-open-in="picker">
-                        <select name="sound">
-                            <option value="default">Default</option>
-                            <option value="startgaze">Stargaze</option>
+                        <select name="sound" onchange="playAudio(this.value);" id="ring-tone">
+                            <option value="default" type="button">Default</option>
+                            <option value="stargaze">Stargaze</option>
                             <option value="ding">Ding</option>
                             <option value="tri-tone">Tri-tone</option>
                         </select>
@@ -115,7 +115,22 @@
                 <!--
         <div class="list-block-label">
             <p>Here comes some useful information about list above</p>
-        </div>-->
+        </div>-->         
+            <audio id="default">
+                <source src="NewFolder/Default.mp3" type="audio/mp3">
+            </audio>
+            <audio id="stargaze">
+                <source src="NewFolder/Stargaze.mp3" type="audio/mp3">
+            </audio>
+            <audio id="ding">
+                <source src="NewFolder/Ding.mp3" type="audio/mp3">
+            </audio>
+            <audio id="tri-tone">
+                <source src="NewFolder/Tri-tone.mp3" type="audio/mp3">
+            </audio>
 </div>
     </div>
     </div>
+
+
+
