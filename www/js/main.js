@@ -957,9 +957,9 @@ myApp.onPageInit('main', function (page) {
     $$('.confirm-payment-button').on('click', function () {   
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
-                'Selected Car is&emsp;&emsp;&nbsp:' + carPlate.toString() + '<br>' +
-                'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;:' + $$('.selected-duration').text() + '<br>' +
-                'Token required is &emsp;:' + tokenReq.toString() +
+                'Selected Car is&emsp;&emsp;&nbsp: <a><b>' + carPlate.toString() + '</b></a><br>' +
+                'Park Until&emsp;&emsp;&emsp;&emsp;&ensp;: <a><b>' + $$('.selected-duration').text() + '</b></a><br>' +
+                'Token required is&emsp;: <a><b>' + tokenReq.toString() + '</b></a>' +
                 '<div class="promo-code" >\
                     <p class="row">\
                         <input type="text" id="used-promo-code" style="text-align:center;" placeholder=" PROMOCODE" />\
@@ -1431,9 +1431,9 @@ function extendConfirmed(theCar) {
 
     tokenReq = (extendDuration * rate);
     extendConfirmText =
-        'Selected car is&emsp;&emsp;&nbsp:' + theCar.toString() + '<br>' +
-        'Extended until&emsp;&emsp; :' + $$('.extended-duration').text() + '<br>' +
-        'Token required is&emsp;:' + tokenReq.toString() + '<br><br>' +
+        'Selected car is&emsp;&emsp;&nbsp: <a><b>' + theCar.toString() + '</b></a><br>' +
+        'Extended until&emsp;&emsp; : <a><b>' + $$('.extended-duration').text() + '</b></a><br>' +
+        'Token required is&emsp;: <a><b>' + tokenReq.toString() + '</b></a><br><br>' +
         'Confirm Transaction?';
     myApp.confirm(extendConfirmText, 'Confirmation', function () {
 
@@ -1518,9 +1518,9 @@ function terminateParkingTime(theCar) {
 
     terminateConfirmText =
         'Are you sure that you want to terminate the follwing parking?<br/>' +
-        'Car Plate Number&emsp;&nbsp  :' + theCar.toString() + '<br/>' +
-        'Time Remaining&emsp;&emsp; :' + timeVal + ' ' + timeUnit + '<br/>' +
-        'Expected End Time is :<br/>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '<br/><br/>' +
+        'Car Plate Number&nbsp; : <a><b>' + theCar.toString() + '</b></a><br/>' +
+        'Time Remaining&emsp; : <a><b>' + timeVal + ' ' + timeUnit + '</b></a><br/>' +
+        'Expected End Time is :<br/><a><b><center>' + terminateTime.getHours() + ' : ' + terminateTime.getMinutes() + ' : ' + terminateTime.getSeconds() + '</center></b></a><br/><br/>' +
         'Confirm to Terminate?';
 
     myApp.closeModal();
