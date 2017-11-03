@@ -16,7 +16,7 @@ var mainView = myApp.addView('.view-main', {
 // Global Variables
 var Db = {};
 var Strg = {};
-var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef, storageReportRef;
+var Loaded, user, userRef, adminRef, carRef, carRead, storageRef, topupHistRef, historyRef, historyRead, topupHistRead, storageuserRef, storageReport_ip_Ref;
 var colorTheme;
 var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false, uploadedProfilePic = false;
 var expired = false, extendDuration;
@@ -108,7 +108,7 @@ function initUserInfo() {
     topupHistRef = userRef.child('topup_history');
     storageRef = firebase.storage().ref();
     storageuserRef = storageRef.child('users/' + user.uid);
-    storageReportRef = storageRef.child('report');
+    storageReport_ip_Ref = storageRef.child('report/illegal_park');
     Db.admin = {};
 
     userRef.on('value',
@@ -1860,8 +1860,6 @@ function createNewFileEntry(imgUri) {
 
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
-    var profilepicRef = storageuserRef.child('profile_pic.jpg');
-
     //Display Profile Pic and Info
     var str1 = '<img class="profile-pic" src="';
     var str2 = '" width="100" height="100">';
@@ -2420,6 +2418,8 @@ myApp.onPageInit('profile-report', function (page) {
             myApp.alert('Where did you lost your car?', 'Error');
         }
         else {
+            var report_timestamp = (Date.now()).toString();
+
             cl_owner_name = $$('#cl-owner-name').val();
             cl_owner_ic = $$('#cl-owner-ic').val();
             cl_owner_pass = $$('#cl-owner-pass').val();
@@ -2428,7 +2428,7 @@ myApp.onPageInit('profile-report', function (page) {
             cl_location = $$('#cl-location').val();
             cl_remarks = $$('#cl-remarks').val();
 
-            userRef.child('report').child('car_loss').push({
+            userRef.child('report').child('car_loss').child(report_timestamp + cl_plate).update({
                 cl_owner_name: cl_owner_name,
                 cl_owner_ic: cl_owner_ic,
                 cl_owner_pass: cl_owner_pass,
@@ -2437,7 +2437,6 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_location: cl_location,
                 cl_remarks: cl_remarks
             }).then(function () {
-
                 myApp.alert('Report Submitted!');
                 mainView.router.refreshPage();
             }).catch(function (error) {
@@ -2449,48 +2448,20 @@ myApp.onPageInit('profile-report', function (page) {
     });
 
 
-    var ip_plate;
-    var ip_location;
-    var ip_behavior;
-    var ip_remarks;
+    var ip_plate, ip_location, ip_behavior, ip_remarks, ip_photo_downloadURL, isready = false, ip_photo_localURL;
+
     //Photo Preview
-
-        $$('#ip-photo').on('change', function (event) {
-            var files = event.target.files, file;
-            if (files && files.length > 0) {
-                file = files[0];
-                var pictureURL = window.URL.createObjectURL(file);
-                console.log("pictureURL");
-                console.log(pictureURL);
-                $$('.ip-photo-show').append(' <li><div class="item-content"><div class="item-inner"><div class="item-title label">Proof</div><div><img class="view-big-pic" src="' + pictureURL + '" /></div></div></div></li >');
-                //$$('.ip-photo-show').find('img').attr('src', pictureURL);
-            }
-        });
-
-    /*
-    function readFile(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                console.log(e);
-                console.log("e");
-
-                //({
-                //}).then(function () {
-
-                //    isready = true;
-                //});
-            }
-            reader.readAsDataURL(input.files[0]);
+    $$('#ip-photo').on('change', function (event) {
+        var files = event.target.files, file;
+        if (files && files.length > 0) {
+            file = files[0];
+            ip_photo_localURL = window.URL.createObjectURL(file);
+            $$('.ip-photo-show').append(' <li><div class="item-content"><div class="item-inner"><div class="item-title label">Proof</div><div><img class="view-big-pic" src="' + ip_photo_localURL + '" /></div></div></div></li >');
+            isready = true;
         }
-    }
+    });
 
-    $('#ip-photo').on('change', function () { readFile(this); });
-    */
-    //-----------------------------
-    // submit button for illegal parking
-    //-----------------------------
+    // Submit button for illegal parking
     $$('#ip-submit').on('click', function () {
         if ($$('#ip-plate').val() === "") {
             //empty email input textbox case
@@ -2510,71 +2481,56 @@ myApp.onPageInit('profile-report', function (page) {
             ip_behavior = $$('#ip-behavior').val();
             ip_remarks = $$('#ip-remarks').val();
 
-
-            //var timestamp = Math.floor(Date.now());
-            
-
-            if (isready == 1) {
-                $$('#ip-photo').on('change', function (event) {
-                    var files = event.target.files, file;
-                    if (files && files.length > 0) {
-                        file = files[0];
-                        var pictureURL = window.URL.createObjectURL(file);
-                        to_blob(pictureURL).then(function (blob) {
-                            var metadata = {
-                                name: 'profile_pic',
-                                contentType: 'image/jpg'
-                            };
-                            var uploadTask = storageuserRef.child('ip_photo').put(blob, metadata);
-                            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                console.log('Upload is ' + progress + '% done');
-                                switch (snapshot.state) {
-                                    case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                        console.log('Upload is paused');
-                                        break;
-                                    case firebase.storage.TaskState.RUNNING: // or 'running'
-                                        console.log('Upload is running');
-                                        break;
-                                }
-                            }, function (error) {
-                                switch (error.code) {
-                                    case 'storage/unauthorized':
-                                        break;
-                                    case 'storage/canceled':
-                                        break;
-                                    case 'storage/unknown':
-                                        break;
-                                }
-                            }, function () {
-                                var downloadURL = uploadTask.snapshot.downloadURL;
-                                user.updateProfile({
-                                    photoURL: downloadURL
-                                }).then(function () {
-                                    console.log("url loaded")
-                                    mainView.router.refreshPage();
-                                })
-                            });
-                        });
-                    }
-                });
-            }
-
-            userRef.child('report').child('illegal_park').push({
+            var report_timestamp =(Date.now()).toString();
+            userRef.child('report').child('illegal_park').child(report_timestamp + ip_plate).update({
                 ip_plate: ip_plate,
                 ip_location: ip_location,
                 ip_behavior: ip_behavior,
-                ip_remarks: ip_remarks
+                ip_remarks: ip_remarks,
             }).then(function () {
-                myApp.alert('Report Submitted!');
-                mainView.router.refreshPage();
+                if (isready == true) {
+                    to_blob(ip_photo_localURL).then(function (blob) {
+                        var uploadTask = storageReport_ip_Ref.child(report_timestamp + ip_plate).put(blob);
+                        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log('Upload is ' + progress + '% done');
+                            switch (snapshot.state) {
+                                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                    console.log('Upload is paused');
+                                    break;
+                                case firebase.storage.TaskState.RUNNING: // or 'running'
+                                    console.log('Upload is running');
+                                    break;
+                            }
+                        }, function (error) {
+                            switch (error.code) {
+                                case 'storage/unauthorized':
+                                    break;
+                                case 'storage/canceled':
+                                    break;
+                                case 'storage/unknown':
+                                    break;
+                            }
+                        }, function () {
+                            ip_photo_downloadURL = uploadTask.snapshot.downloadURL;
+                            userRef.child('report').child('illegal_park').child(report_timestamp + ip_plate).update({
+                                ip_photo: ip_photo_downloadURL
+                            }).then(function () {
+                                myApp.alert('Report Submitted!');
+                                mainView.router.refreshPage();
+                            }).catch(function (error) {
+                            });
+                        });
+                    });
+                }
+                else {
+                    myApp.alert('Report Submitted!');
+                    mainView.router.refreshPage();
+                }
             }).catch(function (error) {
             });
         }
-
     });
-
-
 });
 
 
