@@ -333,6 +333,12 @@ a.close-popover{
     margin: 20% auto;
 }
 
+.view-big-pic {
+    display: block;
+    width: 100%;
+    margin: 10px auto 0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               px auto;
+}
+
 .no-promo {
     padding-top: 8px;
     padding-bottom: 8px;
