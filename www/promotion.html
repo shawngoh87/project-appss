@@ -7,6 +7,28 @@
         </div>
     </div>
 
+    <div id="promoPoster">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="left"><a id="promoBack" href="#"><i class="icon icon-back"></i></a></div>
+                <div class="center"><h1 id="profile-title">Promotions</h1></div>
+                <div class="right"></div>
+            </div>
+        </div>
+
+        <img id="poster" src="" />
+
+        <div id="promoContent">
+            <h2 class="promoDivTitle">Description</h2>
+            <p id="promoDescription"></p>
+
+            <h2 class="promoDivTitle">Term and Conditions</h2>
+            <ol id="termCondition"></ol>
+        </div>
+
+        <input id="inviBut" class="specialWatchVideo" type="button" value="Watch video & answer question to get free token" />
+    </div>
+
     <div id="video-background"></div>
 
     <video id="ads-video">
@@ -62,18 +84,24 @@
 
     <div class="page-content">
         <div class="tabs">
+            <!-- Nearby shops tabs -->
             <div id="nearbyShop" class="tab active">
+                <!-- Map -->
                 <div class="content-block">
                     <div class="content-block-inner">
                         <div id="nearby-map"></div>
                     </div>
                 </div>
+
+                <!-- Promo Cards -->
                 <div class="list-block">
                     <ul id="nearby-map-promo">
                     </ul>
                 </div>
                 <div id="nearby-promo-ads"></div>
             </div>
+
+            <!-- Nearby Promotion Tab -->
             <div id="nearbyPromo" class="tab"></div>
         </div>
     </div>
