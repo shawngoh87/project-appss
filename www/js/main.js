@@ -140,6 +140,9 @@ function initUserInfo() {
     adminRef.child('qna').on('value', function (snapshot) {
         Db.admin.qna = snapshot.val();
     })
+    adminRef.child('poster').on('value', function (snapshot) {
+        Db.admin.poster = snapshot.val();
+    })
     adminRef.child('promotion_company').on('value', function (snapshot) {
         Strg.logo = {};
         Strg.icon = {};
@@ -2668,6 +2671,7 @@ myApp.onPageInit('promotion', function (page) {
 
     var temp;
     $$('#okButton').on('click', function () {
+        document.getElementById(temp + "But").style.visibility = "hidden";
         document.getElementById("ads-video").style.visibility = "hidden";
         document.getElementById("myPopUp").style.visibility = "hidden";
         document.getElementById("video-background").style.visibility = "hidden";
@@ -2689,6 +2693,10 @@ myApp.onPageInit('promotion', function (page) {
         document.getElementById("ads-video").style.visibility = "hidden";
         document.getElementById("video-background").style.visibility = "hidden"; 
         document.getElementById("myPopUp").style.visibility = "hidden";
+    });
+
+    $$('#promoBack').on('click', function () {
+        document.getElementById("promoPoster").style.visibility = "hidden";        
     });
 
     //-------------------------------
@@ -2735,10 +2743,11 @@ myApp.onPageInit('promotion', function (page) {
                                             position: pos,
                                             icon: Strg.icon[promoCompany]
                                         }));
+
                                         //-----------------------------------------------
                                         for (var promoNum in snapshot.child(sublocality).child(promoCompany).val()) {
                                             $$('#nearby-map-promo').append('\
-                                                <li>\
+                                                <li id="' + promoCompany + '-card">\
                                                     <div class="card">\
                                                         <div class="card-content">\
                                                             <div class="card-content-inner" style="padding:16px 16px 0px 16px;">\
@@ -2760,6 +2769,72 @@ myApp.onPageInit('promotion', function (page) {
                                                     $$(this).closest('.card').find('.promo-card-logo').attr('src', Strg.logo[promoCompany]);
                                                 }
                                             })
+
+                                            var someID = document.getElementById(promoCompany + '-card');
+                                            var someButtonId;
+
+                                            (function (_promoCompany) {
+                                                // crerate new watch video button and add listener
+                                                var btn = document.createElement("BUTTON");
+                                                var t = document.createTextNode("Watch video & answer question to get free token");
+                                                btn.className = "watchVideo";
+                                                btn.setAttribute("id", _promoCompany + "But");
+                                                btn.appendChild(t);
+                                                document.getElementById('promoPoster').appendChild(btn);
+                                                someButtonId = document.getElementById(_promoCompany + "But");
+
+                                                someButtonId.addEventListener('click', function () {                                                
+                                                    storageRef.child('ads/' + _promoCompany + '.mp4').getDownloadURL().then(function (url) {
+                                                        $$('#ads-video-mp4-src').attr('src', url);
+                                                        $$('#question').html(Db.admin.qna[_promoCompany].question);
+
+                                                        var rng = Math.floor((Math.random() * 10) + 1);
+                                                        if (rng >= 6) {
+                                                            $$('#firstAns').html(Db.admin.qna[_promoCompany].correct);
+                                                            document.getElementById("firstInput").value = "correct";
+                                                            $$('#secondAns').html(Db.admin.qna[_promoCompany].wrong);
+                                                            document.getElementById("secondInput").value = "wrong";
+                                                        } else {
+                                                            $$('#firstAns').html(Db.admin.qna[_promoCompany].wrong);
+                                                            document.getElementById("firstInput").value = "wrong";
+                                                            $$('#secondAns').html(Db.admin.qna[_promoCompany].correct);
+                                                            document.getElementById("secondInput").value = "correct";
+                                                        }
+
+                                                        document.getElementById("video-background").style.visibility = "visible";
+                                                        document.getElementById("myPopUp").style.visibility = "hidden";
+                                                        document.getElementById("ads-video").style.visibility = "visible";
+                                                        document.getElementById('ads-video').load();
+                                                        document.getElementById('ads-video').play();
+                                                        $$('#ads-video').on('ended', function () {
+                                                            document.getElementById("video-background").style.visibility = "visible";
+                                                            document.getElementById("ads-video").style.visibility = "hidden";
+                                                            document.getElementById("myPopUp").style.visibility = "visible";
+                                                            temp = _promoCompany;
+                                                        })
+                                                    })                                                 
+                                                });
+
+                                                // add listener to all cards
+                                                someID.addEventListener('click', function () {
+                                                    myApp.showIndicator();
+                                                    document.getElementById("promoPoster").style.visibility = "visible";
+                                                    storageRef.child('poster/' + _promoCompany + 'poster.png').getDownloadURL().then(function (url) {
+                                                        $$('#poster').attr('src', url);
+                                                        setTimeout(function () { myApp.hideIndicator(); }, 1000);                                                        
+                                                    })
+                                                    document.getElementById('promoDescription').innerHTML = Db.admin.poster[_promoCompany].Description;                                                    
+                                                    $$("#termCondition").empty()
+                                                    for (var k in Db.admin.poster[_promoCompany].term) {
+                                                        var termCond = '<li>' + Db.admin.poster[_promoCompany].term[k] + '</li>';
+                                                        $$('#termCondition').append(termCond);
+                                                    }        
+                                                    $$(".watchVideo").each(function (index) {
+                                                        $$(this).css("z-index", "-200");
+                                                    });
+                                                    $$("#" + _promoCompany + "But").css("z-index", "20002");
+                                                });
+                                            })(promoCompany);
                                         }
                                         //----------------------------------------------
                                         for (var rewardCompany in Db.admin.rewards) {
@@ -2776,40 +2851,37 @@ myApp.onPageInit('promotion', function (page) {
                                                         return function () {
                                                             nearbyInfo[innerKey].close();
                                                             nearbyMarkers[innerKey].setAnimation(null);
-                                                            storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
+                                                            //storageRef.child('ads/' + rewardCompany + '.mp4').getDownloadURL().then(function (url) {
 
-                                                                $$('#ads-video-mp4-src').attr('src', url);
-                                                                $$('#question').html(Db.admin.qna[rewardCompany].question);
+                                                            //    $$('#ads-video-mp4-src').attr('src', url);
+                                                            //    $$('#question').html(Db.admin.qna[rewardCompany].question);
 
-                                                                var rng = Math.floor((Math.random() * 10) + 1);
-                                                                if (rng >= 6) {
-                                                                    $$('#firstAns').html(Db.admin.qna[rewardCompany].correct);
-                                                                    document.getElementById("firstInput").value = "correct";
-                                                                    $$('#secondAns').html(Db.admin.qna[rewardCompany].wrong);
-                                                                    document.getElementById("secondInput").value = "wrong";
-                                                                } else {
-                                                                    $$('#firstAns').html(Db.admin.qna[rewardCompany].wrong);
-                                                                    document.getElementById("firstInput").value = "wrong";
-                                                                    $$('#secondAns').html(Db.admin.qna[rewardCompany].correct);
-                                                                    document.getElementById("secondInput").value = "correct";
-                                                                }
+                                                            //    var rng = Math.floor((Math.random() * 10) + 1);
+                                                            //    if (rng >= 6) {
+                                                            //        $$('#firstAns').html(Db.admin.qna[rewardCompany].correct);
+                                                            //        document.getElementById("firstInput").value = "correct";
+                                                            //        $$('#secondAns').html(Db.admin.qna[rewardCompany].wrong);
+                                                            //        document.getElementById("secondInput").value = "wrong";
+                                                            //    } else {
+                                                            //        $$('#firstAns').html(Db.admin.qna[rewardCompany].wrong);
+                                                            //        document.getElementById("firstInput").value = "wrong";
+                                                            //        $$('#secondAns').html(Db.admin.qna[rewardCompany].correct);
+                                                            //        document.getElementById("secondInput").value = "correct";
+                                                            //    }
 
-                                                                document.getElementById("video-background").style.visibility = "visible";
-                                                                document.getElementById("myPopUp").style.visibility = "hidden";
-                                                                document.getElementById("ads-video").style.visibility = "visible";                                                                
-                                                                document.getElementById('ads-video').load();
-                                                                document.getElementById('ads-video').play();
-                                                                $$('#ads-video').on('ended', function () {
-                                                                    document.getElementById("video-background").style.visibility = "visible";    
-                                                                    document.getElementById("ads-video").style.visibility = "hidden"; 
-                                                                    document.getElementById("myPopUp").style.visibility = "visible";      
+                                                            //    document.getElementById("video-background").style.visibility = "visible";
+                                                            //    document.getElementById("myPopUp").style.visibility = "hidden";
+                                                            //    document.getElementById("ads-video").style.visibility = "visible";                                                                
+                                                            //    document.getElementById('ads-video').load();
+                                                            //    document.getElementById('ads-video').play();
+                                                            //    $$('#ads-video').on('ended', function () {
+                                                            //        document.getElementById("video-background").style.visibility = "visible";    
+                                                            //        document.getElementById("ads-video").style.visibility = "hidden"; 
+                                                            //        document.getElementById("myPopUp").style.visibility = "visible";      
                                                                     google.maps.event.clearListeners(nearbyMarkers[innerKey], 'click');
-                                                                    temp = rewardCompany;
-                                                                })
-
-                                                                
-
-                                                            })
+                                                            //        temp = rewardCompany;
+                                                            //    })
+                                                            //})
                                                         }
                                                     }(promoMarker));
                                                 })(rewardCompany);
