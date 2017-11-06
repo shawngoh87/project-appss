@@ -614,7 +614,30 @@ function refreshTopupHist() {
 }
 
 myApp.onPageInit('profile-settings', function (page) {
+    var google_provider = new firebase.auth.GoogleAuthProvider();
+    var facebook_provider = new firebase.auth.FacebookAuthProvider();
 
+    $$('#facebook-link').on('click', function () {
+        //auth.currentUser.linkWithPopup(facebook_provider).then(function (result) {
+        //    // Accounts successfully linked.
+        //    var credential = result.credential;
+        //    var user = result.user;
+        //    console.log('234');
+        //}).catch(function (error) {
+
+        //});
+    });
+
+    $$('#google-link').on('click', function () {
+        //auth.currentUser.linkWithPopup(google_provider).then(function (result) {
+        //    // Accounts successfully linked.
+        //    var credential = result.credential;
+        //    var user = result.user;
+        //    console.log('234');
+        //}).catch(function (error) {
+
+        //});
+    });
 });
 myApp.onPageInit('profile-help', function (page) {
 
@@ -2453,14 +2476,22 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_location: cl_location,
                 cl_remarks: cl_remarks
             }).then(function () {
+                adminRef.child('report_cases').child('car_loss').child(report_timestamp + cl_plate).update({
+                    cl_owner_name: cl_owner_name,
+                    cl_owner_ic: cl_owner_ic,
+                    cl_owner_pass: cl_owner_pass,
+                    cl_phone: cl_phone,
+                    cl_plate: cl_plate,
+                    cl_location: cl_location,
+                    cl_remarks: cl_remarks,
+                    cl_user: user.uid,
+                });
+            }).then(function () {
                 myApp.alert('Report Submitted!');
                 mainView.router.refreshPage();
             }).catch(function (error) {
-
             });
-
         }
-
     });
 
 
@@ -3149,7 +3180,7 @@ myApp.onPageInit('edit-profile-pic', function (page) {
 
         var test = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
-        boundary: { width: 300, height: 300 },
+        boundary: { width: 280, height: 280 },
         showZoomer: true,
         enableExif: true
     });
