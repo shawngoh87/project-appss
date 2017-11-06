@@ -2528,12 +2528,20 @@ myApp.onPageInit('profile-report', function (page) {
             ip_behavior = $$('#ip-behavior').val();
             ip_remarks = $$('#ip-remarks').val();
 
-            var report_timestamp =(Date.now()).toString();
+            var report_timestamp = (Date.now()).toString();
             userRef.child('report').child('illegal_park').child(report_timestamp + ip_plate).update({
                 ip_plate: ip_plate,
                 ip_location: ip_location,
                 ip_behavior: ip_behavior,
                 ip_remarks: ip_remarks,
+            }).then(function () {
+                adminRef.child('report_cases').child('illegal_park').child(report_timestamp + ip_plate).update({
+                    ip_plate: ip_plate,
+                    ip_location: ip_location,
+                    ip_behavior: ip_behavior,
+                    ip_remarks: ip_remarks,
+                    ip_user: user.uid
+                });
             }).then(function () {
                 if (isready == true) {
                     to_blob(ip_photo_localURL).then(function (blob) {
@@ -2562,6 +2570,10 @@ myApp.onPageInit('profile-report', function (page) {
                             ip_photo_downloadURL = uploadTask.snapshot.downloadURL;
                             userRef.child('report').child('illegal_park').child(report_timestamp + ip_plate).update({
                                 ip_photo: ip_photo_downloadURL
+                            }).then(function () {
+                                adminRef.child('report_cases').child('illegal_park').child(report_timestamp + ip_plate).update({
+                                    ip_photo: ip_photo_downloadURL
+                                });
                             }).then(function () {
                                 myApp.alert('Report Submitted!');
                                 mainView.router.refreshPage();
