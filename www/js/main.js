@@ -21,7 +21,28 @@ var colorTheme;
 var rate, selfset = false, selectedCar = false, selectedLocation = false, checkPromo = false, uploadedProfilePic = false;
 var expired = false, extendDuration;
 var customMarker;
+var isExitReady = 0;
 
+document.addEventListener("backbutton", onBackKeyDown, false);
+function onBackKeyDown(e) {
+    e.preventDefault();
+    if (mainView.activePage.name !== 'main' && mainView.activePage.name !== 'index') {
+        mainView.back();
+    }
+    else if (isExitReady) {
+        navigator.app.exitApp();
+    }
+    else if (!isExitReady) {
+        $$('.popover-notification').text('Press back again to exit.');
+        $('.popover-notification').fadeIn();
+        isExitReady = 1;
+        setTimeout(function () {
+            isExitReady = 0;
+            $('.popover-notification').fadeOut();
+        }, 3000);
+    }
+    else { alert('This should never happen!');}
+}
 //--------------------------------
 //Color them of main page
 //--------------------------------
@@ -43,6 +64,7 @@ var user_pos = {
 var geo_accuracy;
 document.getElementById('login-logo').style.setProperty("top", "37%");
 document.getElementById("forget-password").style.visibility = "hidden";
+
 
 //------------------------------------------
 // Check Whether User has signed in or not
@@ -246,7 +268,7 @@ function removeVehicle(item) {
         buttons: [
             {
                 text: 'Cancel',
-                onClick: function () {/* Do Nothing */ }
+                onClick: function () {}
             },
             {
                 text: 'Ok',
@@ -257,11 +279,13 @@ function removeVehicle(item) {
                         }
                     })                    
                     //carRef.child($$(item).closest('.card').find('.owned-car').text()).remove();                     
-                    $$(item).closest('.card').remove();
-                    console.log($$(item).closest('.card').find('.owned-car').text());
+                    //$$(item).closest('div.col-50').remove();
+                    //console.log($$(item).closest('.card').find('.owned-car').text());
 
                     firebase.database().ref('users/' + user.uid + '/cars/' + $$(item).closest('.card').find('.owned-car').text()).update({
                         isDelete: true
+                    }).then(function () {
+                        populateVehicleCards();
                     });
                 }
             },
@@ -305,6 +329,34 @@ function loadSpecificTransaction(carPlate) {
     }
     mainView.loadContent(pageContentHeader + pageContent + pageContentFooter);
 }
+
+
+function populateVehicleCards() {
+    $$('#sub-tab-vehicle').empty();
+    var cars = Db.user.cars;
+    var i = 0;
+    var STR = '';
+
+    STR += '<div class="row no-gutter">';
+    for (var displayCarPlate in cars) {//write to UI
+        var str1 = '<div class="col-50"><div class="card"><div class="card-content card-50" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" style="text-align:center"><div class="list-block"><ul><li><div style="padding-top: 10px;padding-bottom: 10px;"><img src="images/car-car.png" style="padding-top: 10px;width:40%;"> <img class="red-cancel" src="img/red_cancel.png" style="width:40%;z-index:10;position:absolute;left:30%;opacity:0.5;display:none" onclick="removeVehicle(this);"></div></li><li><div class="owned-car" style="font-weight: 700; font-size:20px;padding-top: 3px; padding-bottom: 3px;">';
+        var str2 = '</div></li><li><div style="font-size:15px;color: rgba(0, 0, 0, 0.54);">';
+        var str3 = '</div> </li> </ul> </div> </div> </div></div>';
+
+        if (cars[displayCarPlate].isDelete === false) {
+            i++;
+            STR += (str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+            if (!(i % 2)) {
+                STR += '</div><div class="row no-gutter">';
+            }
+            //$$('#sub-tab-vehicle').closest('.row').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+            //$$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
+        }
+    }
+    STR += '</div>';
+    $$('#sub-tab-vehicle').append(STR);
+}
+
 
 //---------------------------------
 //Function to refresh active card
@@ -708,58 +760,21 @@ myApp.onPageInit('main', function (page) {
             }
 
             // Init vehicle tab
-            
-            var cars = Db.user.cars;
-            
-            for (var displayCarPlate in cars) {//write to UI
-
-                var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li> <a class="item-content item-link"  onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                var str2 = '</div><div class="cards-item-title">'
-                var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link" style="display: none">cancel</i></div></div> </a > </li></ul></div></div></div>';
-                //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-                if (cars[displayCarPlate].isDelete === false)
-                {
-                    $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-                }                                                                                
-            }
+            populateVehicleCards();
 
             // flip delete 
             $$('.flip-cancel').on('click', function () {
-
-                var something = $$(this).attr('state');
-                console.log(something);
-
-
                 if ($$(this).attr('state') == 'open') {
-                    $$('#sub-tab-vehicle').empty();
-                    var cars = Db.user.cars;
-                    for (var displayCarPlate in cars) {//write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block" style="background-color: LightGray"><ul><li><div class="item-content item-link"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                        var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><a href="#" onclick="removeVehicle(this);" class="override-icon-color"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></a></div></div></div></li></ul></div></div></div>';
-
-                        if (cars[displayCarPlate].isDelete === false) {
-                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-                        }                     
-                    }
-                    $$('.vehicle-cancel').show();
+                    populateVehicleCards();
+                    $$('.card-50').attr('onclick', '');
+                    $$('.red-cancel').show();
                     $$(this).attr('state', 'close');
+                    $$('.floating-button').click();
 
                 }
 
                 else if ($$(this).attr('state') == 'close') {
-                    $$('#sub-tab-vehicle').empty();
-                    var cars = Db.user.cars;
-                    for (var displayCarPlate in cars) {//write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                        var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
-
-                        if (cars[displayCarPlate].isDelete === false) {
-                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-                        }                        
-                    }
-
+                    populateVehicleCards();
                     $$(this).attr('state', 'open');
                     $$('.floating-button').click();
                 }
@@ -1224,30 +1239,19 @@ myApp.onPageInit('main', function (page) {
 
     // Vehicle Tab - Adding vehicle via floating action button
     $$('.modal-vehicle').on('click', function () {
-    $$('#sub-tab-vehicle').empty();
-                    var cars = Db.user.cars;
-                    for (var displayCarPlate in cars) {//write to UI
-                        var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                        var str2 = '</div><div class="cards-item-title">'
-                        var str3 = '</div></div><div class="item-after"><i class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
+        $$(this).attr('state', 'close');
+        $$('.floating-button').click();
 
-                        if (cars[displayCarPlate].isDelete === false) {
-                            $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + cars[displayCarPlate].description + str3);
-                        }
-                                                                          
-                    }
-
-                    $$(this).attr('state', 'close');
-                    $$('.floating-button').click();
-
-
+        $$('.red-cancel').hide();
         myApp.modal({
             title: 'Add vehicle',
             afterText: '<div class="input-field"><input type="text" id="txt-car-plate" class="modal-text-input" placeholder="Car plate"></div><div class="input-field"><input type="text" id="txt-car-description" class="modal-text-input" placeholder="Description"></div>',
             buttons: [
                 {
                     text: 'Cancel',
-                    onClick: function () {/* Do Nothing */ }
+                    onClick: function () {
+                        $$('.red-cancel').hide();
+                    }
                 },
                 {
                     text: 'Ok',
@@ -1272,22 +1276,8 @@ myApp.onPageInit('main', function (page) {
 
                         })
 
-                        for (displayCarPlate in cars) {
-                            if (cars[displayCarPlate].isDelete === true) {
-                                myApp.alert("Car Model already exist!");
-                               
-                            }
-
-                            else if (cars[displayCarPlate].isDelete === false) {
-                                //write to UI
-                                var str1 = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-content item-link" href="vehicle-history" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');"><div class="item-inner" style="background-image:none; padding-right: 20px"><div class="item-title"><div class="owned-car">';
-                                var str2 = '</div><div class="cards-item-title">'
-                                var str3 = '</div></div><div class="item-after"><i onclick="alert("a")" class="material-icons override-icon-size item-link vehicle-cancel" style="display: none">cancel</i></div></div></a></li></ul></div></div></div>';
-                                //var str = '<div class="card"><div class="card-content"><div class="list-block"><ul><li><a class="item-link item-content" onclick="loadSpecificTransaction(\'' + displayCarPlate.toString() + '\');" href="vehicle-history"><div class="item-inner style="padding-right: 10px" style="background-image:none"><div class="item-title"><div class="owned-car">GOTCHA</div><div class="cards-item-title">hint</div></div><div class="item-after"></div><i class="material-icons override-icon-size item-link" style="">cancel</i></div></a></li></ul></div></div></div>';
-                                $$('#sub-tab-vehicle').append(str1 + displayCarPlate + str2 + $$('#txt-car-description').val() + str3);
-                                myApp.closeModal();
-                            }
-                        }                                                  
+                        populateVehicleCards();
+                        myApp.closeModal();
                     }
                 },
             ]

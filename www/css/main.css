@@ -18,11 +18,23 @@
 
 /* Tse Li */
 
+.front-message {
+    z-index: 100;
+    border-style: solid;
+    border-color: gray;
+    border-radius: 8px;
+    background-color: gray;
+    color: white;
+    position: absolute;
+    margin: auto;
+    padding: 5px;
+    top: 70%;
+    right:30%;
+}
+
 .cards-item-title {
     max-width: 50%;
     font-size: small;
-    padding-left: 0;
-    padding-right: 16px;
     color: rgba(0, 0, 0, 0.54);
 }
 
