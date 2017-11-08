@@ -23,6 +23,9 @@ var expired = false, extendDuration;
 var customMarker;
 var isExitReady = 0;
 
+var google_provider = new firebase.auth.GoogleAuthProvider();
+var facebook_provider = new firebase.auth.FacebookAuthProvider();
+
 document.addEventListener("backbutton", onBackKeyDown, false);
 function onBackKeyDown(e) {
     e.preventDefault();
@@ -669,27 +672,27 @@ myApp.onPageInit('profile-settings', function (page) {
     var google_provider = new firebase.auth.GoogleAuthProvider();
     var facebook_provider = new firebase.auth.FacebookAuthProvider();
 
-    $$('#facebook-link').on('click', function () {
-        //auth.currentUser.linkWithPopup(facebook_provider).then(function (result) {
-        //    // Accounts successfully linked.
-        //    var credential = result.credential;
-        //    var user = result.user;
-        //    console.log('234');
-        //}).catch(function (error) {
+    //$$('#facebook-link').on('click', function () {
+    //    auth.currentUser.linkWithPopup(facebook_provider).then(function (result) {
+    //        // Accounts successfully linked.
+    //        var credential = result.credential;
+    //        var user = result.user;
+    //        console.log('234');
+    //    }).catch(function (error) {
 
-        //});
-    });
+    //    });
+    //});
+   
+    //$$('#google-link').on('click', function () {
+    //    auth.currentUser.linkWithPopup(google_provider).then(function (result) {
+    //        // Accounts successfully linked.
+    //        var credential = result.credential;
+    //        var user = result.user;
+    //        console.log('234');
+    //    }).catch(function (error) {
 
-    $$('#google-link').on('click', function () {
-        //auth.currentUser.linkWithPopup(google_provider).then(function (result) {
-        //    // Accounts successfully linked.
-        //    var credential = result.credential;
-        //    var user = result.user;
-        //    console.log('234');
-        //}).catch(function (error) {
-
-        //});
-    });
+    //    });
+    //});
 });
 myApp.onPageInit('profile-help', function (page) {
 
