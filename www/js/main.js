@@ -1806,87 +1806,6 @@ function to_blob(url) {
     });
 }
 
-function setOptions(srcType) {
-    var options = {
-        // Some common settings are 20, 50, and 100
-        quality: 50,
-        destinationType: Camera.DestinationType.FILE_URI,
-        // In this app, dynamically set the picture source, Camera or photo gallery
-        sourceType: srcType,
-        encodingType: Camera.EncodingType.JPEG,
-        mediaType: Camera.MediaType.PICTURE,
-        allowEdit: true,
-        correctOrientation: true  //Corrects Android orientation quirks
-    }
-    return options;
-}
-
-var testurl;
-
-//FilePicker//
-function openFilePicker(selection) {
-
-    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
-    var options = setOptions(srcType);
-    var func = createNewFileEntry;
-    var imgUri = null;
-    testurl = null;
-
-    if (selection == "picker-thmb") {
-        // To downscale a selected image,
-        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
-        options.targetHeight = 100;
-        options.targetWidth = 100;
-    }
-
-    navigator.camera.getPicture(function cameraSuccess(data) {
-        /*
-        var blob = to_blob(imageUri);
-        return blob;
-        console.log("return blob liao");
-        */
-        testurl = data;
-            //.toString().replace('blob:', '');
-        console.log('data');
-        console.log(data);
-        console.log("return data in terms of testurl liao");
-    }, function cameraError(error) {
-        console.debug("Unable to obtain picture: " + error, "app");
-
-        }, options);
-    console.log('returned');
-}
-
-function getFileEntry(imgUri) {
-    window.resolveLocalFileSystemURL(imgUri, function success(fileEntry) {
-
-        // Do something with the FileEntry object, like write to it, upload it, etc.
-        // writeFile(fileEntry, imgUri);
-        console.log("got file: " + fileEntry.fullPath);
-        // displayFileData(fileEntry.nativeURL, "Native URL");
-
-    }, function () {
-        // If don't get the FileEntry (which may happen when testing
-        // on some emulators), copy to a new FileEntry.
-        createNewFileEntry(imgUri);
-    });
-}
-
-function createNewFileEntry(imgUri) {
-    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
-
-        // JPEG file
-        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
-            // Do something with it, like write to it, upload it, etc.
-            // writeFile(fileEntry, imgUri);
-            console.log("got file: " + fileEntry.fullPath);
-            // displayFileData(fileEntry.fullPath, "File copied to");
-
-        }, onErrorCreateFile);
-
-    }, onErrorResolveUrl);
-}
-
 //My Profile!!!!
 myApp.onPageInit('profile-myprofile', function (page) {
     //Display Profile Pic and Info
@@ -2411,7 +2330,6 @@ myApp.onPageInit('settings-change-password', function (page) {
     });
 });
 
-//add upload pic, add case-key(timestamp?), add copy to admin backup//////////////////////
 //Make Report (CarLoss/IllegalPark)
 myApp.onPageInit('profile-report', function (page) {
 
@@ -3189,22 +3107,6 @@ myApp.onPageInit('edit-profile-pic', function (page) {
     */
 });
 
-    //$$('.actionCancel').on('click', function () {
-    //    console.log(openFilePicker());
-    //    console.log(testurl);
-    //});
-
-
-    $$('.actionDone').on('click', function () {
-        //on button click
-        test.result('blob').then(function (blob) {
-            // do something with cropped blob
-        });
-    });
-
-
-
-
 function playAudio(event) {    
 
     document.getElementById('default').pause();
@@ -3224,3 +3126,79 @@ function playAudio(event) {
 
 }
 
+/*
+function setOptions(srcType) {
+    var options = {
+        // Some common settings are 20, 50, and 100
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI,
+        // In this app, dynamically set the picture source, Camera or photo gallery
+        sourceType: srcType,
+        encodingType: Camera.EncodingType.JPEG,
+        mediaType: Camera.MediaType.PICTURE,
+        allowEdit: true,
+        correctOrientation: true  //Corrects Android orientation quirks
+    }
+    return options;
+}
+
+var testurl;
+
+//FilePicker//
+function openFilePicker(selection) {
+
+    var srcType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
+    var options = setOptions(srcType);
+    var func = createNewFileEntry;
+    var imgUri = null;
+    testurl = null;
+
+    if (selection == "picker-thmb") {
+        // To downscale a selected image,
+        // Camera.EncodingType (e.g., JPEG) must match the selected image type.
+        options.targetHeight = 100;
+        options.targetWidth = 100;
+    }
+
+    navigator.camera.getPicture(function cameraSuccess(data) {
+        testurl = data;
+        console.log('data');
+        console.log(data);
+        console.log("return data in terms of testurl liao");
+    }, function cameraError(error) {
+        console.debug("Unable to obtain picture: " + error, "app");
+
+        }, options);
+    console.log('returned');
+}
+
+function getFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(imgUri, function success(fileEntry) {
+
+        // Do something with the FileEntry object, like write to it, upload it, etc.
+        // writeFile(fileEntry, imgUri);
+        console.log("got file: " + fileEntry.fullPath);
+        // displayFileData(fileEntry.nativeURL, "Native URL");
+
+    }, function () {
+        // If don't get the FileEntry (which may happen when testing
+        // on some emulators), copy to a new FileEntry.
+        createNewFileEntry(imgUri);
+    });
+}
+
+function createNewFileEntry(imgUri) {
+    window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
+
+        // JPEG file
+        dirEntry.getFile("tempFile.jpeg", { create: true, exclusive: false }, function (fileEntry) {
+            // Do something with it, like write to it, upload it, etc.
+            // writeFile(fileEntry, imgUri);
+            console.log("got file: " + fileEntry.fullPath);
+            // displayFileData(fileEntry.fullPath, "File copied to");
+
+        }, onErrorCreateFile);
+
+    }, onErrorResolveUrl);
+}
+*/
