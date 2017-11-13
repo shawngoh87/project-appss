@@ -26,6 +26,12 @@ var isExitReady = 0;
 var google_provider = new firebase.auth.GoogleAuthProvider();
 var facebook_provider = new firebase.auth.FacebookAuthProvider();
 
+google_provider.addScope('https://www.googleapis.com/auth/admin.datatransfer');
+firebase.auth().languageCode = 'pt';
+google_provider.setCustomParameters({
+    'login_hint': 'user@example.com'
+});
+
 document.addEventListener("backbutton", onBackKeyDown, false);
 function onBackKeyDown(e) {
     e.preventDefault();
@@ -669,31 +675,54 @@ function refreshTopupHist() {
 }
 
 myApp.onPageInit('profile-settings', function (page) {
-    var google_provider = new firebase.auth.GoogleAuthProvider();
-    var facebook_provider = new firebase.auth.FacebookAuthProvider();
 
-    //$$('#facebook-link').on('click', function () {
-    //    auth.currentUser.linkWithPopup(facebook_provider).then(function (result) {
-    //        // Accounts successfully linked.
-    //        var credential = result.credential;
-    //        var user = result.user;
-    //        console.log('234');
-    //    }).catch(function (error) {
+    $$('#facebook-link').on('click', function () {
+        auth.User.linkWithPopup(facebook_provider).then(function (result) {
+            // Accounts successfully linked.
+            var credential = result.credential;
+            var user = result.user;
+        }).catch(function (error) {
 
-    //    });
-    //});
+        });
+    });
    
-    //$$('#google-link').on('click', function () {
-    //    auth.currentUser.linkWithPopup(google_provider).then(function (result) {
-    //        // Accounts successfully linked.
-    //        var credential = result.credential;
-    //        var user = result.user;
-    //        console.log('234');
-    //    }).catch(function (error) {
+    $$('#google-link').on('click', function () {
+        auth.User.linkWithPopup(google_provider).then(function (result) {
+            auth.User.link(credential).then(function (user) {
+                console.log("Account linking success", user);
+            }, function (error) {
+                console.log("Account linking error", error);
+            });
+        }).catch(function (error) {
 
-    //    });
-    //});
+        });
+
+    });
 });
+
+//myApp.onPageInit('link-fb', function (page) {
+
+//    $$('.testfblogin').on('click', function () {
+//        firebase.auth().signInWithPopup(facebook_provider).then(function (result) {
+//            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+//            var token = result.credential.accessToken;
+//            // The signed-in user info.
+//            var user = result.user;
+//            // mainView.router.loadPage("main.html");
+
+//            // ...
+//        }).catch(function (error) {
+//            var errorCode = error.code;
+//            var errorMessage = error.message;
+//            var email = error.email;
+//            var credential = error.credential;
+//            // ...
+//        });
+
+//    });
+
+//});
+
 myApp.onPageInit('profile-help', function (page) {
 
 });
