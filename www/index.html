@@ -51,12 +51,11 @@
                                 <input type="button" class="button-login-page button-signup" value="Sign Up" /><br />
                             </form>
                         </div>
-
                         <div class="input-user-help">
                             <input type="button" id="forget-password" style="color: #323131;" value="Forget Password" />
                         </div>
                         <div>
-                            <p class="buttons-row"> <a href="link-fb.html" class="button button-raised button-fill testfblogin"><strong>FB login test</strong></a></p>
+                            <p class="buttons-row"> <a href="link-fb.html" class="button button-raised button-fill"><strong>FB login test</strong></a></p>
                         </div>
                     </div>
                 </div>
@@ -77,7 +76,29 @@
         };
         firebase.initializeApp(config);
     </script>
+
+    <!--Facebook Login--> 
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '144570779507126',
+                cookie: true,
+                xfbml: true,
+                version: 'v2.10'
+            });
+            FB.AppEvents.logPageView();
+        };
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
     <!--<script type="text/javascript" src="cordova.js"></script>-->
+
     <script type="text/javascript" src="dist/js/framework7.js"></script>
     <script type="text/javascript" src="js/lib.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
