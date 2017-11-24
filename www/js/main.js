@@ -82,7 +82,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     document.getElementById('login-logo').style.setProperty("top", "18%");
     document.getElementById("forget-password").style.visibility = "visible";
     if (user) {
-        if (!user.emailVerified) {                // Reminder: NOT the condition.
+        if (user.emailVerified) {                // Reminder: NOT the condition.
             // email succesfully verified
             // User is signed in.
             document.getElementById("user-input-four-element").style.visibility = "hidden";
@@ -264,6 +264,62 @@ $$('.button-login').on('click', function () {
 //--------------------
 $$('.button-signup').on('click', function () {
     mainView.router.loadPage("signup.html");
+})
+
+$$('.google-login').on('click', function () {
+    firebase.auth().languageCode = 'pt';
+    firebase.auth().signInWithRedirect(google_provider).catch(function (error) {
+        // An error happened.
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            // Step 2.
+            // User's email already exists.
+            // The pending Google credential.
+            var pendingCred = error.credential;
+            // The provider account's email address.
+            var email = error.email;
+            // Get registered providers for this email.
+            firebase.auth().fetchProvidersForEmail(email).then(function (providers) {
+                // Step 3.
+                // If the user has several providers,
+                // the first provider in the list will be the "recommended" provider to use.
+                if (providers[0] === 'password') {
+                    // Asks the user his password.
+                    // In real scenario, you should handle this asynchronously.
+                    var password = promptUserForPassword(); // TODO: implement promptUserForPassword.
+                    firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+                        // Step 4a.
+                        return user.link(pendingCred);
+                    }).then(function () {
+                        // Google account successfully linked to the existing Firebase user.
+                        goToApp();
+                    });
+                    return;
+                }
+                // All the other cases are external providers.
+                // Construct provider object for that provider.
+                // TODO: implement getProviderForProviderId.
+                var provider = getProviderForProviderId(providers[0]);
+                // At this point, you should let the user know that he already has an account
+                // but with a different provider, and let him validate the fact he wants to
+                // sign in with this provider.
+                // Sign in to provider. Note: browsers usually block popup triggered asynchronously,
+                // so in real scenario you should ask the user to click on a "continue" button
+                // that will trigger the signInWithPopup.
+                firebase.auth().signInWithPopup(provider).then(function (result) {
+                    // Remember that the user may have signed in with an account that has a different email
+                    // address than the first one. This can happen as Firebase doesn't control the provider's
+                    // sign in flow and the user is free to login using whichever account he owns.
+                    // Step 4b.
+                    // Link to Google credential.
+                    // As we have access to the pending credential, we can directly call the link method.
+                    result.user.link(pendingCred).then(function () {
+                        // Google account successfully linked to the existing Firebase user.
+                        goToApp();
+                    });
+                });
+            });
+        }
+    });
 })
 
 //---------------------------
@@ -682,8 +738,9 @@ myApp.onPageInit('settings-link-fb', function (page) {
             // Accounts successfully linked.
             var credential = result.credential;
             var user = result.user;
+            console.log("Account linking success", user);
         }).catch(function (error) {
-
+            console.log("Account linking error", error);
         });
     });
 
@@ -3225,7 +3282,7 @@ function playAudio(event) {
     sound.load();
     sound.play();
 
-}
+};
 
 /*
 function setOptions(srcType) {
