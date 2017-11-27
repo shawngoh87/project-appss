@@ -94,6 +94,7 @@ firebase.auth().onAuthStateChanged(function (user) {
             setTimeout(function () {
                 console.log('Timedout');
                 if (!Loaded) {
+                    Db.admin = JSON.parse(localStorage.getItem('admin'));
                     Strg.logo = JSON.parse(localStorage.getItem('logo'));
                     Strg.icon = JSON.parse(localStorage.getItem('icon'));
                     Db.user = JSON.parse(localStorage.getItem('user'));
@@ -205,7 +206,7 @@ function initUserInfo() {
             }
         })
     })
-
+    localStorage.setItem('admin', JSON.stringify(Db.admin));
     storageRef.child('icon/Marker.png').getDownloadURL().then(function (url) {
         customMarker = url;
     })
