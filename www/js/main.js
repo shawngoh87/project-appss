@@ -82,11 +82,11 @@ firebase.auth().onAuthStateChanged(function (user) {
     document.getElementById('login-logo').style.setProperty("top", "18%");
     document.getElementById("forget-password").style.visibility = "visible";
     if (user) {
-        if (user.emailVerified) {                // Reminder: NOT the condition.
+        if (user.emailVerified) {                
             // email succesfully verified
             // User is signed in.
-            document.getElementById("user-input-four-element").style.visibility = "hidden";
-            document.getElementById("log-in-notify").style.visibility = "visible";
+            document.getElementById("user-input-four-element").style.visibility = "hidden"; // hide user input text box and button
+            document.getElementById("log-in-notify").style.visibility = "visible";          // show logging in title
             $$('.index-preloader').show();
             initUserInfo();
             Loaded = 0;
@@ -218,6 +218,7 @@ function initUserInfo() {
 $$('#forget-password').on('click', function () {
     myApp.prompt('Enter your email address below and a password reset email will be sent to you.', 'Forget Password?', function (fp_email) {
         if (fp_email === "") {
+            // handle empty input case
             myApp.alert('Please try again to enter your email address.', 'Error');
         }
         else {
@@ -235,10 +236,10 @@ $$('#forget-password').on('click', function () {
 // Login Authentication
 //-------------------------
 $$('.button-login').on('click', function () {
-    var si_email = $$('.user-email').val();
-    var si_password = $$('.password').val();
+    var si_email = $$('.user-email').val();     // get user email
+    var si_password = $$('.password').val();    // get user password
 
-    document.getElementById("user-input-four-element").style.visibility = "hidden";
+    document.getElementById("user-input-four-element").style.visibility = "hidden"; 
     document.getElementById("log-in-notify").style.visibility = "visible";
     $$('.index-preloader').show();
 
@@ -264,7 +265,7 @@ $$('.button-login').on('click', function () {
 // Go to Sign up Page
 //--------------------
 $$('.button-signup').on('click', function () {
-    mainView.router.loadPage("signup.html");
+    mainView.router.loadPage("signup.html");        
 })
 
 $$('.google-login').on('click', function () {
@@ -1165,7 +1166,7 @@ myApp.onPageInit('main', function (page) {
                     var request = {
                         location: pos,
                         radius: '250',          // unit is in meters (value now is 250m)
-                        type: ['restaurant', 'bank']
+                        type: ['restaurant', 'bank']    
                     };
 
                     var service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -1741,11 +1742,7 @@ myApp.onPageInit('signup', function (page) {
     var su_password;
     var su_username;
     var su_phone;
-    var su_ic;
-
-    
-   
-
+    var su_ic; 
     //-----------------------------
     // back button function
     //-----------------------------
@@ -1778,6 +1775,7 @@ myApp.onPageInit('signup', function (page) {
             myApp.alert('Password and Confirm Password does not match. Please try again.', 'Error');
         }
         else {
+            // send email verfication and phone number verification
             var param = {
                 url: 'https://api.authy.com/protected/json/phones/verification/start?via=sms&phone_number=' + $$('#su-phone-no').val() + '&country_code=60&locale=en',
                 method: 'POST',
@@ -2004,6 +2002,10 @@ myApp.onPageInit('profile-myprofile', function (page) {
 //---------------------------
 myApp.onPageInit("select-location", function (page) {
     myApp.showIndicator();
+
+    //==========================
+    // initialize variable
+    //==========================
     var default_marker = [];
     var default_pos = {
         lat: 0,
@@ -2078,20 +2080,21 @@ myApp.onPageInit("select-location", function (page) {
     var click_counter;
     $$('#default-location').on('click', function () {
         if (click_counter === 0) {
-            document.getElementById("default-location").style.backgroundColor = "green";
-            document.getElementById("default-location").style.color = "white";
-            document.getElementById("defaultcheckbox").checked = true;
+            document.getElementById("default-location").style.backgroundColor = "green";    // UI for default location
+            document.getElementById("default-location").style.color = "white";              // UI for default location
+            document.getElementById("defaultcheckbox").checked = true;                      // UI for default location
             selfset = false;
-            // checked
-            default_marker.forEach(function (marker) {
-                marker.setMap(null);
+            
+            default_marker.forEach(function (marker) {  
+                marker.setMap(null);    // clear marker
             });
-            default_marker = [];
-            $$('#default-address').html(default_pos['full_addr']);
-            document.getElementById("pac-input").style.visibility = "hidden";
-            var pos = {
-                lat: default_pos['lat'],
-                lng: default_pos['lng']
+            default_marker = [];        // clear marker
+
+            $$('#default-address').html(default_pos['full_addr']);  // display default address
+            document.getElementById("pac-input").style.visibility = "hidden";   // hide search box
+            var pos = {     
+                lat: default_pos['lat'],    // default latitude value
+                lng: default_pos['lng']     // default longitude value
             }
             map.setCenter(pos);
             map.setZoom(18);
@@ -2101,22 +2104,24 @@ myApp.onPageInit("select-location", function (page) {
                 position: pos,
                 icon: customMarker
             }));
-            click_counter = 1;
+            click_counter = 1;  // toggle click counter
         }
         else if (click_counter === 1) {
-            document.getElementById("default-location").style.backgroundColor = "white";
-            document.getElementById("default-location").style.color = "green";
-            document.getElementById("defaultcheckbox").checked = false;
+            document.getElementById("default-location").style.backgroundColor = "white";    // UI for user set location
+            document.getElementById("default-location").style.color = "green";              // UI for user set location
+            document.getElementById("defaultcheckbox").checked = false;                     // UI for user set location
             selfset = true;
+
             default_marker.forEach(function (marker) {
-                marker.setMap(null);
+                marker.setMap(null);    // cleaer all marker
             });
-            default_marker = [];
-            $$('#default-address').html(selfset_pos['full_addr']);
-            document.getElementById("pac-input").style.visibility = "visible";
+            default_marker = [];        // clear all marker
+
+            $$('#default-address').html(selfset_pos['full_addr']);  // display address
+            document.getElementById("pac-input").style.visibility = "visible";  // make search box visible
             var pos = {
-                lat: selfset_pos['lat'],
-                lng: selfset_pos['lng']
+                lat: selfset_pos['lat'],    // user-set address
+                lng: selfset_pos['lng']     // user-set address
             }
             map.setCenter(pos);
             map.setZoom(18);
@@ -2126,11 +2131,11 @@ myApp.onPageInit("select-location", function (page) {
                 position: pos,
                 icon: customMarker
             }));
-            click_counter = 0;
+            click_counter = 0;  // toggle click counter
         }
     });
 
-    // User click confirm button function
+    // Confirm button function
     $$('#use-selfset-loca').on('click', function () {
         if (selfset === true) {
             user_pos['lat'] = selfset_pos['lat'];
@@ -2147,7 +2152,7 @@ myApp.onPageInit("select-location", function (page) {
             user_pos['locality'] = default_pos['locality'];
         }
         console.log(user_pos);
-        mainView.router.back();
+        mainView.router.back(); // go back to index.html after confirm
         $$('.selected-location').html(user_pos['city']);
         $$('.selected-location-logo').css('color', 'red');
         selectedLocation = true;
@@ -2776,6 +2781,10 @@ myApp.onPageInit('promotion', function (page) {
     }    
 
     var temp;
+
+    //==================================
+    //  User confirm answer button
+    //==================================
     $$('#okButton').on('click', function () {
         document.getElementById(temp + "But").style.visibility = "hidden";
         document.getElementById("ads-video").style.visibility = "hidden";
@@ -2791,7 +2800,7 @@ myApp.onPageInit('promotion', function (page) {
             })
         }
         else {
-            myApp.alert('You got the wrong answer.', 'Notification')
+            myApp.alert('You got the wrong answer. No token for you.', 'Notification')
         }
     });
 
@@ -2880,21 +2889,25 @@ myApp.onPageInit('promotion', function (page) {
                                             var someButtonId;
 
                                             (function (_promoCompany) {
-                                                // crerate new watch video button and add listener
+                                                // crerate new watch video button 
                                                 var btn = document.createElement("BUTTON");
-                                                var t = document.createTextNode("Watch video & answer question to get free token");
+                                                var t = document.createTextNode("Watch video & answer question to get free token"); // button text
                                                 btn.className = "watchVideo";
                                                 btn.setAttribute("id", _promoCompany + "But");
                                                 btn.appendChild(t);
                                                 document.getElementById('promoPoster').appendChild(btn);
                                                 someButtonId = document.getElementById(_promoCompany + "But");
 
+                                                // add listener to newly created watch video button
                                                 someButtonId.addEventListener('click', function () {                                                
-                                                    storageRef.child('ads/' + _promoCompany + '.mp4').getDownloadURL().then(function (url) {
+                                                    storageRef.child('ads/' + _promoCompany + '.mp4').getDownloadURL().then(function (url) {    // get the video from database
                                                         $$('#ads-video-mp4-src').attr('src', url);
-                                                        $$('#question').html(Db.admin.qna[_promoCompany].question);
+                                                        $$('#question').html(Db.admin.qna[_promoCompany].question);     // get the question from database
 
-                                                        var rng = Math.floor((Math.random() * 10) + 1);
+                                                        //============================================
+                                                        // order the answer by randon number generator
+                                                        //============================================
+                                                        var rng = Math.floor((Math.random() * 10) + 1);     
                                                         if (rng >= 6) {
                                                             $$('#firstAns').html(Db.admin.qna[_promoCompany].correct);
                                                             document.getElementById("firstInput").value = "correct";
@@ -2907,15 +2920,17 @@ myApp.onPageInit('promotion', function (page) {
                                                             document.getElementById("secondInput").value = "correct";
                                                         }
 
-                                                        document.getElementById("video-background").style.visibility = "visible";
-                                                        document.getElementById("myPopUp").style.visibility = "hidden";
-                                                        document.getElementById("ads-video").style.visibility = "visible";
+                                                        document.getElementById("video-background").style.visibility = "visible";   // show opaque black background behind video
+                                                        document.getElementById("myPopUp").style.visibility = "hidden";             // hide Q&A pop up 
+                                                        document.getElementById("ads-video").style.visibility = "visible";          // show video
                                                         document.getElementById('ads-video').load();
-                                                        document.getElementById('ads-video').play();
+                                                        document.getElementById('ads-video').play();    // play video
+
+                                                        // video finish playing
                                                         $$('#ads-video').on('ended', function () {
-                                                            document.getElementById("video-background").style.visibility = "visible";
-                                                            document.getElementById("ads-video").style.visibility = "hidden";
-                                                            document.getElementById("myPopUp").style.visibility = "visible";
+                                                            document.getElementById("video-background").style.visibility = "visible";   
+                                                            document.getElementById("ads-video").style.visibility = "hidden";       // hide video after finish playing
+                                                            document.getElementById("myPopUp").style.visibility = "visible";        // show Q&A for user to get token
                                                             temp = _promoCompany;
                                                         })
                                                     })                                                 
@@ -2923,15 +2938,17 @@ myApp.onPageInit('promotion', function (page) {
 
                                                 // add listener to all cards
                                                 someID.addEventListener('click', function () {
-                                                    myApp.showIndicator();
+                                                    myApp.showIndicator();      // page is loading
                                                     document.getElementById("promoPoster").style.visibility = "visible";
-                                                    storageRef.child('poster/' + _promoCompany + 'poster.png').getDownloadURL().then(function (url) {
+                                                    storageRef.child('poster/' + _promoCompany + 'poster.png').getDownloadURL().then(function (url) {   // get poster from database
                                                         $$('#poster').attr('src', url);
-                                                        setTimeout(function () { myApp.hideIndicator(); }, 1000);                                                        
+                                                        setTimeout(function () { myApp.hideIndicator(); }, 1000);    // stop page loading after 1sec finish loading                                                    
                                                     })
-                                                    document.getElementById('promoDescription').innerHTML = Db.admin.poster[_promoCompany].Description;                                                    
-                                                    $$("#termCondition").empty()
-                                                    for (var k in Db.admin.poster[_promoCompany].term) {
+                                                    document.getElementById('promoDescription').innerHTML = Db.admin.poster[_promoCompany].Description; // display promotion description
+                                                    $$("#termCondition").empty()    // clear out old term and condition
+
+                                                    // display term and condition
+                                                    for (var k in Db.admin.poster[_promoCompany].term) {    
                                                         var termCond = '<li>' + Db.admin.poster[_promoCompany].term[k] + '</li>';
                                                         $$('#termCondition').append(termCond);
                                                     }        
