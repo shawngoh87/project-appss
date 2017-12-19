@@ -131,7 +131,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     }
 });
 
-function initUserInfo() {
+function initUserInfo() { //retrieve user info from database
     user = firebase.auth().currentUser;
     userRef = firebase.database().ref('users/' + user.uid);
     adminRef = firebase.database().ref('admin');
@@ -927,7 +927,7 @@ myApp.onPageInit('main', function (page) {
 
 
 
-            //Get tokens
+            //Get tokens info of the user
             userRef.child('balance').on('value', function (snapshot) {
                 $$('.token').html(+snapshot.val());
                 console.log('token:'+snapshot.val())
@@ -1138,9 +1138,9 @@ myApp.onPageInit('main', function (page) {
         getDuration();
     })
 
-    //-----------------------
-    // Pay Button Function
-    //-----------------------
+    //-------------------------------------------------------
+    // Pay Button Function (submit parking info to database)
+    //-------------------------------------------------------
     $$('.confirm-payment-button').on('click', function () {   
         if (selectedCar && selectedLocation && parkDuration > 0) {
             confirmText =
@@ -1264,8 +1264,8 @@ myApp.onPageInit('main', function (page) {
                     $$('.selected-location-logo').css('color', 'inherit');
                     selectedCar = false;
                     selectedLocation = false;
-                    myApp.showTab('#tab-history');
-                    myApp.showTab('#active');
+                    myApp.showTab('#tab-history'); // direct to history tab after payment
+                    myApp.showTab('#active'); 
                     var timestamp = Math.floor(Date.now());
                     carRef.child(carPlate).child('parking').update({
                         active: true,
