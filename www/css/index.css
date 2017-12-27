@@ -83,6 +83,13 @@ body {
     color: white;
 }
 
+.button-login-page.third-party-login {
+    background-color: inherit;
+    color: white;
+    font-size: 13px;
+    text-decoration: underline;
+}
+
 .input-user-help{
     position: absolute;
     top: 92%;

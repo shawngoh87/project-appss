@@ -76,6 +76,14 @@ document.getElementById("forget-password").style.visibility = "hidden";
 
 
 //------------------------------------------
+// Go to Login with other method page
+//------------------------------------------
+$$('.third-party-login').on('click', function () {
+    mainView.router.loadPage("login-other-method.html");
+    console.log('clicked');
+});
+
+//------------------------------------------
 // Check Whether User has signed in or not
 //------------------------------------------
 firebase.auth().onAuthStateChanged(function (user) {
@@ -268,44 +276,7 @@ $$('.button-signup').on('click', function () {
     mainView.router.loadPage("signup.html");        
 })
 
-$$('.google-login').on('click', function () {
-    firebase.auth().languageCode = 'pt';
-    firebase.auth().signInWithRedirect(google_provider).catch(function (error) {
-        // An error happened.
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          
-            var pendingCred = error.credential;
-            
-            var email = error.email;
-            
-            firebase.auth().fetchProvidersForEmail(email).then(function (providers) {
-               
-                if (providers[0] === 'password') {
 
-                    var password = promptUserForPassword(); // TODO: implement promptUserForPassword.
-                    firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
-
-                        return user.link(pendingCred);
-                    }).then(function () {
-                       
-                        goToApp();
-                    });
-                    return;
-                }
-             
-                var provider = getProviderForProviderId(providers[0]);
-               
-                firebase.auth().signInWithRedirect(provider).then(function (result) {
-                  
-                    result.user.link(pendingCred).then(function () {
-                        
-                        goToApp();
-                    });
-                });
-            });
-        }
-    });
-})
 
 //---------------------------
 // Function to remove vehicle
@@ -716,7 +687,7 @@ function refreshTopupHist() {
 }
 
 myApp.onPageInit('settings-link-fb', function (page) {
-
+    //to link facebook account
     $$('.facebook-link').on('click', function () {
         console.log("clicked")
         user.linkWithRedirect(facebook_provider).then(function (result) {
@@ -733,7 +704,7 @@ myApp.onPageInit('settings-link-fb', function (page) {
 
 
 myApp.onPageInit('profile-settings', function (page) {
-
+    //to link google account
     $$('.google-link').on('click', function () {
         user.linkWithRedirect(google_provider).then(function (result) {
             auth.User.link(credential).then(function (user) {
@@ -1927,7 +1898,7 @@ function changeColorTheme(color) {
             break;
     }
 }
-
+//convert image to blob for upload to firebase storage
 function to_blob(url) {
 
     return new Promise(function (resolve, reject) {
@@ -2563,7 +2534,9 @@ myApp.onPageInit('profile-report', function (page) {
         }
     });
 
+    //-------------------------------------
     // Submit button for illegal parking
+    //-------------------------------------
     $$('#ip-submit').on('click', function () {
         if ($$('#ip-plate').val() === "") {
             //empty email input textbox case
@@ -3036,7 +3009,8 @@ myApp.onPageInit('promotion', function (page) {
 
 });
 
-//Change Profile
+
+//Change Profile Info
 myApp.onPageInit('settings-change-profile', function (page) {
     var name = Db.user.real_name;
     var ic = Db.user.IC;
@@ -3187,6 +3161,7 @@ myApp.onPageInit('edit-profile-pic', function (page) {
         }
     }
 
+    //To crop picture
     var to_crop = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
         boundary: { width: 280, height: 280 },
@@ -3265,6 +3240,50 @@ myApp.onPageInit('edit-profile-pic', function (page) {
     });
     */
 });
+
+myApp.onPageInit('login-other-method', function (page) {
+    //To login with google account
+    $$('.google-login').on('click', function () {
+        firebase.auth().languageCode = 'pt';
+        firebase.auth().signInWithRedirect(google_provider).catch(function (error) {
+            // An error happened.
+            if (error.code === 'auth/account-exists-with-different-credential') {
+
+                var pendingCred = error.credential;
+
+                var email = error.email;
+
+                firebase.auth().fetchProvidersForEmail(email).then(function (providers) {
+
+                    if (providers[0] === 'password') {
+
+                        var password = promptUserForPassword(); // TODO: implement promptUserForPassword.
+                        firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+
+                            return user.link(pendingCred);
+                        }).then(function () {
+
+                            goToApp();
+                        });
+                        return;
+                    }
+
+                    var provider = getProviderForProviderId(providers[0]);
+
+                    firebase.auth().signInWithRedirect(provider).then(function (result) {
+
+                        result.user.link(pendingCred).then(function () {
+
+                            goToApp();
+                        });
+                    });
+                });
+            }
+        });
+    })
+
+});
+
 
 function playAudio(event) {    
 
