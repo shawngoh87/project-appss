@@ -686,10 +686,10 @@ function refreshTopupHist() {
     showTopupHist();
 }
 
+//Link FB account to existing account
+//TODO: import user information
 myApp.onPageInit('settings-link-fb', function (page) {
-    //to link facebook account
     $$('.facebook-link').on('click', function () {
-        console.log("clicked")
         user.linkWithRedirect(facebook_provider).then(function (result) {
             // Accounts successfully linked.
             var credential = result.credential;
@@ -699,7 +699,6 @@ myApp.onPageInit('settings-link-fb', function (page) {
             console.log("Account linking error", error);
         });
     });
-
 });
 
 
@@ -718,6 +717,10 @@ myApp.onPageInit('profile-settings', function (page) {
 });
 
 
+//Not yet complete*******************************
+//user.link is not functioning, havent figure out why
+//can try to handle the process manually(refer to docs)
+//When user login with FB account, the account of the same email already exist, both the account will link together
 myApp.onPageInit('link-fb', function (page) {
 
     $$('.testfblogin').on('click', function () {
@@ -740,7 +743,7 @@ myApp.onPageInit('link-fb', function (page) {
                         // Asks the user his password.
                         // In real scenario, you should handle this asynchronously. ----------------------------------- ?????
                         //use the visible thing to prompt for password
-                            myApp.modalPassword('You password please:', function (password) {
+                            myApp.modalPassword('Please enter your password:', function (password) {
                                 console.log(password);
 
                                 firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
@@ -780,34 +783,12 @@ myApp.onPageInit('link-fb', function (page) {
             }
         });
     });
-
-
-
-
-
-    //$$('.testfblogin').on('click', function () {
-    //    firebase.auth().signInWithPopup(facebook_provider).then(function (result) {
-    //        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-    //        var token = result.credential.accessToken;
-    //        // The signed-in user info.
-    //        var user = result.user;
-    //        // mainView.router.loadPage("main.html");
-
-    //        // ...
-    //    }).catch(function (error) {
-    //        var errorCode = error.code;
-    //        var errorMessage = error.message;
-    //        var email = error.email;
-    //        var credential = error.credential;
-    //        // ...
-    //    });
-    //});
-
 });
 
 myApp.onPageInit('profile-help', function (page) {
 
 });
+//to keep the tab active when back from entering another html page
 function myactive() {
     $$("#tab-profile").addClass("active")
     $$("#tab-park").removeClass("active")
@@ -1456,6 +1437,7 @@ myApp.onPageInit('main', function (page) {
     });
 
     //--Profile Tab-------------------------------------------------
+    //Log Out Button
     $$('.confirm-logout-ok').on('click', function () {
         myApp.confirm('Are you sure to logout?', 'Logout', function () {
             firebase.auth().signOut().then(function () {
@@ -1475,6 +1457,7 @@ myApp.onPageInit('main', function (page) {
     var ministr1 = '<img src="';
     var ministr2 = '" width="80" height="80">';
 
+    //To display profile picture in profile tab
     if (user.photoURL != null) {
         $$('.profile-pic-mini').append(ministr1 + user.photoURL + ministr2);
     } else {
@@ -1898,6 +1881,7 @@ function changeColorTheme(color) {
             break;
     }
 }
+
 //convert image to blob for upload to firebase storage
 function to_blob(url) {
 
@@ -1924,7 +1908,6 @@ myApp.onPageInit('profile-myprofile', function (page) {
     var str2 = '" width="100" height="100">';
     if (user.photoURL != null) {
         $$('.button-profile-pic').append(str1 + user.photoURL + str2);
-   //     console.log(user.photoURL);
     } else {
         $$('.button-profile-pic').append('<img class="profile-pic" src="images/profile_pic_default.png" width="100">');
     }
@@ -2378,8 +2361,9 @@ myApp.onPageInit("select-location", function (page) {
     }
 });
 
-//Need to change ordering way//////////////////////
 //Promocode
+//Need to change ordering way//////////////////////
+//Now is follow by key, which is oldest to newest
 myApp.onPageInit('profile-promocode', function (page) {
     var available_promo = 0;
     var have_promo = 0;
@@ -2391,6 +2375,7 @@ myApp.onPageInit('profile-promocode', function (page) {
     var str5 = '</p> <p>'
     var str6 = '</p> </div> </div> </li>'
 
+    //**the variable 'promotion' here and the promotion before is different
     function loadPromo() {
         var promotion = Db.user.promotion; // Clone it to prevent async bugs
         for (var eachPromotion in promotion) {
@@ -2427,6 +2412,7 @@ myApp.onPageInit('settings-change-password', function (page) {
 
     $$('#button-update-password').on('click', function () {
         var credential = firebase.auth.EmailAuthProvider.credential(user.email, $$('#old-password').val());
+        //if old pssword is valid, proceed to next step
         user.reauthenticateWithCredential(credential).then(function () {
             if ($$('#new-password').val() === $$('#confirm-new-password').val()) {
                 user.updatePassword($$('#new-password').val()).then(function () {
@@ -2493,6 +2479,7 @@ myApp.onPageInit('profile-report', function (page) {
             cl_location = $$('#cl-location').val();
             cl_remarks = $$('#cl-remarks').val();
 
+            //carloss report case name = report timestamp + plate number
             userRef.child('report').child('car_loss').child(report_timestamp + cl_plate).update({
                 cl_owner_name: cl_owner_name,
                 cl_owner_ic: cl_owner_ic,
@@ -2502,6 +2489,7 @@ myApp.onPageInit('profile-report', function (page) {
                 cl_location: cl_location,
                 cl_remarks: cl_remarks
             }).then(function () {
+                //duplicate to admin branch, for own storing and handling purpose
                 adminRef.child('report_cases').child('car_loss').child(report_timestamp + cl_plate).update({
                     cl_owner_name: cl_owner_name,
                     cl_owner_ic: cl_owner_ic,
@@ -2520,17 +2508,17 @@ myApp.onPageInit('profile-report', function (page) {
         }
     });
 
-
+    //Illegal Parking
     var ip_plate, ip_location, ip_behavior, ip_remarks, ip_photo_downloadURL, isready = false, ip_photo_localURL;
 
-    //Photo Preview
+    //Photo Preview for image uploaded
     $$('#ip-photo').on('change', function (event) {
         var files = event.target.files, file;
         if (files && files.length > 0) {
             file = files[0];
             ip_photo_localURL = window.URL.createObjectURL(file);
             $$('.ip-photo-show').append(' <li><div class="item-content"><div class="item-inner"><div class="item-title label">Proof</div><div><img class="view-big-pic" src="' + ip_photo_localURL + '" /></div></div></div></li >');
-            isready = true;
+            isready = true;     //if photo is chosen
         }
     });
 
@@ -2557,6 +2545,7 @@ myApp.onPageInit('profile-report', function (page) {
             ip_remarks = $$('#ip-remarks').val();
 
             var report_timestamp = (Date.now()).toString();
+            //illegalpark report case name = report timestamp + plate number
             userRef.child('report').child('illegal_park').child(report_timestamp + ip_plate).update({
                 ip_plate: ip_plate,
                 ip_location: ip_location,
@@ -2620,7 +2609,7 @@ myApp.onPageInit('profile-report', function (page) {
     });
 });
 
-
+//This promotion is different with the promocode, this is the advertisment part 
 myApp.onPageInit('promotion', function (page) {
     //-------------
     //Initiate UI
@@ -3026,7 +3015,7 @@ myApp.onPageInit('settings-change-profile', function (page) {
 
     $$('#button-update-profile').on('click', function () {
         if ($$('#edit-name').val() !== ("") && $$('#edit-ic').val() !== ("") && $$('#edit-birthday').val() !== ("") && $$('#edit-address').val() !== ("")) {
-
+            //If everything is not empty, update the database
             userRef.update({
                 real_name: $$('#edit-name').val(),
                 IC: $$('#edit-ic').val(),
@@ -3162,6 +3151,9 @@ myApp.onPageInit('edit-profile-pic', function (page) {
     }
 
     //To crop picture
+    //Croppie is used (Google to know more)
+
+    //the frame displayed
     var to_crop = $('#main-cropper').croppie({
         viewport: { width: 250, height: 250, type: 'circle' },
         boundary: { width: 280, height: 280 },
@@ -3212,12 +3204,13 @@ myApp.onPageInit('edit-profile-pic', function (page) {
             });
         }
         else {
-            myApp.alert("Choose a File!!!!");
+            myApp.alert("Please choose an image.");
         };
     });
 
     /*
-     //if using cordova
+     //if using cordova plugin
+    //workable, but cordova is not used because "cordova.js" affects the usage of firebase storage (unknown reason)
     $$('.actionUpload').on('click', function () {
         openFilePicker();
         var waitPhoto = setInterval(function () {
@@ -3304,6 +3297,9 @@ function playAudio(event) {
 
 };
 
+
+
+//This whole section need to be included if cordova camera plugin is used
 /*
 function setOptions(srcType) {
     var options = {
